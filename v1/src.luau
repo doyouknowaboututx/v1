@@ -65,6 +65,8 @@ local Library = {}
 Library.__index = Library
 
 local Connections = {}
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/doyouknowaboututx/v1/main/v1/src/Core/Notification.luau", true))()
+
 local function CreateTween(instance, properties, duration, easingStyle, easingDirection)
     local tween = ts:Create(
         instance,
@@ -446,7 +448,7 @@ function Library:_SetupMobileSupport()
         Position = UDim2.new(0, 15, 0.5, -25),
         Size = UDim2.new(0, 50, 0, 50),
         AnchorPoint = Vector2.new(0, 0.5),
-        Visible = false,
+        Visible = true,
         ZIndex = 999,
         Parent = self.screenGui
     })
@@ -489,12 +491,7 @@ function Library:_SetupMobileSupport()
     end)
     
     self._mobileToggle = mobileButton
-    
-    if IsMobileDevice() then
-        mobileButton.Visible = not self._visible
-    end
 end
-
 function Library:_CreateMainv0rtexd()
     self.screenGui = CreateInstance("ScreenGui", {
         Name = n,
@@ -769,87 +766,69 @@ function Library:_RegisterConfigElement(id, elementType, getValue, setValue)
     }
 end
 
+function Library:GetConfigFolder()
+    local baseFolder = "CHX"
+    if isfolder and not isfolder(baseFolder) then
+        makefolder(baseFolder)
+    end
+    return baseFolder
+end
+
 function Library:SaveConfig(configName)
     if not writefile then
-        self:Notify({
-            Title = "Error",
-            Description = "Config system not supported",
-            Duration = 3
-        })
+        chx("Config system not supported", 3)
         return false
     end
-    
-    EnsureConfigFolder()
-    
+
+    local folder = self:GetConfigFolder()
+    local path = folder .. "/" .. configName .. ".json"
+
     local configData = {}
     for id, element in pairs(self._configElements) do
         local value = element.getValue()
-        
         if typeof(value) == "Color3" then
             value = {R = value.R, G = value.G, B = value.B, _type = "Color3"}
         elseif typeof(value) == "EnumItem" then
             value = {_type = "EnumItem", _enum = tostring(value.EnumType), _value = value.Name}
         end
-        
         configData[id] = value
     end
-    
+
     local success, err = pcall(function()
-        writefile("AcrylicConfigs/" .. configName .. ".json", hs:JSONEncode(configData))
+        writefile(path, hs:JSONEncode(configData))
     end)
-    
+
     if success then
         self._currentConfig = configName
-        self:Notify({
-            Title = "Config Saved",
-            Description = "Saved as: " .. configName,
-            Duration = 2,
-            Icon = "rbxassetid://10723356507"
-        })
+        chx("Saved as: " .. configName, 2)
         return true
     else
-        self:Notify({
-            Title = "Error",
-            Description = "Failed to save config",
-            Duration = 3
-        })
+        chx("Failed to save config", 3)
         return false
     end
 end
 
 function Library:LoadConfig(configName)
     if not readfile or not isfile then
-        self:Notify({
-            Title = "Error",
-            Description = "Config system not supported",
-            Duration = 3
-        })
+        chx("Config system not supported", 3)
         return false
     end
-    
-    local path = "AcrylicConfigs/" .. configName .. ".json"
+
+    local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
     if not isfile(path) then
-        self:Notify({
-            Title = "Error",
-            Description = "Config not found: " .. configName,
-            Duration = 3
-        })
+        chx("Config not found: " .. configName, 3)
         return false
     end
-    
+
     local success, data = pcall(function()
         return hs:JSONDecode(readfile(path))
     end)
-    
+
     if not success or not data then
-        self:Notify({
-            Title = "Error",
-            Description = "Failed to load config",
-            Duration = 3
-        })
+        chx("Failed to load config", 3)
         return false
     end
-    
+
     for id, value in pairs(data) do
         if self._configElements[id] then
             if type(value) == "table" and value._type == "Color3" then
@@ -857,20 +836,14 @@ function Library:LoadConfig(configName)
             elseif type(value) == "table" and value._type == "EnumItem" then
                 value = Enum[value._enum][value._value]
             end
-            
             pcall(function()
                 self._configElements[id].setValue(value)
             end)
         end
     end
-    
+
     self._currentConfig = configName
-    self:Notify({
-        Title = "Config Loaded",
-        Description = "Loaded: " .. configName,
-        Duration = 2,
-        Icon = "rbxassetid://10723356507"
-    })
+    chx("Loaded: " .. configName, 2)
     return true
 end
 
@@ -878,15 +851,11 @@ function Library:DeleteConfig(configName)
     if not delfile or not isfile then
         return false
     end
-    
-    local path = "AcrylicConfigs/" .. configName .. ".json"
+
+    local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
     if isfile(path) then
         delfile(path)
-        self:Notify({
-            Title = "Config Deleted",
-            Description = "Deleted: " .. configName,
-            Duration = 2
-        })
+        chx("Deleted: " .. configName, 2)
         return true
     end
     return false
@@ -1621,7 +1590,7 @@ function Library._CreateDropdown(tab, config)
     })
 
     local maxVisibleOptions = 5
-    local totalOptionsHeight = math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight + 30) -- 30px untuk search box
+    local totalOptionsHeight = math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight + 30)
 
     local optionsContainer = CreateInstance("Frame", {
         Name = "OptionsContainer",
