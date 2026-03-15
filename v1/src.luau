@@ -187,10 +187,6 @@ local function DisconnectAll()
     Connections = {}
 end
 
-function Library:GetConfigs()
-    return GetAvailableConfigs(self)
-end
-
 local function GetAvailableConfigs(library)
     local configs = {}
     if isfolder and listfiles then
@@ -208,6 +204,10 @@ local function GetAvailableConfigs(library)
         end
     end
     return configs
+end
+
+function Library:GetConfigs()
+    return GetAvailableConfigs(self)
 end
 
 local AcrylicBlur = {}
