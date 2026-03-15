@@ -187,23 +187,21 @@ local function DisconnectAll()
     Connections = {}
 end
 
-local function GetConfigFolder(configName)
-    return "AcrylicConfigs/" .. configName
+function Library:GetConfigs()
+    return GetAvailableConfigs(self)
 end
 
-local function EnsureConfigFolder()
-    if isfolder and not isfolder("AcrylicConfigs") then
-        makefolder("AcrylicConfigs")
-    end
-end
-
-local function GetAvailableConfigs()
+local function GetAvailableConfigs(library)
     local configs = {}
     if isfolder and listfiles then
-        EnsureConfigFolder()
-        local files = listfiles("AcrylicConfigs")
+        local folder = library:GetConfigFolder()
+        if not isfolder(folder) then
+            makefolder(folder)
+        end
+
+        local files = listfiles(folder)
         for _, file in ipairs(files) do
-            local name = file:match("AcrylicConfigs/(.+)%.json$") or file:match("AcrylicConfigs\\(.+)%.json$")
+            local name = file:match(folder .. "/(.+)%.json$")
             if name then
                 table.insert(configs, name)
             end
@@ -454,10 +452,10 @@ function Library:_SetupMobileSupport()
     })
     CreateCorner(mobileButton, 25)
     CreateStroke(mobileButton)
-    
+
     local dragging = false
     local dragStart, startPos
-    
+
     mobileButton.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
@@ -465,19 +463,19 @@ function Library:_SetupMobileSupport()
             startPos = mobileButton.Position
         end
     end)
-    
+
     mobileButton.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
             if dragging then
                 local delta = input.Position - dragStart
-                if delta.Magnitude < 10 then
+                if delta.Magnitude < 5 then
                     self:Toggle()
                 end
             end
             dragging = false
         end
     end)
-    
+
     ui.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
             local delta = input.Position - dragStart
@@ -489,9 +487,15 @@ function Library:_SetupMobileSupport()
             )
         end
     end)
-    
+
     self._mobileToggle = mobileButton
 end
+
+function Library:Toggle()
+    self._visible = not self._visible
+    self.container.Visible = self._visible
+end
+
 function Library:_CreateMainv0rtexd()
     self.screenGui = CreateInstance("ScreenGui", {
         Name = n,
