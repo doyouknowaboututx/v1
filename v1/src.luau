@@ -65,9 +65,6 @@ local Library = {}
 Library.__index = Library
 
 local Connections = {}
-local NotificationQueue = {}
-local NotificationContainer = nil
-
 local function CreateTween(instance, properties, duration, easingStyle, easingDirection)
     local tween = ts:Create(
         instance,
@@ -384,19 +381,6 @@ function AcrylicBlur:Destroy()
     end
 end
 
-local function CreateNotificationContainer(screenGui)
-    if NotificationContainer then return NotificationContainer end
-    NotificationContainer = CreateInstance("Frame", {
-        Name = "NotificationContainer",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(1, -240, 0, 20),
-        Size = UDim2.new(0, 220, 1, -40),
-        Parent = screenGui
-    })
-    CreateListLayout(NotificationContainer, 10, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Vertical)
-    return NotificationContainer
-end
-
 function Library.new(title, configFolder)
     local self = setmetatable({}, Library)
     self.title = title or "Acrylic"
@@ -422,79 +406,19 @@ function Library.new(title, configFolder)
     return self
 end
 
-function Library:Notify(config)
-    local title = config.Title or "Notification"
-    local description = config.Description or ""
-    local duration = config.Duration or 3
-    local icon = config.Icon or "rbxassetid://10709775704"
+local StarterGui = game:GetService("StarterGui")
+local function chx(msg, duration, icon)
+    StarterGui:SetCore("SendNotification", {
+        Title = "ChloeX Notification",
+        Text = msg or "",
+        Icon = icon or "rbxassetid://95750353626660",
+        Duration = duration or 3,
+        Button1 = "OK"
+    })
+end
 
-    local notification = CreateInstance("Frame", {
-        Name = "Notification",
-        BackgroundColor3 = c.Notification.Background,
-        Position = UDim2.new(1, 20, 0, 0),
-        Size = UDim2.new(1, 0, 0, s.Notification.Height),
-        ClipsDescendants = true,
-        Parent = NotificationContainer
-    })
-    CreateCorner(notification, 4)
-    CreateInstance("UIStroke", {
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-        Color = c.Notification.Border,
-        Thickness = 1.5,
-        Parent = notification
-    })
-    local titleLabel = CreateInstance("TextLabel", {
-        Name = "Title",
-        FontFace = f.Regular,
-        TextColor3 = c.Text,
-        Text = title,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 14, 0, 16),
-        TextSize = textsize.Normal,
-        Size = UDim2.new(1, -60, 0, 19),
-        Parent = notification
-    })
-    local descriptionLabel = CreateInstance("TextLabel", {
-        Name = "Description",
-        FontFace = f.Regular,
-        TextColor3 = c.TextDark,
-        Text = description,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        TextTruncate = Enum.TextTruncate.AtEnd,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 14, 0, 38),
-        TextSize = textsize.Normal,
-        Size = UDim2.new(1, -60, 0, 19),
-        Parent = notification
-    })
-    local iconImage = CreateInstance("ImageLabel", {
-        Name = "Icon",
-        BackgroundTransparency = 1,
-        Image = icon,
-        Position = UDim2.new(1, -33, 0, 23),
-        Size = UDim2.new(0, 19, 0, 19),
-        Parent = notification
-    })
-    CreateInstance("UIAspectRatioConstraint", {
-        Parent = iconImage
-    })
-    local timerBar = CreateInstance("Frame", {
-        Name = "Timer",
-        BackgroundColor3 = c.Notification.Timer,
-        Position = UDim2.new(0, 0, 1, -3),
-        Size = UDim2.new(1, 0, 0, 3),
-        Parent = notification
-    })
-    CreateCorner(timerBar, 100)
-    CreateTween(notification, {Position = UDim2.new(0, 0, 0, 0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    CreateTween(timerBar, {Size = UDim2.new(0, 0, 0, 3)}, duration, Enum.EasingStyle.Linear)
-    task.delay(duration, function()
-        CreateTween(notification, {Position = UDim2.new(1, 20, 0, 0)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-        task.wait(0.3)
-        notification:Destroy()
-    end)
-    return notification
+function Library:Notify(config)
+    chx(config.Description or "", config.Duration, config.Icon)
 end
 
 function Library:_SetupKeybindListener()
@@ -1713,7 +1637,7 @@ function Library._CreateDropdown(tab, config)
     })
 
     local maxVisibleOptions = 5
-    local totalOptionsHeight = math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight)
+    local totalOptionsHeight = math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight + 30) -- 30px untuk search box
 
     local optionsContainer = CreateInstance("Frame", {
         Name = "OptionsContainer",
@@ -1730,15 +1654,33 @@ function Library._CreateDropdown(tab, config)
     CreateCorner(optionsContainer, 5)
     CreateStroke(optionsContainer)
 
+    local searchBox = CreateInstance("TextBox", {
+        Name = "SearchBox",
+        FontFace = f.Regular,
+        TextColor3 = c.Text,
+        PlaceholderText = "Search...",
+        PlaceholderColor3 = c.TextDark,
+        Text = "",
+        BackgroundColor3 = c.Secondary,
+        BackgroundTransparency = 0.2,
+        BorderSizePixel = 0,
+        TextSize = textsize.Small,
+        Size = UDim2.new(1, -10, 0, 26),
+        Position = UDim2.new(0, 5, 0, 5),
+        Parent = optionsContainer
+    })
+    CreateCorner(searchBox, 5)
+
     local optionsScroll = CreateInstance("ScrollingFrame", {
         Name = "OptionsScroll",
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 1, 0),
+        Size = UDim2.new(1, 0, 1, -36),
         CanvasSize = UDim2.new(0, 0, 0, #options * s.Dropdown.OptionHeight),
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60),
         ZIndex = 100,
+        Position = UDim2.new(0, 0, 0, 36),
         Parent = optionsContainer
     })
     CreateListLayout(optionsScroll, 0, Enum.SortOrder.LayoutOrder)
@@ -1751,56 +1693,74 @@ function Library._CreateDropdown(tab, config)
         end
     end
 
-    local function CreateOptionButton(option)
-        local optionBtn = CreateInstance("TextButton", {
-            Name = option,
-            FontFace = f.Regular,
-            TextColor3 = c.Text,
-            Text = option,
-            BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            TextSize = textsize.Small,
-            Size = UDim2.new(1, 0, 0, s.Dropdown.OptionHeight),
-            ZIndex = 100,
-            Parent = optionsScroll
-        })
+    local optionButtons = {}
 
-        optionBtn.MouseEnter:Connect(function()
-            CreateTween(optionBtn, {BackgroundTransparency = 0.5}, animationspeed.Fast)
-        end)
+    local function RefreshOptions(filter)
+        -- clear old
+        for _, btn in ipairs(optionButtons) do btn:Destroy() end
+        optionButtons = {}
 
-        optionBtn.MouseLeave:Connect(function()
-            CreateTween(optionBtn, {BackgroundTransparency = 1}, animationspeed.Fast)
-        end)
-
-        optionBtn.MouseButton1Click:Connect(function()
-            if multiSelect then
-                local index = table.find(selected, option)
-                if index then
-                    table.remove(selected, index)
-                else
-                    table.insert(selected, option)
-                end
-                UpdateSelectedText()
-                callback(selected)
-            else
-                selected = option
-                UpdateSelectedText()
-                callback(selected)
-                expanded = false
-                optionsContainer.Visible = false
-                CreateTween(arrow, {Rotation = 0}, animationspeed.Normal)
-                frame.ZIndex = 1
+        local filteredOptions = {}
+        for _, option in ipairs(options) do
+            if not filter or option:lower():find(filter:lower()) then
+                table.insert(filteredOptions, option)
             end
-        end)
+        end
 
-        return optionBtn
+        for _, option in ipairs(filteredOptions) do
+            local optionBtn = CreateInstance("TextButton", {
+                Name = option,
+                FontFace = f.Regular,
+                TextColor3 = c.Text,
+                Text = option,
+                BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                TextSize = textsize.Small,
+                Size = UDim2.new(1, 0, 0, s.Dropdown.OptionHeight),
+                ZIndex = 100,
+                Parent = optionsScroll
+            })
+
+            optionBtn.MouseEnter:Connect(function()
+                CreateTween(optionBtn, {BackgroundTransparency = 0.5}, animationspeed.Fast)
+            end)
+            optionBtn.MouseLeave:Connect(function()
+                CreateTween(optionBtn, {BackgroundTransparency = 1}, animationspeed.Fast)
+            end)
+
+            optionBtn.MouseButton1Click:Connect(function()
+                if multiSelect then
+                    local index = table.find(selected, option)
+                    if index then
+                        table.remove(selected, index)
+                    else
+                        table.insert(selected, option)
+                    end
+                    UpdateSelectedText()
+                    callback(selected)
+                else
+                    selected = option
+                    UpdateSelectedText()
+                    callback(selected)
+                    expanded = false
+                    optionsContainer.Visible = false
+                    CreateTween(arrow, {Rotation = 0}, animationspeed.Normal)
+                    frame.ZIndex = 1
+                end
+            end)
+
+            table.insert(optionButtons, optionBtn)
+        end
+
+        optionsScroll.CanvasSize = UDim2.new(0, 0, 0, #optionButtons * s.Dropdown.OptionHeight)
     end
 
-    for _, option in ipairs(options) do
-        CreateOptionButton(option)
-    end
+    searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        RefreshOptions(searchBox.Text)
+    end)
+
+    RefreshOptions() -- initial populate
 
     local toggleBtn = CreateInstance("TextButton", {
         Name = "ToggleBtn",
@@ -1833,17 +1793,7 @@ function Library._CreateDropdown(tab, config)
         end,
         Refresh = function(_, newOptions)
             options = newOptions
-            for _, child in ipairs(optionsScroll:GetChildren()) do
-                if child:IsA("TextButton") then
-                    child:Destroy()
-                end
-            end
-            for _, option in ipairs(options) do
-                CreateOptionButton(option)
-            end
-            optionsScroll.CanvasSize = UDim2.new(0, 0, 0, #options * s.Dropdown.OptionHeight)
-            local newTotalHeight = math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight)
-            optionsContainer.Size = UDim2.new(0, 135, 0, newTotalHeight)
+            RefreshOptions(searchBox.Text)
         end
     }
 
