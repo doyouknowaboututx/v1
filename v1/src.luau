@@ -467,10 +467,7 @@ function Library:_SetupMobileSupport()
     mobileButton.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
             if dragging then
-                local delta = input.Position - dragStart
-                if delta.Magnitude < 5 then
-                    self:Toggle()
-                end
+                self:Toggle()
             end
             dragging = false
         end
@@ -489,6 +486,22 @@ function Library:_SetupMobileSupport()
     end)
 
     self._mobileToggle = mobileButton
+end
+
+function Library:Toggle()
+    self._visible = not self._visible
+    if self._screenGui then
+        self._screenGui.Enabled = self._visible
+    end
+    if self._container then
+        self._container.Visible = self._visible
+    end
+    if self._acrylicBlur and self._acrylicBlur.Frame then
+        self._acrylicBlur.Frame.Visible = self._visible
+    end
+    if self._mobileToggle then
+        self._mobileToggle.Visible = not self._visible
+    end
 end
 
 function Library:Toggle()
