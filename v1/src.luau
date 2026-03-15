@@ -192,11 +192,18 @@ local function DisconnectAll()
 end
 
 function Library:GetConfigFolder()
-    local folder = "CHX"
-    if isfolder and not isfolder(folder) then
-        makefolder(folder)
+    local baseFolder = "CHX"
+    if isfolder and not isfolder(baseFolder) then
+        makefolder(baseFolder)
     end
-    return folder
+
+    local folder = self.configFolder or self.title or "Games"
+    local fullPath = baseFolder .. "/" .. folder
+    if isfolder and not isfolder(fullPath) then
+        makefolder(fullPath)
+    end
+
+    return fullPath
 end
 
 local function GetAvailableConfigs(library)
