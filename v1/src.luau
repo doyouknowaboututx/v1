@@ -2491,15 +2491,4 @@ function Library._CreateConfigSection(tab)
     }
 end
 
-tabMethods.Slider = tabMethods.CreateSlider
-tabMethods.Button = tabMethods.CreateButton
-tabMethods.Toggle = tabMethods.CreateToggle
-tabMethods.Dropdown = tabMethods.CreateDropdown
-tabMethods.Keybind = tabMethods.CreateKeybind
-tabMethods.Color = tabMethods.CreateColorPicker
-tabMethods.Input = tabMethods.CreateTextBox
-tabMethods.Textbox = tabMethods.CreateTextBox
-tabMethods.Paragraph = tabMethods.CreateParagraph
-tabMethods.ConfigSection = tabMethods.CreateConfigSection
-
 return Library
