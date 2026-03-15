@@ -405,7 +405,7 @@ function Library.new(title, configFolder)
     return self
 end
 
-local Notification = require(script.Parent.Core.Notification)
+local Notification = require(script.Parent.Notification)
 local chx = Notification.Notify
 
 function Library:Notify(config)
