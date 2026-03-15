@@ -405,16 +405,8 @@ function Library.new(title, configFolder)
     return self
 end
 
-local StarterGui = game:GetService("StarterGui")
-local function chx(msg, duration, icon)
-    StarterGui:SetCore("SendNotification", {
-        Title = "ChloeX Notification",
-        Text = msg or "",
-        Icon = icon or "rbxassetid://95750353626660",
-        Duration = duration or 3,
-        Button1 = "OK"
-    })
-end
+local Notification = require(script.Parent.Core.Notification)
+local chx = Notification.Notify
 
 function Library:Notify(config)
     chx(config.Description or "", config.Duration, config.Icon)
