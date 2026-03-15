@@ -405,13 +405,6 @@ function Library.new(title, configFolder)
     return self
 end
 
-local Notification = require(script.Parent.Notification)
-local chx = Notification.Notify
-
-function Library:Notify(config)
-    chx(config.Description or "", config.Duration, config.Icon)
-end
-
 function Library:_SetupKeybindListener()
     Connections["keybind_listener"] = ui.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
