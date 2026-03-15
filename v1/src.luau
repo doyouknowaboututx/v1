@@ -878,10 +878,6 @@ function Library:DeleteConfig(configName)
     return false
 end
 
-function Library:GetConfigs()
-    return GetAvailableConfigs()
-end
-
 function Library:SetAutoSave(enabled)
     self._autoSave = enabled
     if enabled then
