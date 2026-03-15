@@ -1775,7 +1775,7 @@ function Library._CreateDropdown(tab, config)
 		RefreshOptions(searchBox.Text)
 	end)
 
-	RefreshOptions() -- initial populate
+	RefreshOptions()
 
 	local toggleBtn = CreateInstance("TextButton", {
 		Name = "ToggleBtn",
@@ -2378,9 +2378,8 @@ end
 
 function Library._CreateConfigSection(tab)
 	local lib = tab._library
-
 	Library._CreateContentSection(tab, "Configuration")
-
+    
 	local configNameBox = Library._CreateTextBox(tab, {
 		Name = "Config Name",
 		Default = "default",
@@ -2390,11 +2389,11 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	local configDropdown
-	configDropdown = Library._CreateDropdown(tab, {
+	lib:GetConfigFolder()
+
+	local configDropdown = Library._CreateDropdown(tab, {
 		Name = "Select Config",
 		Options = lib:GetConfigs(),
-		Default = "default",
 		Callback = function(selected)
 			configNameBox:SetText(selected)
 			lib._currentConfig = selected
@@ -2407,7 +2406,9 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:SaveConfig(configName)
-				configDropdown:Refresh(lib:GetConfigs())
+				task.defer(function()
+					configDropdown:Refresh(lib:GetConfigs())
+				end)
 			end
 		end,
 	})
@@ -2418,6 +2419,9 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:LoadConfig(configName)
+				task.defer(function()
+					configDropdown:Refresh(lib:GetConfigs())
+				end)
 			end
 		end,
 	})
@@ -2428,7 +2432,9 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:DeleteConfig(configName)
-				configDropdown:Refresh(lib:GetConfigs())
+				task.defer(function()
+					configDropdown:Refresh(lib:GetConfigs())
+				end)
 			end
 		end,
 	})
@@ -2436,7 +2442,9 @@ function Library._CreateConfigSection(tab)
 	Library._CreateButton(tab, {
 		Name = "Refresh Configs",
 		Callback = function()
-			configDropdown:Refresh(lib:GetConfigs())
+			task.defer(function()
+				configDropdown:Refresh(lib:GetConfigs())
+			end)
 			chx("Configs Refreshed")
 		end,
 	})
