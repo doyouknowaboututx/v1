@@ -1758,13 +1758,26 @@ function Library._CreateDropdown(tab, config)
 
 	local methods = {
 		SetValue = function(_, value)
-			if multiSelect and type(value) == "table" then
-				selected = value
-			elseif not multiSelect then
+			if multiSelect then
+				if type(value) == "table" then
+					selected = value
+				else
+					selected = { value }
+				end
+			else
 				selected = value
 			end
 			UpdateSelectedText()
 			callback(selected)
+		end,
+		SetValues = function(_, values)
+			if multiSelect and type(values) == "table" then
+				selected = values
+				UpdateSelectedText()
+				callback(selected)
+			else
+				warn("only table banh")
+			end
 		end,
 		GetValue = function()
 			return selected
