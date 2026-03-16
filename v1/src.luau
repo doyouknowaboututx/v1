@@ -208,7 +208,7 @@ local function GetAvailableConfigs(library)
 		end
 		local files = listfiles(folder)
 		for _, file in ipairs(files) do
-			local name = file:match(folder .. "/(.+)%.json$")
+			local name = file:match(folder .. "[/\\](.+)%.json$")
 			if name then
 				table.insert(configs, name)
 			end
