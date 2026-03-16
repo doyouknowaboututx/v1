@@ -448,7 +448,7 @@ end
 function Library:_SetupMobileSupport()
 	local mobileButton = CreateInstance("ImageButton", {
 		Name = "MobileToggle",
-		Image = "rbxassetid://112235310154264",
+		Image = "rbxassetid://95750353626660",
 		ImageColor3 = c.Text,
 		BackgroundColor3 = c.Background,
 		BackgroundTransparency = 0.1,
