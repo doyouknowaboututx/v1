@@ -1374,14 +1374,14 @@ function Library._CreateSlider(tab, config)
 end
 
 function Library._CreateButton(tab, config)
-	local names = {
-		{ Name = config.Name, Callback = config.Callback },
-		{ Name = config.SubName, Callback = config.SubCallback },
-		{ Name = config.ThreeName, Callback = config.ThreeCallback },
-		{ Name = config.FourName, Callback = config.FourCallback }
+	local titles = {
+		{ Name = config.Name, Callback = config.Callback, SubButtons = config.SubButtons },
+		{ Name = config.SubName, Callback = config.SubCallback, SubButtons = config.SubSubButtons },
+		{ Name = config.ThreeName, Callback = config.ThreeCallback, SubButtons = config.ThreeSubButtons },
+		{ Name = config.FourName, Callback = config.FourCallback, SubButtons = config.FourSubButtons }
 	}
 
-	for _, t in ipairs(names) do
+	for _, t in ipairs(titles) do
 		if t.Name then
 			local frame = CreateInstance("Frame", {
 				Name = "Button_" .. t.Name,
@@ -1420,6 +1420,58 @@ function Library._CreateButton(tab, config)
 				CreateTween(frame, { BackgroundTransparency = 0.4 }, animationspeed.Fast)
 				if t.Callback then t.Callback() end
 			end)
+
+			if t.SubButtons and #t.SubButtons > 0 then
+				local count = #t.SubButtons
+				local rows = (count == 3) and 2 or math.ceil(count / 2)
+				local subFrame = CreateInstance("Frame", {
+					Name = t.Name .. "_SubButtons",
+					BackgroundTransparency = 1,
+					Size = UDim2.new(1, 0, 0, s.Button.Height * rows),
+					Position = UDim2.new(0, 0, 1, 5),
+					Parent = frame
+				})
+
+				for i, sub in ipairs(t.SubButtons) do
+					local subSize, subPosX, subPosY
+					if count == 1 then
+						subSize = UDim2.new(1, 0, 1, 0)
+						subPosX, subPosY = 0, 0
+					elseif count == 2 then
+						subSize = UDim2.new(0.5, -2, 1, 0)
+						subPosX, subPosY = (i == 1) and 0 or 0.5, 0
+					elseif count == 3 then
+						if i <= 2 then
+							subSize = UDim2.new(0.5, -2, 0.5, -2)
+							subPosX, subPosY = (i-1) * 0.5, 0
+						else
+							subSize = UDim2.new(1, 0, 0.5, -2)
+							subPosX, subPosY = 0, 0.5
+						end
+					elseif count == 4 then
+						subSize = UDim2.new(0.5, -2, 0.5, -2)
+						subPosX, subPosY = ((i-1)%2) * 0.5, (i > 2) and 0.5 or 0
+					else
+						subSize = UDim2.new(0.5, -2, 0.5, -2)
+						subPosX, subPosY = ((i-1)%2) * 0.5, math.floor((i-1)/2) * 0.5
+					end
+
+					local subBtn = CreateInstance("TextButton", {
+						Name = "Sub_" .. sub.Name,
+						Text = sub.Name,
+						FontFace = f.Regular,
+						TextColor3 = c.Text,
+						BackgroundColor3 = c.Secondary,
+						BorderSizePixel = 0,
+						Size = subSize,
+						Position = UDim2.new(subPosX, 5, subPosY, 5),
+						Parent = subFrame
+					})
+					CreateCorner(subBtn, 5)
+					CreateStroke(subBtn)
+					subBtn.MouseButton1Click:Connect(sub.Callback)
+				end
+			end
 		end
 	end
 end
