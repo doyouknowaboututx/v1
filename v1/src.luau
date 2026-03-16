@@ -782,11 +782,18 @@ function Library:_SetupSmartResize(handle)
 end
 
 function Library:_ToggleMinimize()
-	self.minimized = not self.minimized
-	self.container.Visible = not self.minimized
-	if self._acrylicBlur then
-		self._acrylicBlur:SetEnabled(not self.minimized)
-	end
+    self.minimized = not self.minimized
+    if self.minimized then
+        self.container.Visible = false
+        if self._acrylicBlur then
+            self._acrylicBlur:SetEnabled(false)
+        end
+    else
+        self.container.Visible = true
+        if self._acrylicBlur then
+            self._acrylicBlur:SetEnabled(true)
+        end
+    end
 end
 function Library:Destroy()
 	if self._autoSave then
