@@ -1376,14 +1376,14 @@ end
 function Library._CreateButton(tab, config)
 	local name = config.Name or "Button"
 	local callback = config.Callback or function() end
-	local subButtons = config.SubButtons or {} -- daftar sub-button: { {Name="Sub1", Callback=function() end}, ... }
+	local subButtons = config.SubButtons or {}
 
 	local frame = CreateInstance("Frame", {
 		Name = "Button_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
 		BorderSizePixel = 0,
-		Size = UDim2.new(1, 0, 0, s.Button.Height),
+		Size = UDim2.new(0, 100, 0, s.Button.Height),
 		Parent = tab.content,
 	})
 	CreateCorner(frame, 5)
@@ -1426,7 +1426,11 @@ function Library._CreateButton(tab, config)
 			Position = UDim2.new(0, 0, 1, 5),
 			Parent = frame,
 		})
-		local layout = CreateListLayout(subFrame, 5, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
+		local layout = CreateUIGridLayout(subFrame)
+		layout.CellSize = UDim2.new(0, 80, 0, s.Button.Height)
+		layout.FillDirection = Enum.FillDirection.Horizontal
+		layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		layout.VerticalAlignment = Enum.VerticalAlignment.Top
 		for _, sub in ipairs(subButtons) do
 			local subBtn = CreateInstance("TextButton", {
 				Name = "Sub_" .. sub.Name,
@@ -1457,7 +1461,11 @@ function Library._CreateButton(tab, config)
 					Position = UDim2.new(0, 0, 1, 5),
 					Parent = frame,
 				})
-				CreateListLayout(subFrame, 5, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
+				local layout = CreateUIGridLayout(subFrame)
+				layout.CellSize = UDim2.new(0, 80, 0, s.Button.Height)
+				layout.FillDirection = Enum.FillDirection.Horizontal
+				layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+				layout.VerticalAlignment = Enum.VerticalAlignment.Top
 			end
 			local subBtn = CreateInstance("TextButton", {
 				Name = "Sub_" .. subConfig.Name,
