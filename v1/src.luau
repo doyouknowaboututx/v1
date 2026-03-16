@@ -474,7 +474,7 @@ function Library:_SetupMobileSupport()
 			input.UserInputType == Enum.UserInputType.Touch
 			or input.UserInputType == Enum.UserInputType.MouseButton1
 		then
-			local delta = input.Position - dragStart
+			local delta = input.Position - dragStart --- error disini?
 			if not dragging or delta.Magnitude < 10 then
 				self:Toggle()
 			end
@@ -782,19 +782,14 @@ function Library:_SetupSmartResize(handle)
 end
 
 function Library:_ToggleMinimize()
-    self.minimized = not self.minimized
-    if self.minimized then
-        self.container.Visible = false
-        if self._acrylicBlur then
-            self._acrylicBlur:SetEnabled(false)
-        end
-    else
-        self.container.Visible = true
-        if self._acrylicBlur then
-            self._acrylicBlur:SetEnabled(true)
-        end
+    local isVisible = not self.container.Visible
+    self.container.Visible = isVisible
+
+    if self._acrylicBlur then
+        self._acrylicBlur:SetEnabled(isVisible)
     end
 end
+
 function Library:Destroy()
 	if self._autoSave then
 		self:SaveConfig(self._currentConfig)
