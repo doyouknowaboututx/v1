@@ -6,8 +6,6 @@ local rs = game:GetService("RunService")
 local gs = game:GetService("GuiService")
 local hs = game:GetService("HttpService")
 
-local n = "Acrylic"
-
 local c = {
 	Background = Color3.fromRGB(12, 12, 12),
 	Secondary = Color3.fromRGB(20, 20, 20),
@@ -20,11 +18,6 @@ local c = {
 		Enabled = Color3.fromRGB(255, 255, 255),
 		Disabled = Color3.fromRGB(32, 32, 32),
 		Circle = Color3.fromRGB(20, 20, 20),
-	},
-	Notification = {
-		Background = Color3.fromRGB(11, 11, 11),
-		Border = Color3.fromRGB(26, 26, 26),
-		Timer = Color3.fromRGB(255, 255, 255),
 	},
 }
 
@@ -39,7 +32,7 @@ local s = {
 	Tab = { Width = 135, Height = 35 },
 	ColorPicker = { Width = 180, Height = 160 },
 	Notification = { Width = 220, Height = 70 },
-	TextBox = { Height = 39, InputWidth = 150 },
+	Input = { Height = 39, InputWidth = 150 },
 }
 
 local f = {
@@ -510,7 +503,7 @@ end
 
 function Library:_CreateMainv0rtexd()
 	self.screenGui = CreateInstance("ScreenGui", {
-		Name = n,
+		Name = ChloeX,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false,
 	})
