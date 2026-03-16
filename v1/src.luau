@@ -810,6 +810,15 @@ function Library:Destroy()
 	end
 end
 
+function Library:_RegisterConfigElement(id, elementType, getValue, setValue)
+    self._configElements = self._configElements or {}
+    self._configElements[id] = {
+        type = elementType,
+        getValue = getValue,
+        setValue = setValue,
+    }
+end
+
 function Library:SaveConfig(configName)
     if not writefile then
         chx("Config system not supported", 3)
