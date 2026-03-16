@@ -627,7 +627,7 @@ function Library:_Createv0rtexdControls()
 		yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 		yesBtn.Text = "Yes"
 		yesBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-        noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
+        yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 		yesBtn.TextColor3 = Color3.new(1, 1, 1)
 		yesBtn.Parent = popup
 		yesBtn.MouseButton1Click:Connect(function()
