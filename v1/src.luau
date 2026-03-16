@@ -212,7 +212,7 @@ local function GetAvailableConfigs(library)
 		local folder = library:GetConfigFolder()
 		local files = listfiles(folder)
 		for _, file in ipairs(files) do
-			local name = file:match(".+/([%w_%-]+)%.json$")
+			local name = file:match(".+/([^/]+)%.json$")
 			if name then
 				table.insert(configs, name)
 			end
