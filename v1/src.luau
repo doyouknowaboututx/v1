@@ -2346,12 +2346,6 @@ function Library._CreateConfigSection(tab)
         Name = "Refresh Configs",
         Callback = function()
             configDropdown:Refresh(lib:GetConfigs())
-            lib:Notify({
-                Title = "Configs Refreshed",
-                Description = "Config list updated",
-                Duration = 2,
-                Icon = "rbxassetid://10723356507"
-            })
         end
     })
 
