@@ -626,7 +626,8 @@ function Library:_Createv0rtexdControls()
 		yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
 		yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 		yesBtn.Text = "Yes"
-		yesBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+		yesBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 		yesBtn.TextColor3 = Color3.new(1, 1, 1)
 		yesBtn.Parent = popup
 		yesBtn.MouseButton1Click:Connect(function()
@@ -637,7 +638,8 @@ function Library:_Createv0rtexdControls()
 		noBtn.Size = UDim2.new(0.4, 0, 0, 30)
 		noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
 		noBtn.Text = "No"
-		noBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+		noBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 		noBtn.TextColor3 = Color3.new(1, 1, 1)
 		noBtn.Parent = popup
 		noBtn.MouseButton1Click:Connect(function()
