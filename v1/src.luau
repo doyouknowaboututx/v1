@@ -32,7 +32,7 @@ local s = {
 	Tab = { Width = 135, Height = 35 },
 	ColorPicker = { Width = 180, Height = 160 },
 	Notification = { Width = 220, Height = 70 },
-	Input = { Height = 39, InputWidth = 150 },
+	TextBox = { Height = 39, InputWidth = 150 },
 }
 
 local f = {
