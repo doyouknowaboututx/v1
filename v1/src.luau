@@ -22,9 +22,9 @@ local c = {
 }
 
 local s = {
-	v0rtexd = { Width = 690, Height = 446 },
-	Minv0rtexd = { Width = 500, Height = 300 },
-	Maxv0rtexd = { Width = 1200, Height = 800 },
+	chl0e = { Width = 690, Height = 446 },
+	Minchl0e = { Width = 500, Height = 300 }, -- INI BUAT SIZE bisa? 
+	Maxchl0e = { Width = 1200, Height = 800 },
 	Toggle = { Width = 38, Height = 21, Circle = 13 },
 	Button = { Height = 39 },
 	Slider = { Height = 46 },
@@ -396,14 +396,14 @@ function Library.new(title, configFolder)
 	self._keybinds = {}
 	self._toggleKey = Enum.KeyCode.RightControl
 	self._visible = true
-	self._originalHeight = s.v0rtexd.Height
-	self._minSize = Vector2.new(s.Minv0rtexd.Width, s.Minv0rtexd.Height)
-	self._maxSize = Vector2.new(s.Maxv0rtexd.Width, s.Maxv0rtexd.Height)
+	self._originalHeight = s.chl0e.Height
+	self._minSize = Vector2.new(s.Minchl0e.Width, s.Minchl0e.Height)
+	self._maxSize = Vector2.new(s.Maxchl0e.Width, s.Maxchl0e.Height)
 	self._mobileToggle = nil
 	self._configElements = {}
 	self._autoSave = false
 	self._currentConfig = "default"
-	self:_CreateMainv0rtexd()
+	self:_CreateMainchl0e()
 	self:_SetupKeybindListener()
 	self:_SetupMobileSupport()
 	return self
@@ -457,62 +457,56 @@ function Library:_SetupMobileSupport()
 
 	local dragging = false
 	local dragStart, startPos
+	local moved = false
 
 	mobileButton.InputBegan:Connect(function(input)
-		if
-			input.UserInputType == Enum.UserInputType.Touch
-			or input.UserInputType == Enum.UserInputType.MouseButton1
-		then
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
 			dragging = true
+			moved = false
 			dragStart = input.Position
 			startPos = mobileButton.Position
 		end
 	end)
 
+	ui.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+			local delta = input.Position - dragStart
+			if delta.Magnitude > 10 then
+				moved = true
+			end
+			mobileButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+
 	mobileButton.InputEnded:Connect(function(input)
-		if
-			input.UserInputType == Enum.UserInputType.Touch
-			or input.UserInputType == Enum.UserInputType.MouseButton1
-		then
-			local delta = input.Position - dragStart --- error disini?
-			if not dragging or delta.Magnitude < 10 then
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			if not moved then
 				self:Toggle()
 			end
 			dragging = false
 		end
 	end)
 
-	ui.InputChanged:Connect(function(input)
-		if
-			dragging
-			and (
-				input.UserInputType == Enum.UserInputType.Touch
-				or input.UserInputType == Enum.UserInputType.MouseMovement
-			)
-		then
-			local delta = input.Position - dragStart
-			mobileButton.Position =
-				UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		end
-	end)
-
 	self._mobileToggle = mobileButton
 end
 
-function Library:_CreateMainv0rtexd()
+function Library:_CreateMainchl0e()
 	self.screenGui = CreateInstance("ScreenGui", {
 		Name = "ChloeX",
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false,
 	})
 
+	local isMobile = IsMobileDevice()
+	local size = isMobile and s.Minchl0e or s.chl0e
+
 	self.container = CreateInstance("Frame", {
 		Name = "Container",
 		BackgroundColor3 = c.Background,
 		BackgroundTransparency = 0.05,
-		Position = UDim2.new(0.5, -s.v0rtexd.Width / 2, 0.5, -s.v0rtexd.Height / 2),
+		Position = UDim2.new(0.5, -size.Width / 2, 0.5, -size.Height / 2),
 		BorderSizePixel = 0,
-		Size = UDim2.new(0, s.v0rtexd.Width, 0, s.v0rtexd.Height),
+		Size = UDim2.new(0, size.Width, 0, size.Height),
 		ClipsDescendants = false,
 		Parent = self.screenGui,
 	})
@@ -539,7 +533,7 @@ function Library:_CreateMainv0rtexd()
 		Parent = self.topBar,
 	})
 
-	self:_Createv0rtexdControls()
+	self:_Createchl0eControls()
 
 	CreateInstance("Frame", {
 		Name = "Header",
@@ -558,7 +552,7 @@ function Library:_CreateMainv0rtexd()
 	self._acrylicBlur = AcrylicBlur.new(self.container)
 end
 
-function Library:_Createv0rtexdControls()
+function Library:_Createchl0eControls()
 	local minimizeBtn = CreateInstance("ImageLabel", {
 		Name = "Minimize",
 		ImageColor3 = c.TextDark,
