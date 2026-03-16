@@ -1397,7 +1397,7 @@ function Library._CreateButton(tab, config)
         BackgroundTransparency = 1,
         TextSize = 14,
         BorderSizePixel = 0,
-        Size = subName and UDim2.new(0.5, -5, 1, 0) or UDim2.new(1, -10, 1, 0),
+        Size = subName and UDim2.new(0.5, -5, 1, 0) or UDim2.new(1, 0, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
         Parent = frame,
     })
@@ -1600,9 +1600,9 @@ function Library._CreateDropdown(tab, config)
 		Name = "SelectedDisplay",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.04,
-		Position = UDim2.new(1, -145, 0, 6),
+		Position = UDim2.new(1, -160, 0, 6),
 		BorderSizePixel = 0,
-		Size = UDim2.new(0, 135, 0, 26),
+		Size = UDim2.new(0, 150, 0, 26),
 		ZIndex = 2,
 		Parent = frame,
 	})
