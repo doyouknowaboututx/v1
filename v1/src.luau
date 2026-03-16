@@ -474,11 +474,9 @@ function Library:_SetupMobileSupport()
 			input.UserInputType == Enum.UserInputType.Touch
 			or input.UserInputType == Enum.UserInputType.MouseButton1
 		then
-			if dragging then
-				local delta = input.Position - dragStart
-				if delta.Magnitude < 10 then
-					self:Toggle()
-				end
+			local delta = input.Position - dragStart
+			if not dragging or delta.Magnitude < 10 then
+				self:Toggle()
 			end
 			dragging = false
 		end
