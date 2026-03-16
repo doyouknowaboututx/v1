@@ -504,6 +504,85 @@ function Library:_SetupMobileSupport()
 
     self._mobileToggle = mobileButton
 end
+function Library:Toggle()
+	self._visible = not self._visible
+	if self._screenGui then
+		self._screenGui.Enabled = self._visible
+	end
+	if self._container then
+		self._container.Visible = self._visible
+	end
+	if self._acrylicBlur and self._acrylicBlur.Frame then
+		self._acrylicBlur.Frame.Visible = self._visible
+	end
+	if self._mobileToggle then
+		self._mobileToggle.Visible = not self._visible
+	end
+end
+
+function Library:Toggle()
+	self._visible = not self._visible
+	self.container.Visible = self._visible
+end
+
+function Library:_CreateMainv0rtexd()
+	self.screenGui = CreateInstance("ScreenGui", {
+		Name = n,
+		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+		ResetOnSpawn = false,
+	})
+
+	self.container = CreateInstance("Frame", {
+		Name = "Container",
+		BackgroundColor3 = c.Background,
+		BackgroundTransparency = 0.05,
+		Position = UDim2.new(0.5, -s.v0rtexd.Width / 2, 0.5, -s.v0rtexd.Height / 2),
+		BorderSizePixel = 0,
+		Size = UDim2.new(0, s.v0rtexd.Width, 0, s.v0rtexd.Height),
+		ClipsDescendants = false,
+		Parent = self.screenGui,
+	})
+	CreateCorner(self.container, 5)
+	CreateStroke(self.container)
+
+	self.topBar = CreateInstance("Frame", {
+		Name = "TopBar",
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 45),
+		Parent = self.container,
+	})
+
+	self.titleLabel = CreateInstance("TextLabel", {
+		Name = "Title",
+		FontFace = f.Regular,
+		TextColor3 = c.Text,
+		Text = self.title,
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0, 10, 0, 10),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextSize = textsize.Title,
+		Size = UDim2.new(0, 150, 0, 25),
+		Parent = self.topBar,
+	})
+
+	self:_Createv0rtexdControls()
+
+	CreateInstance("Frame", {
+		Name = "Header",
+		BackgroundColor3 = c.Border,
+		Position = UDim2.new(0, 0, 0, 45),
+		BorderSizePixel = 0,
+		Size = UDim2.new(1, 0, 0, 1),
+		Parent = self.container,
+	})
+
+	self:_CreateContentArea()
+	MakeDraggable(self.container, self.topBar)
+
+	local player = plr.LocalPlayer
+	self.screenGui.Parent = player:WaitForChild("PlayerGui")
+	self._acrylicBlur = AcrylicBlur.new(self.container)
+end
 
 function Library:_Createv0rtexdControls()
 	local minimizeBtn = CreateInstance("ImageLabel", {
