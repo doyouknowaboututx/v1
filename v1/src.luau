@@ -196,8 +196,9 @@ function Library:GetConfigFolder()
     if isfolder and not isfolder(baseFolder) then
         makefolder(baseFolder)
     end
-    local folder = self.configFolder or self.title or "Games"
-    local fullPath = baseFolder .. "/" .. folder
+
+    local placeId = tostring(game.PlaceId or 0)
+    local fullPath = baseFolder .. "/" .. placeId
     if isfolder and not isfolder(fullPath) then
         makefolder(fullPath)
     end
@@ -206,13 +207,12 @@ end
 
 function Library:GetConfigs()
     local configs = {}
-    if isfolder and listfiles then
-        local folder = self:GetConfigFolder()
+    local folder = self:GetConfigFolder()
+    if isfolder(folder) then
         local files = listfiles(folder)
         for _, file in ipairs(files) do
-            local name = file:match(".+/([%w_%-]+)%.json$")
-            if name then
-                table.insert(configs, name)
+            if file:match("%.json$") then
+                table.insert(configs, file:match(".+/([%w_%-]+)%.json$"))
             end
         end
     end
@@ -827,7 +827,10 @@ function Library:SaveConfig(configName)
     local folder = self:GetConfigFolder()
     local path = folder .. "/" .. configName .. ".json"
 
-    local configData = {}
+    local configData = {
+        PlaceId = game.PlaceId -- tambahkan PlaceId
+    }
+
     for id, element in pairs(self._configElements) do
         local value = element.getValue()
         if typeof(value) == "Color3" then
@@ -870,8 +873,14 @@ function Library:LoadConfig(configName)
         return false
     end
 
+    -- optional: pastikan PlaceId sesuai
+    if data.PlaceId ~= game.PlaceId then
+        chx("Config PlaceId mismatch", 3)
+        return false
+    end
+
     for id, value in pairs(data) do
-        if self._configElements[id] then
+        if id ~= "PlaceId" and self._configElements[id] then
             if type(value) == "table" and value._type == "Color3" then
                 value = Color3.new(value.R, value.G, value.B)
             elseif type(value) == "table" and value._type == "EnumItem" then
