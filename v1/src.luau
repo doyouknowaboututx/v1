@@ -604,8 +604,51 @@ function Library:_Createv0rtexdControls()
 		Parent = self.topBar,
 	})
 
+	local function ShowExitPopup(lib)
+		local popup = Instance.new("Frame")
+		popup.Size = UDim2.new(0, 250, 0, 120)
+		popup.Position = UDim2.new(0.5, -125, 0.5, -60)
+		popup.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+		popup.BorderSizePixel = 0
+		popup.Parent = lib.screenGui
+
+		local corner = Instance.new("UICorner", popup)
+		corner.CornerRadius = UDim.new(0, 8)
+
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1, -20, 0, 60)
+		label.Position = UDim2.new(0, 10, 0, 10)
+		label.Text = "Are you sure you want to exit?"
+		label.TextColor3 = Color3.new(1, 1, 1)
+		label.TextScaled = true
+		label.BackgroundTransparency = 1
+		label.Parent = popup
+
+		local yesBtn = Instance.new("TextButton")
+		yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
+		yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
+		yesBtn.Text = "Yes"
+		yesBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+		yesBtn.TextColor3 = Color3.new(1, 1, 1)
+		yesBtn.Parent = popup
+		yesBtn.MouseButton1Click:Connect(function()
+			lib:Destroy()
+		end)
+
+		local noBtn = Instance.new("TextButton")
+		noBtn.Size = UDim2.new(0.4, 0, 0, 30)
+		noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
+		noBtn.Text = "No"
+		noBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+		noBtn.TextColor3 = Color3.new(1, 1, 1)
+		noBtn.Parent = popup
+		noBtn.MouseButton1Click:Connect(function()
+			popup:Destroy()
+		end)
+	end
+
 	closeBtn.MouseButton1Click:Connect(function()
-		self:Destroy()
+		ShowExitPopup(self)
 	end)
 
 	closeBtn.MouseEnter:Connect(function()
@@ -738,33 +781,11 @@ end
 
 function Library:_ToggleMinimize()
 	self.minimized = not self.minimized
-	if self.minimized then
-		if self._acrylicBlur then
-			self._acrylicBlur:SetEnabled(false)
-		end
-		CreateTween(self.mainContent, { Size = UDim2.new(1, 0, 0, 0) }, animationspeed.Slow)
-		CreateTween(self.container, { Size = UDim2.new(0, self.container.AbsoluteSize.X, 0, 45) }, animationspeed.Slow)
-		if self.resizeBtn then
-			self.resizeBtn.Visible = false
-		end
-	else
-		if self._acrylicBlur then
-			self._acrylicBlur:SetEnabled(true)
-		end
-		CreateTween(
-			self.container,
-			{ Size = UDim2.new(0, self.container.AbsoluteSize.X, 0, self._originalHeight) },
-			animationspeed.Slow
-		)
-		task.delay(0.1, function()
-			CreateTween(self.mainContent, { Size = UDim2.new(1, 0, 1, -46) }, animationspeed.Normal)
-		end)
-		if self.resizeBtn then
-			self.resizeBtn.Visible = true
-		end
+	self.container.Visible = not self.minimized
+	if self._acrylicBlur then
+		self._acrylicBlur:SetEnabled(not self.minimized)
 	end
 end
-
 function Library:Destroy()
 	if self._autoSave then
 		self:SaveConfig(self._currentConfig)
@@ -1374,80 +1395,82 @@ function Library._CreateSlider(tab, config)
 end
 
 function Library._CreateButton(tab, config)
-    local name = config.Name or "Button"
-    local callback = config.Callback or function() end
-    local subName = config.SubName
-    local subCallback = config.SubCallback or function() end
+	local name = config.Name or "Button"
+	local callback = config.Callback or function() end
+	local subName = config.SubName
+	local subCallback = config.SubCallback or function() end
 
-    local frame = CreateInstance("Frame", {
-        Name = "Button_" .. name,
-        BackgroundColor3 = c.Secondary,
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Size = UDim2.new(1, 0, 0, s.Button.Height),
-        Parent = tab.content,
-    })
-    CreateCorner(frame, 5)
+	local frame = CreateInstance("Frame", {
+		Name = "Button_" .. name,
+		BackgroundColor3 = c.Secondary,
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Size = UDim2.new(1, 0, 0, s.Button.Height),
+		Parent = tab.content,
+	})
+	CreateCorner(frame, 5)
 
-    local mainButton = CreateInstance("TextButton", {
-        Name = "Button_Main",
-        Text = name,
-        FontFace = f.Regular,
-        TextColor3 = c.Text,
-        BackgroundTransparency = 1,
-        TextSize = 14,
-        BorderSizePixel = 0,
-        Size = subName and UDim2.new(0.5, -5, 1, 0) or UDim2.new(1, 0, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
-        Parent = frame,
-    })
-    CreateCorner(mainButton, 5)
-    CreateStroke(mainButton)
-    mainButton.MouseButton1Click:Connect(callback)
+	local mainButton = CreateInstance("TextButton", {
+		Name = "Button_Main",
+		Text = name,
+		FontFace = f.Regular,
+		TextColor3 = c.Text,
+		BackgroundTransparency = 1,
+		TextSize = 14,
+		BorderSizePixel = 0,
+		Size = subName and UDim2.new(0.5, -5, 1, 0) or UDim2.new(1, 0, 1, 0),
+		Position = UDim2.new(0, 0, 0, 0),
+		Parent = frame,
+	})
+	CreateCorner(mainButton, 5)
+	CreateStroke(mainButton)
+	mainButton.MouseButton1Click:Connect(callback)
 
-    local subButton
-    if subName then
-        subButton = CreateInstance("TextButton", {
-            Name = "Button_Sub",
-            Text = subName,
-            FontFace = f.Regular,
-            TextColor3 = c.Text,
-            BackgroundTransparency = 1,
-            TextSize = 14,
-            BorderSizePixel = 0,
-            Size = UDim2.new(0.5, 0, 1, 0),
-            Position = UDim2.new(0.5, 0, 0, 0),
-            Parent = frame,
-        })
-        CreateCorner(subButton, 5)
-        CreateStroke(subButton)
-        subButton.MouseButton1Click:Connect(subCallback)
-    end
+	local subButton
+	if subName then
+		subButton = CreateInstance("TextButton", {
+			Name = "Button_Sub",
+			Text = subName,
+			FontFace = f.Regular,
+			TextColor3 = c.Text,
+			BackgroundTransparency = 1,
+			TextSize = 14,
+			BorderSizePixel = 0,
+			Size = UDim2.new(0.5, 0, 1, 0),
+			Position = UDim2.new(0.5, 0, 0, 0),
+			Parent = frame,
+		})
+		CreateCorner(subButton, 5)
+		CreateStroke(subButton)
+		subButton.MouseButton1Click:Connect(subCallback)
+	end
 
-    return {
-        SetText = function(_, text)
-            mainButton.Text = text
-        end,
-        AddSubButton = function(_, newSubName, newSubCallback)
-            if subButton then return end
-            subButton = CreateInstance("TextButton", {
-                Name = "Button_Sub",
-                Text = newSubName,
-                FontFace = f.Regular,
-                TextColor3 = c.Text,
-                BackgroundTransparency = 1,
-                TextSize = 14,
-                BorderSizePixel = 0,
-                Size = UDim2.new(0.5, 0, 1, 0),
-                Position = UDim2.new(0.5, 0, 0, 0),
-                Parent = frame,
-            })
-            CreateCorner(subButton, 5)
-            CreateStroke(subButton)
-            subButton.MouseButton1Click:Connect(newSubCallback or function() end)
-            mainButton.Size = UDim2.new(0.5, -5, 1, 0)
-        end
-    }
+	return {
+		SetText = function(_, text)
+			mainButton.Text = text
+		end,
+		AddSubButton = function(_, newSubName, newSubCallback)
+			if subButton then
+				return
+			end
+			subButton = CreateInstance("TextButton", {
+				Name = "Button_Sub",
+				Text = newSubName,
+				FontFace = f.Regular,
+				TextColor3 = c.Text,
+				BackgroundTransparency = 1,
+				TextSize = 14,
+				BorderSizePixel = 0,
+				Size = UDim2.new(0.5, 0, 1, 0),
+				Position = UDim2.new(0.5, 0, 0, 0),
+				Parent = frame,
+			})
+			CreateCorner(subButton, 5)
+			CreateStroke(subButton)
+			subButton.MouseButton1Click:Connect(newSubCallback or function() end)
+			mainButton.Size = UDim2.new(0.5, -5, 1, 0)
+		end,
+	}
 end
 function Library._CreateToggle(tab, config)
 	local name = config.Name or "Toggle"
