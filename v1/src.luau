@@ -1619,8 +1619,7 @@ function Library._CreateDropdown(tab, config)
 	})
 
 	local maxVisibleOptions = 5
-	local totalOptionsHeight =
-		math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight + 30)
+	local totalOptionsHeight = math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight + 30)
 
 	local optionsContainer = CreateInstance("Frame", {
 		Name = "OptionsContainer",
@@ -1679,19 +1678,14 @@ function Library._CreateDropdown(tab, config)
 	local optionButtons = {}
 
 	local function RefreshOptions(filter)
-		-- clear old
-		for _, btn in ipairs(optionButtons) do
-			btn:Destroy()
-		end
+		for _, btn in ipairs(optionButtons) do btn:Destroy() end
 		optionButtons = {}
-
 		local filteredOptions = {}
 		for _, option in ipairs(options) do
 			if not filter or option:lower():find(filter:lower()) then
 				table.insert(filteredOptions, option)
 			end
 		end
-
 		for _, option in ipairs(filteredOptions) do
 			local optionBtn = CreateInstance("TextButton", {
 				Name = option,
@@ -1706,22 +1700,12 @@ function Library._CreateDropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
-
-			optionBtn.MouseEnter:Connect(function()
-				CreateTween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
-			end)
-			optionBtn.MouseLeave:Connect(function()
-				CreateTween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-			end)
-
+			optionBtn.MouseEnter:Connect(function() CreateTween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast) end)
+			optionBtn.MouseLeave:Connect(function() CreateTween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast) end)
 			optionBtn.MouseButton1Click:Connect(function()
 				if multiSelect then
 					local index = table.find(selected, option)
-					if index then
-						table.remove(selected, index)
-					else
-						table.insert(selected, option)
-					end
+					if index then table.remove(selected, index) else table.insert(selected, option) end
 					UpdateSelectedText()
 					callback(selected)
 				else
@@ -1734,18 +1718,14 @@ function Library._CreateDropdown(tab, config)
 					frame.ZIndex = 1
 				end
 			end)
-
 			table.insert(optionButtons, optionBtn)
 		end
-
 		optionsScroll.CanvasSize = UDim2.new(0, 0, 0, #optionButtons * s.Dropdown.OptionHeight)
+		UpdateSelectedText()
 	end
 
-	searchBox:GetPropertyChangedSignal("Text"):Connect(function()
-		RefreshOptions(searchBox.Text)
-	end)
-
-	RefreshOptions() -- initial populate
+	searchBox:GetPropertyChangedSignal("Text"):Connect(function() RefreshOptions(searchBox.Text) end)
+	RefreshOptions("")
 
 	local toggleBtn = CreateInstance("TextButton", {
 		Name = "ToggleBtn",
@@ -1755,7 +1735,6 @@ function Library._CreateDropdown(tab, config)
 		ZIndex = 3,
 		Parent = selectedDisplay,
 	})
-
 	toggleBtn.MouseButton1Click:Connect(function()
 		expanded = not expanded
 		optionsContainer.Visible = expanded
@@ -1765,29 +1744,23 @@ function Library._CreateDropdown(tab, config)
 
 	local methods = {
 		SetValue = function(_, value)
-			if multiSelect and type(value) == "table" then
-				selected = value
-			elseif not multiSelect then
-				selected = value
-			end
+			if multiSelect and type(value) == "table" then selected = value
+			elseif not multiSelect then selected = value end
 			UpdateSelectedText()
 			callback(selected)
 		end,
-		GetValue = function()
-			return selected
-		end,
+		GetValue = function() return selected end,
 		Refresh = function(_, newOptions)
 			options = newOptions
-			RefreshOptions(searchBox.Text)
+			RefreshOptions("")
 		end,
 	}
 
 	if tab._library then
-		tab._library:_RegisterConfigElement(flag, "Dropdown", function()
-			return selected
-		end, function(value)
-			methods:SetValue(value)
-		end)
+		tab._library:_RegisterConfigElement(flag, "Dropdown",
+			function() return selected end,
+			function(value) methods:SetValue(value) end
+		)
 	end
 
 	return methods
