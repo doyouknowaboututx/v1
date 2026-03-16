@@ -1378,13 +1378,29 @@ function Library._CreateButton(tab, config)
 	local callback = config.Callback or function() end
 	local subButtons = config.SubButtons or {}
 
+	if not tab._buttonContainer then
+		tab._buttonContainer = CreateInstance("Frame", {
+			Name = "ButtonContainer",
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, 0),
+			Parent = tab.content,
+		})
+		local grid = Instance.new("UIGridLayout")
+		grid.CellSize = UDim2.new(0, 100, 0, s.Button.Height)
+		grid.FillDirection = Enum.FillDirection.Horizontal
+		grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		grid.VerticalAlignment = Enum.VerticalAlignment.Top
+		grid.SortOrder = Enum.SortOrder.LayoutOrder
+		grid.Parent = tab._buttonContainer
+	end
+
 	local frame = CreateInstance("Frame", {
 		Name = "Button_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
 		BorderSizePixel = 0,
 		Size = UDim2.new(0, 100, 0, s.Button.Height),
-		Parent = tab.content,
+		Parent = tab._buttonContainer,
 	})
 	CreateCorner(frame, 5)
 	CreateStroke(frame)
@@ -1426,11 +1442,13 @@ function Library._CreateButton(tab, config)
 			Position = UDim2.new(0, 0, 1, 5),
 			Parent = frame,
 		})
-		local layout = CreateUIGridLayout(subFrame)
+		local layout = Instance.new("UIGridLayout")
 		layout.CellSize = UDim2.new(0, 80, 0, s.Button.Height)
 		layout.FillDirection = Enum.FillDirection.Horizontal
 		layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		layout.VerticalAlignment = Enum.VerticalAlignment.Top
+		layout.SortOrder = Enum.SortOrder.LayoutOrder
+		layout.Parent = subFrame
 		for _, sub in ipairs(subButtons) do
 			local subBtn = CreateInstance("TextButton", {
 				Name = "Sub_" .. sub.Name,
@@ -1461,11 +1479,13 @@ function Library._CreateButton(tab, config)
 					Position = UDim2.new(0, 0, 1, 5),
 					Parent = frame,
 				})
-				local layout = CreateUIGridLayout(subFrame)
+				local layout = Instance.new("UIGridLayout")
 				layout.CellSize = UDim2.new(0, 80, 0, s.Button.Height)
 				layout.FillDirection = Enum.FillDirection.Horizontal
 				layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 				layout.VerticalAlignment = Enum.VerticalAlignment.Top
+				layout.SortOrder = Enum.SortOrder.LayoutOrder
+				layout.Parent = subFrame
 			end
 			local subBtn = CreateInstance("TextButton", {
 				Name = "Sub_" .. subConfig.Name,
