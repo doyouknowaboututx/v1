@@ -192,37 +192,37 @@ local function DisconnectAll()
 end
 
 function Library:GetConfigFolder()
-    local baseFolder = "CHX"
-    if isfolder and not isfolder(baseFolder) then
-        makefolder(baseFolder)
-    end
+	local baseFolder = "CHX"
+	if isfolder and not isfolder(baseFolder) then
+		makefolder(baseFolder)
+	end
 
-    local folder = self.configFolder or self.title or "Games"
-    local fullPath = baseFolder .. "/" .. folder
-    if isfolder and not isfolder(fullPath) then
-        makefolder(fullPath)
-    end
+	local folder = self.configFolder or self.title or "Games"
+	local fullPath = baseFolder .. "/" .. folder
+	if isfolder and not isfolder(fullPath) then
+		makefolder(fullPath)
+	end
 
-    return fullPath
+	return fullPath
 end
 
 local function GetAvailableConfigs(library)
-    local configs = {}
-    if isfolder and listfiles then
-        local folder = library:GetConfigFolder()
-        local files = listfiles(folder)
-        for _, file in ipairs(files) do
-            local name = file:match(".+/([%w_%-]+)%.json$")
-            if name then
-                table.insert(configs, name)
-            end
-        end
-    end
-    return configs
+	local configs = {}
+	if isfolder and listfiles then
+		local folder = library:GetConfigFolder()
+		local files = listfiles(folder)
+		for _, file in ipairs(files) do
+			local name = file:match(".+/([^/]+)%.json$")
+			if name then
+				table.insert(configs, name)
+			end
+		end
+	end
+	return configs
 end
 
 function Library:GetConfigs()
-    return GetAvailableConfigs(self)
+	return GetAvailableConfigs(self)
 end
 
 local AcrylicBlur = {}
@@ -2390,10 +2390,15 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
+	local configs = lib:GetConfigs()
+	if #configs == 0 then
+		configs = { "default" }
+	end
+
 	local configDropdown
 	configDropdown = Library._CreateDropdown(tab, {
 		Name = "Select Config",
-		Options = lib:GetConfigs(),
+		Options = configs,
 		Callback = function(selected)
 			configNameBox:SetText(selected)
 			lib._currentConfig = selected
@@ -2406,8 +2411,7 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:SaveConfig(configName)
-				-- langsung update dropdown
-				configDropdown:SetValue(lib:GetConfigs())
+				configDropdown:Refresh(lib:GetConfigs())
 			end
 		end,
 	})
@@ -2418,7 +2422,6 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:LoadConfig(configName)
-				configDropdown:SetValue(lib:GetConfigs())
 			end
 		end,
 	})
@@ -2429,7 +2432,7 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:DeleteConfig(configName)
-				configDropdown:SetValue(lib:GetConfigs())
+				configDropdown:Refresh(lib:GetConfigs())
 			end
 		end,
 	})
@@ -2444,7 +2447,7 @@ function Library._CreateConfigSection(tab)
 
 	return {
 		RefreshConfigs = function()
-			configDropdown:SetValue(lib:GetConfigs())
+			configDropdown:Refresh(lib:GetConfigs())
 		end,
 	}
 end
