@@ -2368,7 +2368,6 @@ end
 
 function Library._CreateConfigSection(tab)
     local lib = tab._library
-
     Library._CreateContentSection(tab, "Configuration")
 
     local configNameBox = Library._CreateTextBox(tab, {
@@ -2421,15 +2420,7 @@ function Library._CreateConfigSection(tab)
             end
         end,
     })
-
-    Library._CreateButton(tab, {
-        Name = "Refresh Configs",
-        Callback = function()
-            configDropdown:Refresh(lib:GetConfigs())
-            chx("Configs Refreshed")
-        end,
-    })
-
+    
     Library._CreateToggle(tab, {
         Name = "Auto Save",
         Default = false,
