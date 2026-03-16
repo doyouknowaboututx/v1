@@ -433,16 +433,12 @@ function Library:_SetupKeybindListener()
 end
 
 function Library:Toggle()
-	self._visible = not self._visible
-	self.container.Visible = self._visible
+    self._visible = not self._visible
+    self.container.Visible = self._visible
 
-	if self._acrylicBlur then
-		self._acrylicBlur:SetEnabled(self._visible)
-	end
-
-	if self._mobileToggle then
-		self._mobileToggle.Visible = not self._visible
-	end
+    if self._acrylicBlur then
+        self._acrylicBlur:SetEnabled(self._visible)
+    end
 end
 
 function Library:SetToggleKey(keyCode)
@@ -450,54 +446,66 @@ function Library:SetToggleKey(keyCode)
 end
 
 function Library:_SetupMobileSupport()
-    local mobileButton = CreateInstance("ImageButton", {
-        Name = "MobileToggle",
-        Image = "rbxassetid://112235310154264",
-        ImageColor3 = c.Text,
-        BackgroundColor3 = c.Background,
-        BackgroundTransparency = 0.1,
-        Position = UDim2.new(0, 15, 0.5, -25),
-        Size = UDim2.new(0, 50, 0, 50),
-        AnchorPoint = Vector2.new(0, 0.5),
-        Visible = true,
-        ZIndex = 999,
-        Parent = self.screenGui,
-    })
-    CreateCorner(mobileButton, 25)
-    CreateStroke(mobileButton)
+	local mobileButton = CreateInstance("ImageButton", {
+		Name = "MobileToggle",
+		Image = "rbxassetid://112235310154264",
+		ImageColor3 = c.Text,
+		BackgroundColor3 = c.Background,
+		BackgroundTransparency = 0.1,
+		Position = UDim2.new(0, 15, 0.5, -25),
+		Size = UDim2.new(0, 50, 0, 50),
+		AnchorPoint = Vector2.new(0, 0.5),
+		Visible = true,
+		ZIndex = 999,
+		Parent = self.screenGui,
+	})
+	CreateCorner(mobileButton, 25)
+	CreateStroke(mobileButton)
 
-    local dragging = false
-    local dragStart, startPos
+	local dragging = false
+	local dragStart, startPos
 
-    mobileButton.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = mobileButton.Position
-        end
-    end)
+	mobileButton.InputBegan:Connect(function(input)
+		if
+			input.UserInputType == Enum.UserInputType.Touch
+			or input.UserInputType == Enum.UserInputType.MouseButton1
+		then
+			dragging = true
+			dragStart = input.Position
+			startPos = mobileButton.Position
+		end
+	end)
 
-    mobileButton.InputEnded:Connect(function(input)
-        if dragging then
-            local delta = input.Position - dragStart
-            if delta.Magnitude < 10 then
-                self:Toggle()
-            end
-            dragging = false
-        end
-    end)
+	mobileButton.InputEnded:Connect(function(input)
+		if
+			input.UserInputType == Enum.UserInputType.Touch
+			or input.UserInputType == Enum.UserInputType.MouseButton1
+		then
+			if dragging then
+				local delta = input.Position - dragStart
+				if delta.Magnitude < 10 then
+					self:Toggle()
+				end
+			end
+			dragging = false
+		end
+	end)
 
-    ui.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-            local delta = input.Position - dragStart
-            mobileButton.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
+	ui.InputChanged:Connect(function(input)
+		if
+			dragging
+			and (
+				input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseMovement
+			)
+		then
+			local delta = input.Position - dragStart
+			mobileButton.Position =
+				UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
 
-    self._mobileToggle = mobileButton
+	self._mobileToggle = mobileButton
 end
 
 function Library:_CreateMainv0rtexd()
