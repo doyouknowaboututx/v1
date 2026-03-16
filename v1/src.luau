@@ -192,37 +192,31 @@ local function DisconnectAll()
 end
 
 function Library:GetConfigFolder()
-	local baseFolder = "CHX"
-	if isfolder and not isfolder(baseFolder) then
-		makefolder(baseFolder)
-	end
-
-	local folder = self.configFolder or self.title or "Games"
-	local fullPath = baseFolder .. "/" .. folder
-	if isfolder and not isfolder(fullPath) then
-		makefolder(fullPath)
-	end
-
-	return fullPath
-end
-
-local function GetAvailableConfigs(library)
-	local configs = {}
-	if isfolder and listfiles then
-		local folder = library:GetConfigFolder()
-		local files = listfiles(folder)
-		for _, file in ipairs(files) do
-			local name = file:match(".+/([^/]+)%.json$")
-			if name then
-				table.insert(configs, name)
-			end
-		end
-	end
-	return configs
+    local baseFolder = "CHX"
+    if isfolder and not isfolder(baseFolder) then
+        makefolder(baseFolder)
+    end
+    local folder = self.configFolder or self.title or "Games"
+    local fullPath = baseFolder .. "/" .. folder
+    if isfolder and not isfolder(fullPath) then
+        makefolder(fullPath)
+    end
+    return fullPath
 end
 
 function Library:GetConfigs()
-	return GetAvailableConfigs(self)
+    local configs = {}
+    if isfolder and listfiles then
+        local folder = self:GetConfigFolder()
+        local files = listfiles(folder)
+        for _, file in ipairs(files) do
+            local name = file:match(".+/([%w_%-]+)%.json$")
+            if name then
+                table.insert(configs, name)
+            end
+        end
+    end
+    return configs
 end
 
 local AcrylicBlur = {}
@@ -817,112 +811,108 @@ function Library:Destroy()
 end
 
 function Library:_RegisterConfigElement(id, elementType, getValue, setValue)
-	self._configElements[id] = {
-		type = elementType,
-		getValue = getValue,
-		setValue = setValue,
-	}
+    self._configElements = self._configElements or {}
+    self._configElements[id] = {
+        type = elementType,
+        getValue = getValue,
+        setValue = setValue,
+    }
 end
 
 function Library:SaveConfig(configName)
-	if not writefile then
-		chx("Config system not supported", 3)
-		return false
-	end
+    if not writefile then
+        chx("Config system not supported", 3)
+        return false
+    end
+    local folder = self:GetConfigFolder()
+    local path = folder .. "/" .. configName .. ".json"
 
-	local folder = self:GetConfigFolder()
-	local path = folder .. "/" .. configName .. ".json"
+    local configData = {}
+    for id, element in pairs(self._configElements) do
+        local value = element.getValue()
+        if typeof(value) == "Color3" then
+            value = { R = value.R, G = value.G, B = value.B, _type = "Color3" }
+        elseif typeof(value) == "EnumItem" then
+            value = { _type = "EnumItem", _enum = tostring(value.EnumType), _value = value.Name }
+        end
+        configData[id] = value
+    end
 
-	local configData = {}
-	for id, element in pairs(self._configElements) do
-		local value = element.getValue()
-		if typeof(value) == "Color3" then
-			value = { R = value.R, G = value.G, B = value.B, _type = "Color3" }
-		elseif typeof(value) == "EnumItem" then
-			value = { _type = "EnumItem", _enum = tostring(value.EnumType), _value = value.Name }
-		end
-		configData[id] = value
-	end
-
-	local success, err = pcall(function()
-		writefile(path, hs:JSONEncode(configData))
-	end)
-
-	if success then
-		self._currentConfig = configName
-		chx("Saved as: " .. configName, 2)
-		return true
-	else
-		chx("Failed to save config", 3)
-		return false
-	end
+    local success = pcall(function()
+        writefile(path, hs:JSONEncode(configData))
+    end)
+    if success then
+        self._currentConfig = configName
+        chx("Saved as: " .. configName, 2)
+        return true
+    else
+        chx("Failed to save config", 3)
+        return false
+    end
 end
 
 function Library:LoadConfig(configName)
-	if not readfile or not isfile then
-		chx("Config system not supported", 3)
-		return false
-	end
+    if not readfile or not isfile then
+        chx("Config system not supported", 3)
+        return false
+    end
+    local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
+    if not isfile(path) then
+        chx("Config not found: " .. configName, 3)
+        return false
+    end
 
-	local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
-	if not isfile(path) then
-		chx("Config not found: " .. configName, 3)
-		return false
-	end
+    local success, data = pcall(function()
+        return hs:JSONDecode(readfile(path))
+    end)
+    if not success or not data then
+        chx("Failed to load config", 3)
+        return false
+    end
 
-	local success, data = pcall(function()
-		return hs:JSONDecode(readfile(path))
-	end)
+    for id, value in pairs(data) do
+        if self._configElements[id] then
+            if type(value) == "table" and value._type == "Color3" then
+                value = Color3.new(value.R, value.G, value.B)
+            elseif type(value) == "table" and value._type == "EnumItem" then
+                value = Enum[value._enum][value._value]
+            end
+            pcall(function()
+                self._configElements[id].setValue(value)
+            end)
+        end
+    end
 
-	if not success or not data then
-		chx("Failed to load config", 3)
-		return false
-	end
-
-	for id, value in pairs(data) do
-		if self._configElements[id] then
-			if type(value) == "table" and value._type == "Color3" then
-				value = Color3.new(value.R, value.G, value.B)
-			elseif type(value) == "table" and value._type == "EnumItem" then
-				value = Enum[value._enum][value._value]
-			end
-			pcall(function()
-				self._configElements[id].setValue(value)
-			end)
-		end
-	end
-
-	self._currentConfig = configName
-	chx("Loaded: " .. configName, 2)
-	return true
+    self._currentConfig = configName
+    chx("Loaded: " .. configName, 2)
+    return true
 end
 
 function Library:DeleteConfig(configName)
-	if not delfile or not isfile then
-		return false
-	end
-
-	local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
-	if isfile(path) then
-		delfile(path)
-		chx("Deleted: " .. configName, 2)
-		return true
-	end
-	return false
+    if not delfile or not isfile then
+        return false
+    end
+    local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
+    if isfile(path) then
+        delfile(path)
+        chx("Deleted: " .. configName, 2)
+        return true
+    end
+    return false
 end
 
 function Library:SetAutoSave(enabled)
-	self._autoSave = enabled
-	if enabled then
-		task.spawn(function()
-			while self._autoSave and self.screenGui and self.screenGui.Parent do
-				task.wait(30)
-				if self._autoSave then
-					self:SaveConfig(self._currentConfig)
-				end
-			end
-		end)
-	end
+    self._autoSave = enabled
+    if enabled then
+        task.spawn(function()
+            while self._autoSave and self.screenGui and self.screenGui.Parent do
+                task.wait(30)
+                if self._autoSave then
+                    self:SaveConfig(self._currentConfig)
+                end
+            end
+        end)
+    end
 end
 
 function Library:CreateSection(name)
@@ -2377,79 +2367,73 @@ function Library._CreateTextBox(tab, config)
 end
 
 function Library._CreateConfigSection(tab)
-	local lib = tab._library
+    local lib = tab._library
+    Library._CreateContentSection(tab, "Configuration")
 
-	Library._CreateContentSection(tab, "Configuration")
+    local configNameBox = Library._CreateTextBox(tab, {
+        Name = "Config Name",
+        Default = "default",
+        Placeholder = "Enter config name...",
+        Callback = function(text)
+            lib._currentConfig = text
+        end,
+    })
 
-	local configNameBox = Library._CreateTextBox(tab, {
-		Name = "Config Name",
-		Default = "default",
-		Placeholder = "Enter config name...",
-		Callback = function(text)
-			lib._currentConfig = text
-		end,
-	})
+    local configDropdown
+    configDropdown = Library._CreateDropdown(tab, {
+        Name = "Select Config",
+        Options = lib:GetConfigs(),
+        Callback = function(selected)
+            configNameBox:SetText(selected)
+            lib._currentConfig = selected
+        end,
+    })
 
-	local configs = lib:GetConfigs()
-	if #configs == 0 then
-		configs = { "default" }
-	end
+    Library._CreateButton(tab, {
+        Name = "Save Config",
+        Callback = function()
+            local configName = configNameBox:GetText()
+            if configName and configName ~= "" then
+                lib:SaveConfig(configName)
+                configDropdown:Refresh(lib:GetConfigs())
+            end
+        end,
+    })
 
-	local configDropdown
-	configDropdown = Library._CreateDropdown(tab, {
-		Name = "Select Config",
-		Options = configs,
-		Callback = function(selected)
-			configNameBox:SetText(selected)
-			lib._currentConfig = selected
-		end,
-	})
+    Library._CreateButton(tab, {
+        Name = "Load Config",
+        Callback = function()
+            local configName = configNameBox:GetText()
+            if configName and configName ~= "" then
+                lib:LoadConfig(configName)
+            end
+        end,
+    })
 
-	Library._CreateButton(tab, {
-		Name = "Save Config",
-		Callback = function()
-			local configName = configNameBox:GetText()
-			if configName and configName ~= "" then
-				lib:SaveConfig(configName)
-				configDropdown:Refresh(lib:GetConfigs())
-			end
-		end,
-	})
+    Library._CreateButton(tab, {
+        Name = "Delete Config",
+        Callback = function()
+            local configName = configNameBox:GetText()
+            if configName and configName ~= "" then
+                lib:DeleteConfig(configName)
+                configDropdown:Refresh(lib:GetConfigs())
+            end
+        end,
+    })
+    
+    Library._CreateToggle(tab, {
+        Name = "Auto Save",
+        Default = false,
+        Callback = function(enabled)
+            lib:SetAutoSave(enabled)
+        end,
+    })
 
-	Library._CreateButton(tab, {
-		Name = "Load Config",
-		Callback = function()
-			local configName = configNameBox:GetText()
-			if configName and configName ~= "" then
-				lib:LoadConfig(configName)
-			end
-		end,
-	})
-
-	Library._CreateButton(tab, {
-		Name = "Delete Config",
-		Callback = function()
-			local configName = configNameBox:GetText()
-			if configName and configName ~= "" then
-				lib:DeleteConfig(configName)
-				configDropdown:Refresh(lib:GetConfigs())
-			end
-		end,
-	})
-
-	Library._CreateToggle(tab, {
-		Name = "Auto Save",
-		Default = false,
-		Callback = function(enabled)
-			lib:SetAutoSave(enabled)
-		end,
-	})
-
-	return {
-		RefreshConfigs = function()
-			configDropdown:Refresh(lib:GetConfigs())
-		end,
-	}
+    return {
+        RefreshConfigs = function()
+            configDropdown:Refresh(lib:GetConfigs())
+        end,
+    }
 end
 
 return Library
