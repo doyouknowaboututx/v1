@@ -433,12 +433,12 @@ function Library:_SetupKeybindListener()
 end
 
 function Library:Toggle()
-    self._visible = not self._visible
-    self.container.Visible = self._visible
+	self._visible = not self._visible
+	self.container.Visible = self._visible
 
-    if self._acrylicBlur then
-        self._acrylicBlur:SetEnabled(self._visible)
-    end
+	if self._acrylicBlur then
+		self._acrylicBlur:SetEnabled(self._visible)
+	end
 end
 
 function Library:SetToggleKey(keyCode)
@@ -1087,6 +1087,22 @@ function Library._CreateTab(section, name, icon)
 	if not section._library.currentTab then
 		Library._SelectTab(section._library, tab, tabBtn, tabStroke, iconLabel, tabText, textGradient)
 	end
+
+	setmetatable(tab, {
+		__index = function(t, key)
+			if t.elements[key] then
+				return t.elements[key]
+			end
+			local creator = Library["_Create" .. key]
+			if creator then
+				return function(config)
+					local elem = creator(t, config)
+					t.elements[key] = elem
+					return elem
+				end
+			end
+		end,
+	})
 
 	local tabMethods = setmetatable({}, { __index = tab })
 
