@@ -503,7 +503,7 @@ end
 
 function Library:_CreateMainv0rtexd()
 	self.screenGui = CreateInstance("ScreenGui", {
-		Name = ChloeX,
+		Name = "ChloeX",
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false,
 	})
@@ -1382,7 +1382,7 @@ function Library._CreateButton(tab, config)
     local frame = CreateInstance("Frame", {
         Name = "Button_" .. name,
         BackgroundColor3 = c.Secondary,
-        BackgroundTransparency = 0.4,
+        BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Size = UDim2.new(1, 0, 0, s.Button.Height),
         Parent = tab.content,
@@ -1395,10 +1395,11 @@ function Library._CreateButton(tab, config)
         Text = name,
         FontFace = f.Regular,
         TextColor3 = c.Text,
-        BackgroundColor3 = c.Secondary,
+        BackgroundTransparency = 1,
+        TextSize = 14,
         BorderSizePixel = 0,
         Size = subName and UDim2.new(0.5, -5, 1, 0) or UDim2.new(1, -10, 1, 0),
-        Position = UDim2.new(0, 5, 0, 0),
+        Position = UDim2.new(0, 0, 0, 0),
         Parent = frame,
     })
     CreateCorner(mainButton, 5)
@@ -1412,10 +1413,11 @@ function Library._CreateButton(tab, config)
             Text = subName,
             FontFace = f.Regular,
             TextColor3 = c.Text,
-            BackgroundColor3 = c.Secondary,
+            BackgroundTransparency = 1,
+            TextSize = 14,
             BorderSizePixel = 0,
             Size = UDim2.new(0.5, -5, 1, 0),
-            Position = UDim2.new(0.5, 5, 0, 0),
+            Position = UDim2.new(0.5, 0, 0, 0),
             Parent = frame,
         })
         CreateCorner(subButton, 5)
@@ -1434,10 +1436,11 @@ function Library._CreateButton(tab, config)
                 Text = newSubName,
                 FontFace = f.Regular,
                 TextColor3 = c.Text,
-                BackgroundColor3 = c.Secondary,
+                BackgroundTransparency = 1,
+                TextSize = 14,
                 BorderSizePixel = 0,
                 Size = UDim2.new(0.5, -5, 1, 0),
-                Position = UDim2.new(0.5, 5, 0, 0),
+                Position = UDim2.new(0.5, 0, 0, 0),
                 Parent = frame,
             })
             CreateCorner(subButton, 5)
