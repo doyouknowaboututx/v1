@@ -1376,6 +1376,7 @@ end
 function Library._CreateButton(tab, config)
 	local name = config.Name or "Button"
 	local callback = config.Callback or function() end
+	local subButtons = config.SubButtons or {} -- daftar sub-button: { {Name="Sub1", Callback=function() end}, ... }
 
 	local frame = CreateInstance("Frame", {
 		Name = "Button_" .. name,
@@ -1389,29 +1390,16 @@ function Library._CreateButton(tab, config)
 	CreateStroke(frame)
 
 	local nameLabel = CreateInstance("TextLabel", {
-		Name = "Name",
+		Name = "Label",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
 		Text = name,
-		TextXAlignment = Enum.TextXAlignment.Left,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextYAlignment = Enum.TextYAlignment.Center,
 		BackgroundTransparency = 1,
-		Position = UDim2.new(0, 10, 0.5, -10),
 		TextSize = textsize.Normal,
-		Size = UDim2.new(0, 200, 0, 20),
+		Size = UDim2.new(1, 0, 1, 0),
 		Parent = frame,
-	})
-
-	local icon = CreateInstance("ImageLabel", {
-		Name = "Icon",
-		BackgroundTransparency = 1,
-		Image = "rbxassetid://10734898355",
-		ImageColor3 = c.Text,
-		Position = UDim2.new(1, -30, 0.5, -10),
-		Size = UDim2.new(0, 20, 0, 20),
-		Parent = frame,
-	})
-	CreateInstance("UIAspectRatioConstraint", {
-		Parent = icon,
 	})
 
 	local button = CreateInstance("TextButton", {
@@ -1429,10 +1417,62 @@ function Library._CreateButton(tab, config)
 		callback()
 	end)
 
+	local subFrame
+	if #subButtons > 0 then
+		subFrame = CreateInstance("Frame", {
+			Name = name .. "_SubButtons",
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, s.Button.Height),
+			Position = UDim2.new(0, 0, 1, 5),
+			Parent = frame,
+		})
+		local layout = CreateListLayout(subFrame, 5, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
+		for _, sub in ipairs(subButtons) do
+			local subBtn = CreateInstance("TextButton", {
+				Name = "Sub_" .. sub.Name,
+				Text = sub.Name,
+				FontFace = f.Regular,
+				TextColor3 = c.Text,
+				BackgroundColor3 = c.Secondary,
+				BorderSizePixel = 0,
+				Size = UDim2.new(0, 80, 1, 0),
+				Parent = subFrame,
+			})
+			CreateCorner(subBtn, 5)
+			CreateStroke(subBtn)
+			subBtn.MouseButton1Click:Connect(sub.Callback)
+		end
+	end
+
 	return {
 		SetText = function(_, text)
 			nameLabel.Text = text
 		end,
+		AddSubButton = function(_, subConfig)
+			if not subFrame then
+				subFrame = CreateInstance("Frame", {
+					Name = name .. "_SubButtons",
+					BackgroundTransparency = 1,
+					Size = UDim2.new(1, 0, 0, s.Button.Height),
+					Position = UDim2.new(0, 0, 1, 5),
+					Parent = frame,
+				})
+				CreateListLayout(subFrame, 5, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
+			end
+			local subBtn = CreateInstance("TextButton", {
+				Name = "Sub_" .. subConfig.Name,
+				Text = subConfig.Name,
+				FontFace = f.Regular,
+				TextColor3 = c.Text,
+				BackgroundColor3 = c.Secondary,
+				BorderSizePixel = 0,
+				Size = UDim2.new(0, 80, 1, 0),
+				Parent = subFrame,
+			})
+			CreateCorner(subBtn, 5)
+			CreateStroke(subBtn)
+			subBtn.MouseButton1Click:Connect(subConfig.Callback)
+		end
 	}
 end
 
