@@ -1374,50 +1374,50 @@ function Library._CreateSlider(tab, config)
 end
 
 function Library._CreateButton(tab, config)
-	local titles = {
-		{Title=config.Title, Callback=config.Callback},
-		{Title=config.SubTitle, Callback=config.SubCallback},
-		{Title=config.ThreeTitle, Callback=config.ThreeCallback},
-		{Title=config.FourTitle, Callback=config.FourCallback}
+	local names = {
+		{ Name = config.Name, Callback = config.Callback },
+		{ Name = config.SubName, Callback = config.SubCallback },
+		{ Name = config.ThreeName, Callback = config.ThreeCallback },
+		{ Name = config.FourName, Callback = config.FourCallback }
 	}
 
-	for _, t in ipairs(titles) do
-		if t.Title then
+	for _, t in ipairs(names) do
+		if t.Name then
 			local frame = CreateInstance("Frame", {
-				Name = "Button_"..t.Title,
+				Name = "Button_" .. t.Name,
 				BackgroundColor3 = c.Secondary,
 				BackgroundTransparency = 0.4,
 				BorderSizePixel = 0,
-				Size = UDim2.new(1,0,0,s.Button.Height),
+				Size = UDim2.new(1, 0, 0, s.Button.Height),
 				Parent = tab.content
 			})
-			CreateCorner(frame,5)
+			CreateCorner(frame, 5)
 			CreateStroke(frame)
 
-			local nameLabel = CreateInstance("TextLabel",{
-				Name="Label",
-				FontFace=f.Regular,
-				TextColor3=c.Text,
-				Text=t.Title,
-				TextXAlignment=Enum.TextXAlignment.Center,
-				TextYAlignment=Enum.TextYAlignment.Center,
-				BackgroundTransparency=1,
-				TextSize=textsize.Normal,
-				Size=UDim2.new(1,0,1,0),
-				Parent=frame
+			local nameLabel = CreateInstance("TextLabel", {
+				Name = "Label",
+				FontFace = f.Regular,
+				TextColor3 = c.Text,
+				Text = t.Name,
+				TextXAlignment = Enum.TextXAlignment.Center,
+				TextYAlignment = Enum.TextYAlignment.Center,
+				BackgroundTransparency = 1,
+				TextSize = textsize.Normal,
+				Size = UDim2.new(1, 0, 1, 0),
+				Parent = frame
 			})
 
-			local button = CreateInstance("TextButton",{
-				Name="Button",
-				Text="",
-				BackgroundTransparency=1,
-				Size=UDim2.new(1,0,1,0),
-				Parent=frame
+			local button = CreateInstance("TextButton", {
+				Name = "Button",
+				Text = "",
+				BackgroundTransparency = 1,
+				Size = UDim2.new(1, 0, 1, 0),
+				Parent = frame
 			})
 			button.MouseButton1Click:Connect(function()
-				CreateTween(frame, {BackgroundTransparency=0.2}, animationspeed.Fast)
+				CreateTween(frame, { BackgroundTransparency = 0.2 }, animationspeed.Fast)
 				task.wait(0.1)
-				CreateTween(frame, {BackgroundTransparency=0.4}, animationspeed.Fast)
+				CreateTween(frame, { BackgroundTransparency = 0.4 }, animationspeed.Fast)
 				if t.Callback then t.Callback() end
 			end)
 		end
