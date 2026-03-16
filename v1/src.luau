@@ -1618,16 +1618,13 @@ function Library._CreateDropdown(tab, config)
 		Parent = selectedDisplay,
 	})
 
-	local maxVisibleOptions = 5
-	local totalOptionsHeight = math.min(#options * s.Dropdown.OptionHeight, maxVisibleOptions * s.Dropdown.OptionHeight + 30)
-
 	local optionsContainer = CreateInstance("Frame", {
 		Name = "OptionsContainer",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.04,
 		Position = UDim2.new(1, -230, 0, 38),
 		BorderSizePixel = 0,
-		Size = UDim2.new(0, 230, 0, totalOptionsHeight),
+		Size = UDim2.new(0, 230, 0, 190),
 		Visible = false,
 		ZIndex = 100,
 		ClipsDescendants = true,
