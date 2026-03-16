@@ -1388,7 +1388,6 @@ function Library._CreateButton(tab, config)
         Parent = tab.content,
     })
     CreateCorner(frame, 5)
-    CreateStroke(frame)
 
     local mainButton = CreateInstance("TextButton", {
         Name = "Button_Main",
@@ -1416,7 +1415,7 @@ function Library._CreateButton(tab, config)
             BackgroundTransparency = 1,
             TextSize = 14,
             BorderSizePixel = 0,
-            Size = UDim2.new(0.5, -5, 1, 0),
+            Size = UDim2.new(0.5, 0, 1, 0),
             Position = UDim2.new(0.5, 0, 0, 0),
             Parent = frame,
         })
@@ -1439,7 +1438,7 @@ function Library._CreateButton(tab, config)
                 BackgroundTransparency = 1,
                 TextSize = 14,
                 BorderSizePixel = 0,
-                Size = UDim2.new(0.5, -5, 1, 0),
+                Size = UDim2.new(0.5, 0, 1, 0),
                 Position = UDim2.new(0.5, 0, 0, 0),
                 Parent = frame,
             })
