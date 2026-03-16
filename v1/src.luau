@@ -1374,163 +1374,54 @@ function Library._CreateSlider(tab, config)
 end
 
 function Library._CreateButton(tab, config)
-	local name = config.Name or "Button"
-	local callback = config.Callback or function() end
-	local subButtons = config.SubButtons or {}
+	local titles = {
+		{Title=config.Title, Callback=config.Callback},
+		{Title=config.SubTitle, Callback=config.SubCallback},
+		{Title=config.ThreeTitle, Callback=config.ThreeCallback},
+		{Title=config.FourTitle, Callback=config.FourCallback}
+	}
 
-	local frame = CreateInstance("Frame", {
-		Name = "Button_" .. name,
-		BackgroundColor3 = c.Secondary,
-		BackgroundTransparency = 0.4,
-		BorderSizePixel = 0,
-		Size = UDim2.new(1, 0, 0, s.Button.Height),
-		Parent = tab.content,
-	})
-	CreateCorner(frame, 5)
-	CreateStroke(frame)
-
-	local nameLabel = CreateInstance("TextLabel", {
-		Name = "Label",
-		FontFace = f.Regular,
-		TextColor3 = c.Text,
-		Text = name,
-		TextXAlignment = Enum.TextXAlignment.Center,
-		TextYAlignment = Enum.TextYAlignment.Center,
-		BackgroundTransparency = 1,
-		TextSize = textsize.Normal,
-		Size = UDim2.new(1, 0, 1, 0),
-		Parent = frame,
-	})
-
-	local button = CreateInstance("TextButton", {
-		Name = "Button",
-		Text = "",
-		BackgroundTransparency = 1,
-		Size = UDim2.new(1, 0, 1, 0),
-		Parent = frame,
-	})
-
-	button.MouseButton1Click:Connect(function()
-		CreateTween(frame, { BackgroundTransparency = 0.2 }, animationspeed.Fast)
-		task.wait(0.1)
-		CreateTween(frame, { BackgroundTransparency = 0.4 }, animationspeed.Fast)
-		callback()
-	end)
-
-	local subFrame
-	if #subButtons > 0 then
-		local rows = 0
-		if #subButtons == 1 then
-			rows = 1
-		elseif #subButtons == 2 then
-			rows = 1
-		elseif #subButtons == 3 then
-			rows = 2
-		elseif #subButtons >= 4 then
-			rows = 2
-		end
-
-		subFrame = CreateInstance("Frame", {
-			Name = name .. "_SubButtons",
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, s.Button.Height * rows),
-			Position = UDim2.new(0, 0, 1, 5),
-			Parent = frame,
-		})
-
-		for i, sub in ipairs(subButtons) do
-			local subSize, subPosX, subPosY
-
-			if #subButtons == 1 then
-				subSize = UDim2.new(1, 0, 1, 0)
-				subPosX = 0
-				subPosY = 0
-			elseif #subButtons == 2 then
-				subSize = UDim2.new(0.5, -2, 1, 0)
-				subPosX = (i == 1) and 0 or 0.5
-				subPosY = 0
-			elseif #subButtons == 3 then
-				if i <= 2 then
-					subSize = UDim2.new(0.5, -2, 0.5, -2)
-					subPosX = (i-1) * 0.5
-					subPosY = 0
-				else
-					subSize = UDim2.new(1, 0, 0.5, -2)
-					subPosX = 0
-					subPosY = 0.5
-				end
-			elseif #subButtons == 4 then
-				subSize = UDim2.new(0.5, -2, 0.5, -2)
-				subPosX = ((i-1)%2) * 0.5
-				subPosY = (i > 2) and 0.5 or 0
-			end
-
-			local subBtn = CreateInstance("TextButton", {
-				Name = "Sub_" .. sub.Name,
-				Text = sub.Name,
-				FontFace = f.Regular,
-				TextColor3 = c.Text,
+	for _, t in ipairs(titles) do
+		if t.Title then
+			local frame = CreateInstance("Frame", {
+				Name = "Button_"..t.Title,
 				BackgroundColor3 = c.Secondary,
+				BackgroundTransparency = 0.4,
 				BorderSizePixel = 0,
-				Size = subSize,
-				Position = UDim2.new(subPosX, 5, subPosY, 5),
-				Parent = subFrame,
+				Size = UDim2.new(1,0,0,s.Button.Height),
+				Parent = tab.content
 			})
-			CreateCorner(subBtn, 5)
-			CreateStroke(subBtn)
-			subBtn.MouseButton1Click:Connect(sub.Callback)
+			CreateCorner(frame,5)
+			CreateStroke(frame)
+
+			local nameLabel = CreateInstance("TextLabel",{
+				Name="Label",
+				FontFace=f.Regular,
+				TextColor3=c.Text,
+				Text=t.Title,
+				TextXAlignment=Enum.TextXAlignment.Center,
+				TextYAlignment=Enum.TextYAlignment.Center,
+				BackgroundTransparency=1,
+				TextSize=textsize.Normal,
+				Size=UDim2.new(1,0,1,0),
+				Parent=frame
+			})
+
+			local button = CreateInstance("TextButton",{
+				Name="Button",
+				Text="",
+				BackgroundTransparency=1,
+				Size=UDim2.new(1,0,1,0),
+				Parent=frame
+			})
+			button.MouseButton1Click:Connect(function()
+				CreateTween(frame, {BackgroundTransparency=0.2}, animationspeed.Fast)
+				task.wait(0.1)
+				CreateTween(frame, {BackgroundTransparency=0.4}, animationspeed.Fast)
+				if t.Callback then t.Callback() end
+			end)
 		end
 	end
-
-	return {
-		SetText = function(_, text)
-			nameLabel.Text = text
-		end,
-		AddSubButton = function(_, subConfig)
-			if not subFrame then
-				subFrame = CreateInstance("Frame", {
-					Name = name .. "_SubButtons",
-					BackgroundTransparency = 1,
-					Size = UDim2.new(1, 0, 0, s.Button.Height),
-					Position = UDim2.new(0, 0, 1, 5),
-					Parent = frame,
-				})
-			end
-			local childrenCount = #subFrame:GetChildren()
-			local row, col, subSize
-			if childrenCount == 0 then
-				subSize = UDim2.new(1, 0, 1, 0)
-				row = 0
-				col = 0
-			elseif childrenCount == 1 then
-				subSize = UDim2.new(0.5, -2, 1, 0)
-				row = 0
-				col = 0.5
-			elseif childrenCount == 2 then
-				subSize = UDim2.new(1, 0, 0.5, -2)
-				row = 0.5
-				col = 0
-			elseif childrenCount == 3 then
-				subSize = UDim2.new(0.5, -2, 0.5, -2)
-				row = 0.5
-				col = 0.5
-			end
-			local subBtn = CreateInstance("TextButton", {
-				Name = "Sub_" .. subConfig.Name,
-				Text = subConfig.Name,
-				FontFace = f.Regular,
-				TextColor3 = c.Text,
-				BackgroundColor3 = c.Secondary,
-				BorderSizePixel = 0,
-				Size = subSize,
-				Position = UDim2.new(col, 5, row, 5),
-				Parent = subFrame,
-			})
-			CreateCorner(subBtn, 5)
-			CreateStroke(subBtn)
-			subBtn.MouseButton1Click:Connect(subConfig.Callback)
-		end
-	}
 end
 
 function Library._CreateToggle(tab, config)
