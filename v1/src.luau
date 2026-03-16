@@ -187,8 +187,12 @@ local function DisconnectAll()
     Connections = {}
 end
 
-function Library:GetConfigs()
-    return GetAvailableConfigs(self)
+function Library:GetConfigFolder()
+    local baseFolder = "CHX"
+    if isfolder and not isfolder(baseFolder) then
+        makefolder(baseFolder)
+    end
+    return baseFolder
 end
 
 local function GetAvailableConfigs(library)
@@ -198,13 +202,10 @@ local function GetAvailableConfigs(library)
         if not isfolder(folder) then
             makefolder(folder)
         end
-
         local files = listfiles(folder)
         for _, file in ipairs(files) do
             local name = file:match(folder .. "/(.+)%.json$")
-            if name then
-                table.insert(configs, name)
-            end
+            if name then table.insert(configs, name) end
         end
     end
     return configs
@@ -765,31 +766,41 @@ function Library:_RegisterConfigElement(id, elementType, getValue, setValue)
     }
 end
 
+function Library:SetAutoSave(enabled)
+    self._autoSave = enabled
+    if enabled then
+        task.spawn(function()
+            while self._autoSave and self.screenGui and self.screenGui.Parent do
+                task.wait(30)
+                if self._autoSave then
+                    local success = self:SaveConfig(self._currentConfig)
+                    if success then
+                        chx("Auto-saved config: " .. self._currentConfig, 2)
+                    end
+                end
+            end
+        end)
+    end
+end
+
 function Library:SaveConfig(configName)
     if not writefile then
         chx("Config system not supported", 3)
         return false
     end
-    
-    EnsureConfigFolder()
-    
+    local folder = self:GetConfigFolder()
+    local path = folder .. "/" .. configName .. ".json"
     local configData = {}
     for id, element in pairs(self._configElements) do
         local value = element.getValue()
-        
         if typeof(value) == "Color3" then
             value = {R = value.R, G = value.G, B = value.B, _type = "Color3"}
         elseif typeof(value) == "EnumItem" then
             value = {_type = "EnumItem", _enum = tostring(value.EnumType), _value = value.Name}
         end
-        
         configData[id] = value
     end
-    
-    local success, err = pcall(function()
-        writefile("AcrylicConfigs/" .. configName .. ".json", hs:JSONEncode(configData))
-    end)
-    
+    local success, err = pcall(function() writefile(path, hs:JSONEncode(configData)) end)
     if success then
         self._currentConfig = configName
         chx("Saved as: " .. configName, 2)
@@ -805,22 +816,16 @@ function Library:LoadConfig(configName)
         chx("Config system not supported", 3)
         return false
     end
-    
-    local path = "AcrylicConfigs/" .. configName .. ".json"
+    local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
     if not isfile(path) then
         chx("Config not found: " .. configName, 3)
         return false
     end
-    
-    local success, data = pcall(function()
-        return hs:JSONDecode(readfile(path))
-    end)
-    
+    local success, data = pcall(function() return hs:JSONDecode(readfile(path)) end)
     if not success or not data then
         chx("Failed to load config", 3)
         return false
     end
-    
     for id, value in pairs(data) do
         if self._configElements[id] then
             if type(value) == "table" and value._type == "Color3" then
@@ -828,24 +833,17 @@ function Library:LoadConfig(configName)
             elseif type(value) == "table" and value._type == "EnumItem" then
                 value = Enum[value._enum][value._value]
             end
-            
-            pcall(function()
-                self._configElements[id].setValue(value)
-            end)
+            pcall(function() self._configElements[id].setValue(value) end)
         end
     end
-    
     self._currentConfig = configName
     chx("Loaded: " .. configName, 2)
     return true
 end
 
 function Library:DeleteConfig(configName)
-    if not delfile or not isfile then
-        return false
-    end
-    
-    local path = "AcrylicConfigs/" .. configName .. ".json"
+    if not delfile or not isfile then return false end
+    local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
     if isfile(path) then
         delfile(path)
         chx("Deleted: " .. configName, 2)
@@ -855,23 +853,8 @@ function Library:DeleteConfig(configName)
 end
 
 function Library:GetConfigs()
-    return GetAvailableConfigs()
+    return GetAvailableConfigs(self)
 end
-
-function Library:SetAutoSave(enabled)
-    self._autoSave = enabled
-    if enabled then
-        task.spawn(function()
-            while self._autoSave and self.screenGui and self.screenGui.Parent do
-                task.wait(30)
-                if self._autoSave then
-                    self:SaveConfig(self._currentConfig)
-                end
-            end
-        end)
-    end
-end
-
 function Library:CreateSection(name)
     local section = {
         name = name,
