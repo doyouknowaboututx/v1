@@ -450,66 +450,54 @@ function Library:SetToggleKey(keyCode)
 end
 
 function Library:_SetupMobileSupport()
-	local mobileButton = CreateInstance("ImageButton", {
-		Name = "MobileToggle",
-		Image = "rbxassetid://112235310154264",
-		ImageColor3 = c.Text,
-		BackgroundColor3 = c.Background,
-		BackgroundTransparency = 0.1,
-		Position = UDim2.new(0, 15, 0.5, -25),
-		Size = UDim2.new(0, 50, 0, 50),
-		AnchorPoint = Vector2.new(0, 0.5),
-		Visible = true,
-		ZIndex = 999,
-		Parent = self.screenGui,
-	})
-	CreateCorner(mobileButton, 25)
-	CreateStroke(mobileButton)
+    local mobileButton = CreateInstance("ImageButton", {
+        Name = "MobileToggle",
+        Image = "rbxassetid://112235310154264",
+        ImageColor3 = c.Text,
+        BackgroundColor3 = c.Background,
+        BackgroundTransparency = 0.1,
+        Position = UDim2.new(0, 15, 0.5, -25),
+        Size = UDim2.new(0, 50, 0, 50),
+        AnchorPoint = Vector2.new(0, 0.5),
+        Visible = true,
+        ZIndex = 999,
+        Parent = self.screenGui,
+    })
+    CreateCorner(mobileButton, 25)
+    CreateStroke(mobileButton)
 
-	local dragging = false
-	local dragStart, startPos
+    local dragging = false
+    local dragStart, startPos
 
-	mobileButton.InputBegan:Connect(function(input)
-		if
-			input.UserInputType == Enum.UserInputType.Touch
-			or input.UserInputType == Enum.UserInputType.MouseButton1
-		then
-			dragging = true
-			dragStart = input.Position
-			startPos = mobileButton.Position
-		end
-	end)
+    mobileButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = mobileButton.Position
+        end
+    end)
 
-	mobileButton.InputEnded:Connect(function(input)
-		if
-			input.UserInputType == Enum.UserInputType.Touch
-			or input.UserInputType == Enum.UserInputType.MouseButton1
-		then
-			if dragging then
-				local delta = input.Position - dragStart
-				if delta.Magnitude < 10 then
-					self:Toggle()
-				end
-			end
-			dragging = false
-		end
-	end)
+    mobileButton.InputEnded:Connect(function(input)
+        if dragging then
+            local delta = input.Position - dragStart
+            if delta.Magnitude < 10 then
+                self:Toggle()
+            end
+            dragging = false
+        end
+    end)
 
-	ui.InputChanged:Connect(function(input)
-		if
-			dragging
-			and (
-				input.UserInputType == Enum.UserInputType.Touch
-				or input.UserInputType == Enum.UserInputType.MouseMovement
-			)
-		then
-			local delta = input.Position - dragStart
-			mobileButton.Position =
-				UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		end
-	end)
+    ui.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+            local delta = input.Position - dragStart
+            mobileButton.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
 
-	self._mobileToggle = mobileButton
+    self._mobileToggle = mobileButton
 end
 
 function Library:_CreateMainv0rtexd()
@@ -1126,8 +1114,8 @@ function Library._CreateTab(section, name, icon)
 		return Library._CreateColorPicker(self, config)
 	end
 
-	function tabMethods:CreateTextBox(config)
-		return Library._CreateTextBox(self, config)
+	function tabMethods:CreateInput(config)
+		return Library._CreateInput(self, config)
 	end
 
 	function tabMethods:CreateConfigSection()
@@ -1675,7 +1663,9 @@ function Library._CreateDropdown(tab, config)
 	local optionButtons = {}
 
 	local function RefreshOptions(filter)
-		for _, btn in ipairs(optionButtons) do btn:Destroy() end
+		for _, btn in ipairs(optionButtons) do
+			btn:Destroy()
+		end
 		optionButtons = {}
 		local filteredOptions = {}
 		for _, option in ipairs(options) do
@@ -1697,12 +1687,20 @@ function Library._CreateDropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
-			optionBtn.MouseEnter:Connect(function() CreateTween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast) end)
-			optionBtn.MouseLeave:Connect(function() CreateTween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast) end)
+			optionBtn.MouseEnter:Connect(function()
+				CreateTween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
+			end)
+			optionBtn.MouseLeave:Connect(function()
+				CreateTween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
+			end)
 			optionBtn.MouseButton1Click:Connect(function()
 				if multiSelect then
 					local index = table.find(selected, option)
-					if index then table.remove(selected, index) else table.insert(selected, option) end
+					if index then
+						table.remove(selected, index)
+					else
+						table.insert(selected, option)
+					end
 					UpdateSelectedText()
 					callback(selected)
 				else
@@ -1721,7 +1719,9 @@ function Library._CreateDropdown(tab, config)
 		UpdateSelectedText()
 	end
 
-	searchBox:GetPropertyChangedSignal("Text"):Connect(function() RefreshOptions(searchBox.Text) end)
+	searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+		RefreshOptions(searchBox.Text)
+	end)
 	RefreshOptions("")
 
 	local toggleBtn = CreateInstance("TextButton", {
@@ -1741,12 +1741,17 @@ function Library._CreateDropdown(tab, config)
 
 	local methods = {
 		SetValue = function(_, value)
-			if multiSelect and type(value) == "table" then selected = value
-			elseif not multiSelect then selected = value end
+			if multiSelect and type(value) == "table" then
+				selected = value
+			elseif not multiSelect then
+				selected = value
+			end
 			UpdateSelectedText()
 			callback(selected)
 		end,
-		GetValue = function() return selected end,
+		GetValue = function()
+			return selected
+		end,
 		Refresh = function(_, newOptions)
 			options = newOptions
 			RefreshOptions("")
@@ -1754,10 +1759,11 @@ function Library._CreateDropdown(tab, config)
 	}
 
 	if tab._library then
-		tab._library:_RegisterConfigElement(flag, "Dropdown",
-			function() return selected end,
-			function(value) methods:SetValue(value) end
-		)
+		tab._library:_RegisterConfigElement(flag, "Dropdown", function()
+			return selected
+		end, function(value)
+			methods:SetValue(value)
+		end)
 	end
 
 	return methods
@@ -2175,7 +2181,7 @@ function Library._CreateColorPicker(tab, config)
 	return methods
 end
 
-function Library._CreateTextBox(tab, config)
+function Library._CreateInput(tab, config)
 	local name = config.Name or "TextBox"
 	local default = config.Default or ""
 	local placeholder = config.Placeholder or "Enter text..."
@@ -2183,14 +2189,12 @@ function Library._CreateTextBox(tab, config)
 	local clearOnFocus = config.ClearOnFocus or false
 	local numbersOnly = config.NumbersOnly or false
 	local currentText = default
-
-	-- auto-generate flag
 	local sectionName = tab.sectionName or "DefaultSection"
 	local tabName = tab._library.currentTab and tab._library.currentTab.name or "DefaultTab"
 	local flag = tabName .. "_" .. sectionName .. "_" .. name
 
 	local frame = CreateInstance("Frame", {
-		Name = "TextBox_" .. name,
+		Name = "Input_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
 		BorderSizePixel = 0,
@@ -2225,7 +2229,7 @@ function Library._CreateTextBox(tab, config)
 	})
 
 	local textBoxContainer = CreateInstance("Frame", {
-		Name = "TextBoxContainer",
+		Name = "InputContainer",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.04,
 		AnchorPoint = Vector2.new(1, 0.5),
@@ -2307,7 +2311,7 @@ function Library._CreateTextBox(tab, config)
 	}
 
 	if tab._library then
-		tab._library:_RegisterConfigElement(flag, "TextBox", function()
+		tab._library:_RegisterConfigElement(flag, "Input", function()
 			return currentText
 		end, function(value)
 			methods:SetText(value)
@@ -2322,7 +2326,7 @@ function Library._CreateConfigSection(tab)
 
 	Library._CreateContentSection(tab, "Configuration")
 
-	local configNameBox = Library._CreateTextBox(tab, {
+	local configNameBox = Library._CreateInput(tab, {
 		Name = "Config Name",
 		Default = "default",
 		Placeholder = "Enter config name...",
@@ -2331,25 +2335,17 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	-- Ambil folder dan config, pasang debug
-	local folder = lib:GetConfigFolder()
-	print("[CHX] Config folder path:", folder)
-
 	local configs = lib:GetConfigs()
-	print("Available configs:", configs)
 
 	if #configs == 0 then
-		print("Tidak ada config yang ditemukan, menambahkan default")
 		configs = { "default" }
 	end
 
-	-- Baru buat dropdown
 	configDropdown = Library._CreateDropdown(tab, {
 		Name = "Select Config",
 		Options = configs,
 		Default = configs[1],
 		Callback = function(selected)
-			print("Selected config:", selected)
 			configNameBox:SetText(selected)
 			lib._currentConfig = selected
 		end,
