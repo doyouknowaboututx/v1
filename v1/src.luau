@@ -2378,8 +2378,9 @@ end
 
 function Library._CreateConfigSection(tab)
 	local lib = tab._library
+
 	Library._CreateContentSection(tab, "Configuration")
-    
+
 	local configNameBox = Library._CreateTextBox(tab, {
 		Name = "Config Name",
 		Default = "default",
@@ -2389,9 +2390,8 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	lib:GetConfigFolder()
-
-	local configDropdown = Library._CreateDropdown(tab, {
+	local configDropdown
+	configDropdown = Library._CreateDropdown(tab, {
 		Name = "Select Config",
 		Options = lib:GetConfigs(),
 		Callback = function(selected)
@@ -2406,9 +2406,8 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:SaveConfig(configName)
-				task.defer(function()
-					configDropdown:Refresh(lib:GetConfigs())
-				end)
+				-- langsung update dropdown
+				configDropdown:SetValue(lib:GetConfigs())
 			end
 		end,
 	})
@@ -2419,9 +2418,7 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:LoadConfig(configName)
-				task.defer(function()
-					configDropdown:Refresh(lib:GetConfigs())
-				end)
+				configDropdown:SetValue(lib:GetConfigs())
 			end
 		end,
 	})
@@ -2432,20 +2429,8 @@ function Library._CreateConfigSection(tab)
 			local configName = configNameBox:GetText()
 			if configName and configName ~= "" then
 				lib:DeleteConfig(configName)
-				task.defer(function()
-					configDropdown:Refresh(lib:GetConfigs())
-				end)
+				configDropdown:SetValue(lib:GetConfigs())
 			end
-		end,
-	})
-
-	Library._CreateButton(tab, {
-		Name = "Refresh Configs",
-		Callback = function()
-			task.defer(function()
-				configDropdown:Refresh(lib:GetConfigs())
-			end)
-			chx("Configs Refreshed")
 		end,
 	})
 
@@ -2459,7 +2444,7 @@ function Library._CreateConfigSection(tab)
 
 	return {
 		RefreshConfigs = function()
-			configDropdown:Refresh(lib:GetConfigs())
+			configDropdown:SetValue(lib:GetConfigs())
 		end,
 	}
 end
