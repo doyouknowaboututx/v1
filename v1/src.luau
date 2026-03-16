@@ -1376,7 +1376,7 @@ end
 function Library._CreateButton(tab, config)
 	local name = config.Name or "Button"
 	local callback = config.Callback or function() end
-	local subButtons = config.SubButtons or {} -- daftar sub-button: { {Name="Sub1", Callback=function() end}, ... }
+	local subButtons = config.SubButtons or {}
 
 	local frame = CreateInstance("Frame", {
 		Name = "Button_" .. name,
@@ -1419,16 +1419,52 @@ function Library._CreateButton(tab, config)
 
 	local subFrame
 	if #subButtons > 0 then
+		local rows = 0
+		if #subButtons == 1 then
+			rows = 1
+		elseif #subButtons == 2 then
+			rows = 1
+		elseif #subButtons == 3 then
+			rows = 2
+		elseif #subButtons >= 4 then
+			rows = 2
+		end
+
 		subFrame = CreateInstance("Frame", {
 			Name = name .. "_SubButtons",
 			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, s.Button.Height),
+			Size = UDim2.new(1, 0, 0, s.Button.Height * rows),
 			Position = UDim2.new(0, 0, 1, 5),
 			Parent = frame,
 		})
+
 		for i, sub in ipairs(subButtons) do
-			local subBtnWidth = (#subButtons == 1) and 1 or 0.5
-			local subBtnPos = (#subButtons == 1) and 0 or ((i - 1) * 0.5)
+			local subSize, subPosX, subPosY
+
+			if #subButtons == 1 then
+				subSize = UDim2.new(1, 0, 1, 0)
+				subPosX = 0
+				subPosY = 0
+			elseif #subButtons == 2 then
+				subSize = UDim2.new(0.5, -2, 1, 0)
+				subPosX = (i == 1) and 0 or 0.5
+				subPosY = 0
+			elseif #subButtons == 3 then
+				if i <= 2 then
+					subSize = UDim2.new(0.5, -2, 0.5, -2)
+					subPosX = (i-1) * 0.5
+					subPosY = 0
+				else
+					subSize = UDim2.new(1, 0, 0.5, -2)
+					subPosX = 0
+					subPosY = 0.5
+				end
+			elseif #subButtons == 4 then
+				subSize = UDim2.new(0.5, -2, 0.5, -2)
+				subPosX = ((i-1)%2) * 0.5
+				subPosY = (i > 2) and 0.5 or 0
+			end
+
 			local subBtn = CreateInstance("TextButton", {
 				Name = "Sub_" .. sub.Name,
 				Text = sub.Name,
@@ -1436,8 +1472,8 @@ function Library._CreateButton(tab, config)
 				TextColor3 = c.Text,
 				BackgroundColor3 = c.Secondary,
 				BorderSizePixel = 0,
-				Size = UDim2.new(subBtnWidth, -5, 1, 0),
-				Position = UDim2.new(subBtnPos, (i > 1 and 5 or 0), 0, 0),
+				Size = subSize,
+				Position = UDim2.new(subPosX, 5, subPosY, 5),
 				Parent = subFrame,
 			})
 			CreateCorner(subBtn, 5)
@@ -1460,9 +1496,25 @@ function Library._CreateButton(tab, config)
 					Parent = frame,
 				})
 			end
-			local subBtnCount = #subFrame:GetChildren()
-			local subBtnWidth = (subBtnCount == 0) and 1 or 0.5
-			local subBtnPos = (subBtnCount == 0) and 0 or 0.5
+			local childrenCount = #subFrame:GetChildren()
+			local row, col, subSize
+			if childrenCount == 0 then
+				subSize = UDim2.new(1, 0, 1, 0)
+				row = 0
+				col = 0
+			elseif childrenCount == 1 then
+				subSize = UDim2.new(0.5, -2, 1, 0)
+				row = 0
+				col = 0.5
+			elseif childrenCount == 2 then
+				subSize = UDim2.new(1, 0, 0.5, -2)
+				row = 0.5
+				col = 0
+			elseif childrenCount == 3 then
+				subSize = UDim2.new(0.5, -2, 0.5, -2)
+				row = 0.5
+				col = 0.5
+			end
 			local subBtn = CreateInstance("TextButton", {
 				Name = "Sub_" .. subConfig.Name,
 				Text = subConfig.Name,
@@ -1470,14 +1522,14 @@ function Library._CreateButton(tab, config)
 				TextColor3 = c.Text,
 				BackgroundColor3 = c.Secondary,
 				BorderSizePixel = 0,
-				Size = UDim2.new(subBtnWidth, -5, 1, 0),
-				Position = UDim2.new(subBtnPos, (subBtnCount > 0 and 5 or 0), 0, 0),
+				Size = subSize,
+				Position = UDim2.new(col, 5, row, 5),
 				Parent = subFrame,
 			})
 			CreateCorner(subBtn, 5)
 			CreateStroke(subBtn)
 			subBtn.MouseButton1Click:Connect(subConfig.Callback)
-		end,
+		end
 	}
 end
 
