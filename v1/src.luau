@@ -2363,7 +2363,7 @@ function Library._CreateConfigSection(tab)
 
 	-- Ambil folder dan config, pasang debug
 	local folder = lib:GetConfigFolder()
-	print("Config folder path:", folder)
+	print("[CHX] Config folder path:", folder)
 
 	local configs = lib:GetConfigs()
 	print("Available configs:", configs)
