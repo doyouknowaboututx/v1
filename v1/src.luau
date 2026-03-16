@@ -192,33 +192,33 @@ local function DisconnectAll()
 end
 
 function Library:GetConfigFolder()
-	local baseFolder = "CHX"
-	if isfolder and not isfolder(baseFolder) then
-		makefolder(baseFolder)
-	end
+    local baseFolder = "CHX"
+    if isfolder and not isfolder(baseFolder) then
+        makefolder(baseFolder)
+    end
 
-	local folder = self.configFolder or self.title or "Games"
-	local fullPath = baseFolder .. "/" .. folder
-	if isfolder and not isfolder(fullPath) then
-		makefolder(fullPath)
-	end
+    local folder = self.configFolder or self.title or "Games"
+    local fullPath = baseFolder .. "/" .. folder
+    if isfolder and not isfolder(fullPath) then
+        makefolder(fullPath)
+    end
 
-	return fullPath
+    return fullPath
 end
 
-local function GetAvailableConfigs(library)
-	local configs = {}
-	if isfolder and listfiles then
-		local folder = library:GetConfigFolder()
-		local files = listfiles(folder)
-		for _, file in ipairs(files) do
-			local name = file:match(".+/([^/]+)%.json$")
-			if name then
-				table.insert(configs, name)
-			end
-		end
-	end
-	return configs
+function Library:GetConfigs()
+    local configs = {}
+    if isfolder and listfiles then
+        local folder = self:GetConfigFolder()
+        local files = listfiles(folder)
+        for _, file in ipairs(files) do
+            local name = file:match(".+/([%w_%-]+)%.json$")
+            if name then
+                table.insert(configs, name)
+            end
+        end
+    end
+    return configs
 end
 
 function Library:GetConfigs()
@@ -2377,79 +2377,82 @@ function Library._CreateTextBox(tab, config)
 end
 
 function Library._CreateConfigSection(tab)
-	local lib = tab._library
+    local lib = tab._library
 
-	Library._CreateContentSection(tab, "Configuration")
+    Library._CreateContentSection(tab, "Configuration")
 
-	local configNameBox = Library._CreateTextBox(tab, {
-		Name = "Config Name",
-		Default = "default",
-		Placeholder = "Enter config name...",
-		Callback = function(text)
-			lib._currentConfig = text
-		end,
-	})
+    local configNameBox = Library._CreateTextBox(tab, {
+        Name = "Config Name",
+        Default = "default",
+        Placeholder = "Enter config name...",
+        Callback = function(text)
+            lib._currentConfig = text
+        end,
+    })
 
-	local configs = lib:GetConfigs()
-	if #configs == 0 then
-		configs = { "default" }
-	end
+    local configDropdown
+    configDropdown = Library._CreateDropdown(tab, {
+        Name = "Select Config",
+        Options = lib:GetConfigs(),
+        Callback = function(selected)
+            configNameBox:SetText(selected)
+            lib._currentConfig = selected
+        end,
+    })
 
-	local configDropdown
-	configDropdown = Library._CreateDropdown(tab, {
-		Name = "Select Config",
-		Options = configs,
-		Callback = function(selected)
-			configNameBox:SetText(selected)
-			lib._currentConfig = selected
-		end,
-	})
+    Library._CreateButton(tab, {
+        Name = "Save Config",
+        Callback = function()
+            local configName = configNameBox:GetText()
+            if configName and configName ~= "" then
+                lib:SaveConfig(configName)
+                configDropdown:Refresh(lib:GetConfigs())
+            end
+        end,
+    })
 
-	Library._CreateButton(tab, {
-		Name = "Save Config",
-		Callback = function()
-			local configName = configNameBox:GetText()
-			if configName and configName ~= "" then
-				lib:SaveConfig(configName)
-				configDropdown:Refresh(lib:GetConfigs())
-			end
-		end,
-	})
+    Library._CreateButton(tab, {
+        Name = "Load Config",
+        Callback = function()
+            local configName = configNameBox:GetText()
+            if configName and configName ~= "" then
+                lib:LoadConfig(configName)
+            end
+        end,
+    })
 
-	Library._CreateButton(tab, {
-		Name = "Load Config",
-		Callback = function()
-			local configName = configNameBox:GetText()
-			if configName and configName ~= "" then
-				lib:LoadConfig(configName)
-			end
-		end,
-	})
+    Library._CreateButton(tab, {
+        Name = "Delete Config",
+        Callback = function()
+            local configName = configNameBox:GetText()
+            if configName and configName ~= "" then
+                lib:DeleteConfig(configName)
+                configDropdown:Refresh(lib:GetConfigs())
+            end
+        end,
+    })
 
-	Library._CreateButton(tab, {
-		Name = "Delete Config",
-		Callback = function()
-			local configName = configNameBox:GetText()
-			if configName and configName ~= "" then
-				lib:DeleteConfig(configName)
-				configDropdown:Refresh(lib:GetConfigs())
-			end
-		end,
-	})
+    Library._CreateButton(tab, {
+        Name = "Refresh Configs",
+        Callback = function()
+            configDropdown:Refresh(lib:GetConfigs())
+            chx("Configs Refreshed")
+        end,
+    })
 
-	Library._CreateToggle(tab, {
-		Name = "Auto Save",
-		Default = false,
-		Callback = function(enabled)
-			lib:SetAutoSave(enabled)
-		end,
-	})
+    Library._CreateToggle(tab, {
+        Name = "Auto Save",
+        Default = false,
+        Callback = function(enabled)
+            lib:SetAutoSave(enabled)
+        end,
+    })
 
-	return {
-		RefreshConfigs = function()
-			configDropdown:Refresh(lib:GetConfigs())
-		end,
-	}
+    return {
+        RefreshConfigs = function()
+            configDropdown:Refresh(lib:GetConfigs())
+        end,
+    }
 end
 
 return Library
