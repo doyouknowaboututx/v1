@@ -2437,14 +2437,6 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	Library._CreateButton(tab, {
-		Name = "Refresh Configs",
-		Callback = function()
-			configDropdown:Refresh(lib:GetConfigs())
-			chx("Configs Refreshed")
-		end,
-	})
-
 	Library._CreateToggle(tab, {
 		Name = "Auto Save",
 		Default = false,
