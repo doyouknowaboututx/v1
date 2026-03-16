@@ -1378,29 +1378,13 @@ function Library._CreateButton(tab, config)
 	local callback = config.Callback or function() end
 	local subButtons = config.SubButtons or {}
 
-	if not tab._buttonContainer then
-		tab._buttonContainer = CreateInstance("Frame", {
-			Name = "ButtonContainer",
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 0),
-			Parent = tab.content,
-		})
-		local grid = Instance.new("UIGridLayout")
-		grid.CellSize = UDim2.new(0, 100, 0, s.Button.Height)
-		grid.FillDirection = Enum.FillDirection.Horizontal
-		grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
-		grid.VerticalAlignment = Enum.VerticalAlignment.Top
-		grid.SortOrder = Enum.SortOrder.LayoutOrder
-		grid.Parent = tab._buttonContainer
-	end
-
 	local frame = CreateInstance("Frame", {
 		Name = "Button_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
 		BorderSizePixel = 0,
-		Size = UDim2.new(0, 100, 0, s.Button.Height),
-		Parent = tab._buttonContainer,
+		Size = UDim2.new(1, 0, 0, s.Button.Height),
+		Parent = tab.content,
 	})
 	CreateCorner(frame, 5)
 	CreateStroke(frame)
@@ -1425,7 +1409,6 @@ function Library._CreateButton(tab, config)
 		Size = UDim2.new(1, 0, 1, 0),
 		Parent = frame,
 	})
-
 	button.MouseButton1Click:Connect(function()
 		CreateTween(frame, { BackgroundTransparency = 0.2 }, animationspeed.Fast)
 		task.wait(0.1)
@@ -1433,37 +1416,47 @@ function Library._CreateButton(tab, config)
 		callback()
 	end)
 
-	local subFrame
-	if #subButtons > 0 then
-		subFrame = CreateInstance("Frame", {
-			Name = name .. "_SubButtons",
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, s.Button.Height),
-			Position = UDim2.new(0, 0, 1, 5),
-			Parent = frame,
-		})
-		local layout = Instance.new("UIGridLayout")
-		layout.CellSize = UDim2.new(0, 80, 0, s.Button.Height)
-		layout.FillDirection = Enum.FillDirection.Horizontal
-		layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-		layout.VerticalAlignment = Enum.VerticalAlignment.Top
-		layout.SortOrder = Enum.SortOrder.LayoutOrder
-		layout.Parent = subFrame
-		for _, sub in ipairs(subButtons) do
-			local subBtn = CreateInstance("TextButton", {
-				Name = "Sub_" .. sub.Name,
-				Text = sub.Name,
-				FontFace = f.Regular,
-				TextColor3 = c.Text,
-				BackgroundColor3 = c.Secondary,
-				BorderSizePixel = 0,
-				Size = UDim2.new(0, 80, 1, 0),
-				Parent = subFrame,
+	local function CreateSubRows()
+		local rows = {}
+		for i = 1, #subButtons, 2 do
+			local rowFrame = CreateInstance("Frame", {
+				Name = "SubRow_" .. math.ceil(i/2),
+				BackgroundTransparency = 1,
+				Size = UDim2.new(1, 0, 0, s.Button.Height),
+				Parent = frame,
+				Position = UDim2.new(0, 0, 0, s.Button.Height + 5 + s.Button.Height * (math.ceil(i/2)-1) + 5*(math.ceil(i/2)-1)),
 			})
-			CreateCorner(subBtn, 5)
-			CreateStroke(subBtn)
-			subBtn.MouseButton1Click:Connect(sub.Callback)
+			local layout = Instance.new("UIGridLayout")
+			layout.CellSize = UDim2.new(0, 100, 0, s.Button.Height)
+			layout.FillDirection = Enum.FillDirection.Horizontal
+			layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			layout.SortOrder = Enum.SortOrder.LayoutOrder
+			layout.Parent = rowFrame
+
+			for j = i, math.min(i+1, #subButtons) do
+				local sub = subButtons[j]
+				local subBtn = CreateInstance("TextButton", {
+					Name = "Sub_" .. sub.Name,
+					Text = sub.Name,
+					FontFace = f.Regular,
+					TextColor3 = c.Text,
+					BackgroundColor3 = c.Secondary,
+					BorderSizePixel = 0,
+					Size = UDim2.new(0, 100, 0, s.Button.Height),
+					Parent = rowFrame,
+				})
+				CreateCorner(subBtn, 5)
+				CreateStroke(subBtn)
+				subBtn.MouseButton1Click:Connect(sub.Callback)
+			end
+			table.insert(rows, rowFrame)
 		end
+		return rows
+	end
+
+	local subRows = {}
+	if #subButtons > 0 then
+		subRows = CreateSubRows()
 	end
 
 	return {
@@ -1471,35 +1464,11 @@ function Library._CreateButton(tab, config)
 			nameLabel.Text = text
 		end,
 		AddSubButton = function(_, subConfig)
-			if not subFrame then
-				subFrame = CreateInstance("Frame", {
-					Name = name .. "_SubButtons",
-					BackgroundTransparency = 1,
-					Size = UDim2.new(1, 0, 0, s.Button.Height),
-					Position = UDim2.new(0, 0, 1, 5),
-					Parent = frame,
-				})
-				local layout = Instance.new("UIGridLayout")
-				layout.CellSize = UDim2.new(0, 80, 0, s.Button.Height)
-				layout.FillDirection = Enum.FillDirection.Horizontal
-				layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-				layout.VerticalAlignment = Enum.VerticalAlignment.Top
-				layout.SortOrder = Enum.SortOrder.LayoutOrder
-				layout.Parent = subFrame
+			table.insert(subButtons, subConfig)
+			for _, row in ipairs(subRows) do
+				row:Destroy()
 			end
-			local subBtn = CreateInstance("TextButton", {
-				Name = "Sub_" .. subConfig.Name,
-				Text = subConfig.Name,
-				FontFace = f.Regular,
-				TextColor3 = c.Text,
-				BackgroundColor3 = c.Secondary,
-				BorderSizePixel = 0,
-				Size = UDim2.new(0, 80, 1, 0),
-				Parent = subFrame,
-			})
-			CreateCorner(subBtn, 5)
-			CreateStroke(subBtn)
-			subBtn.MouseButton1Click:Connect(subConfig.Callback)
+			subRows = CreateSubRows()
 		end
 	}
 end
