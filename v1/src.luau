@@ -999,7 +999,7 @@ function Library._CreateTab(section, name, icon)
 	local iconLabel = CreateInstance("ImageLabel", {
 		Name = "Icon",
 		BackgroundTransparency = 1,
-		Image = icon or "rbxassetid://112235310154264",
+		Image = icon,
 		ImageColor3 = c.TextDark,
 		AnchorPoint = Vector2.new(0, 0.5),
 		Position = UDim2.new(0, 11, 0.5, 0),
@@ -1852,7 +1852,7 @@ function Library._CreateKeybind(tab, config, lib)
 
 	local keybindId = name .. "_" .. tostring(tick())
 
-	lib._keybinds[keybindId] = {
+	lib._keybinds[keybindId] = { -- error disini?
 		key = currentKey,
 		callback = callback,
 	}
