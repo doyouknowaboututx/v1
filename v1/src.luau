@@ -677,9 +677,13 @@ function Library:_Createchl0eControls()
 			yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 			yesBtn.Text = "Confirm"
-			yesBtn.TextSize = 10
+			yesBtn.TextSize = 12
 			yesBtn.FontFace = f.Regular
 			yesBtn.TextColor3 = c.Text
+			yesBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+			yesBtn.BorderColor3 = Color3.fromRGB(163, 162, 165)
+			yesBtn.BorderSizePixel = 1
+			yesBtn.BorderMode = Enum.BorderMode.Outline
 			yesBtn.Parent = popup
 
 			yesBtn.MouseButton1Click:Connect(function()
@@ -691,9 +695,13 @@ function Library:_Createchl0eControls()
 			noBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
 			noBtn.Text = "Cancel"
-			noBtn.TextSize = 10
+			noBtn.TextSize = 12
 			noBtn.FontFace = f.Regular
 			noBtn.TextColor3 = c.Text
+			noBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+			noBtn.BorderColor3 = Color3.fromRGB(163, 162, 165)
+			noBtn.BorderSizePixel = 1
+			noBtn.BorderMode = Enum.BorderMode.Outline
 			noBtn.Parent = popup
 
 			noBtn.MouseButton1Click:Connect(function()
