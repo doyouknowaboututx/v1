@@ -1611,6 +1611,20 @@ function Library._Button(tab, config)
 		subButton.MouseButton1Click:Connect(subCallback)
 	end
 
+	local function addClickEffect(button)
+		button.MouseButton1Down:Connect(function()
+			Tween(button, { BackgroundTransparency = 0.6 }, 0.1)
+		end)
+		button.MouseButton1Up:Connect(function()
+			Tween(button, { BackgroundTransparency = 1 }, 0.1)
+		end)
+	end
+
+	addClickEffect(mainButton)
+	if subButton then
+		addClickEffect(subButton)
+	end
+
 	return {
 		SetText = function(_, text)
 			mainButton.Text = text
@@ -1635,6 +1649,7 @@ function Library._Button(tab, config)
 			Stroke(subButton)
 			subButton.MouseButton1Click:Connect(newSubCallback or function() end)
 			mainButton.Size = UDim2.new(0.5, -5, 1, 0)
+			addClickEffect(subButton)
 		end,
 	}
 end
