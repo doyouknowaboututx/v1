@@ -2657,16 +2657,12 @@ end
 function Library._ConfigSection(tab)
 	local lib = tab._library
 
-	Library._ContentSection(tab, "Keybind Features")
+	Library._ContentSection(tab, "Keybind")
 
-	local configNameBox = Library._Input(tab, {
-		Name = "Config Name",
-		Default = "default",
-		Placeholder = "Enter config name...",
-		Callback = function(text)
-			lib._currentConfig = text
-		end,
-	})
+	local configs = lib:GetConfigs()
+	if #configs == 0 then
+		configs = { "default" }
+	end
 
 	Library._Keybind(tab, {
 		Name = "Set Keybind",
@@ -2676,19 +2672,13 @@ function Library._ConfigSection(tab)
 		end,
 	})
 
-	Library._ContentSection(tab, "Configuration Features")
-
-	local configs = lib:GetConfigs()
-	if #configs == 0 then
-		configs = { "default" }
-	end
+	Library._ContentSection(tab, "Configuration")
 
 	local configDropdown = Library._Dropdown(tab, {
 		Name = "Select Config",
 		Options = configs,
 		Default = configs[1],
 		Callback = function(selected)
-			configNameBox:SetText(selected)
 			lib._currentConfig = selected
 		end,
 	})
@@ -2696,7 +2686,7 @@ function Library._ConfigSection(tab)
 	Library._Button(tab, {
 		Name = "Save Config",
 		Callback = function()
-			local configName = configNameBox:GetText()
+			local configName = lib._currentConfig
 			if configName and configName ~= "" then
 				lib:SaveConfig(configName)
 				configDropdown:Refresh(lib:GetConfigs())
@@ -2707,7 +2697,7 @@ function Library._ConfigSection(tab)
 	Library._Button(tab, {
 		Name = "Load Config",
 		Callback = function()
-			local configName = configNameBox:GetText()
+			local configName = lib._currentConfig
 			if configName and configName ~= "" then
 				lib:LoadConfig(configName)
 			end
@@ -2717,7 +2707,7 @@ function Library._ConfigSection(tab)
 	Library._Button(tab, {
 		Name = "Delete Config",
 		Callback = function()
-			local configName = configNameBox:GetText()
+			local configName = lib._currentConfig
 			if configName and configName ~= "" then
 				lib:DeleteConfig(configName)
 				configDropdown:Refresh(lib:GetConfigs())
