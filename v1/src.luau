@@ -1831,7 +1831,7 @@ function Library._Dropdown(tab, config)
 		BackgroundTransparency = 0.04,
 		Position = UDim2.new(1, -230, 0, 38),
 		BorderSizePixel = 0,
-		Size = UDim2.new(0, 230, 0, 190),
+		Size = UDim2.new(0, 230, 0, 0),
 		Visible = false,
 		ZIndex = 100,
 		ClipsDescendants = true,
@@ -1906,13 +1906,24 @@ function Library._Dropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
+
+			local corner = Corner(optionBtn, 0)
 			optionBtn.MouseEnter:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
 			end)
 			optionBtn.MouseLeave:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
 			end)
+
 			optionBtn.MouseButton1Click:Connect(function()
+				for _, btn in ipairs(optionButtons) do
+					Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
+					if btn:FindFirstChild("UICorner") then
+						btn.UICorner.CornerRadius = UDim.new(0, 0)
+					end
+					Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
+				end
+
 				if multiSelect then
 					local index = table.find(selected, option)
 					if index then
@@ -1927,11 +1938,17 @@ function Library._Dropdown(tab, config)
 					UpdateSelectedText()
 					callback(selected)
 					expanded = false
-					optionsContainer.Visible = false
+					Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0) }, animationspeed.Fast)
 					Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
 					frame.ZIndex = 1
 				end
+
+				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
+				optionBtn.BorderSizePixel = 1
+				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
+				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			end)
+
 			table.insert(optionButtons, optionBtn)
 		end
 		optionsScroll.CanvasSize = UDim2.new(0, 0, 0, #optionButtons * s.Dropdown.OptionHeight)
@@ -1953,7 +1970,9 @@ function Library._Dropdown(tab, config)
 	})
 	toggleBtn.MouseButton1Click:Connect(function()
 		expanded = not expanded
-		optionsContainer.Visible = expanded
+		optionsContainer.Visible = true
+		local targetHeight = (#optionButtons * s.Dropdown.OptionHeight) + 36
+		Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, targetHeight) }, animationspeed.Fast)
 		Tween(arrow, { Rotation = expanded and 180 or 0 }, animationspeed.Normal)
 		frame.ZIndex = expanded and 10 or 1
 	end)
@@ -1978,7 +1997,7 @@ function Library._Dropdown(tab, config)
 				UpdateSelectedText()
 				callback(selected)
 			else
-				warn("only table banh")
+				warn("only table supported")
 			end
 		end,
 		GetValue = function()
