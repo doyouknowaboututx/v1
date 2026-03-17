@@ -629,23 +629,38 @@ function Library:_Createchl0eControls()
 			local popup = Instance.new("Frame")
 			popup.Size = UDim2.new(0, 0, 0, 0)
 			popup.Position = UDim2.new(0.5, -125, 0.5, -60)
-			popup.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-			popup.BorderSizePixel = 0
+			popup.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+			popup.BorderSizePixel = 1
 			popup.ZIndex = 51
 			popup.Parent = overlay
 
-			local corner = Instance.new("UICorner", popup)
-			corner.CornerRadius = UDim.new(0, 8)
+			local corner = Instance.new("UICorner")
+			corner.CornerRadius = UDim.new(0, 4)
+			corner.Parent = popup
 
 			CreateTween(popup, {
 				Size = UDim2.new(0, 250, 0, 120),
 			}, 0.2)
 
+			local title = Instance.new("TextLabel")
+			title.Size = UDim2.new(1, -20, 0, 18)
+			title.Position = UDim2.new(0, 10, 0, 5)
+			title.Text = "Close Window"
+			title.TextXAlignment = Enum.TextXAlignment.Left
+			title.TextColor3 = Color3.new(1, 1, 1)
+			title.TextSize = 14
+			title.Font = Enum.Font.GothamBold
+			title.BackgroundTransparency = 1
+			title.ZIndex = 52
+			title.Parent = popup
+
 			local label = Instance.new("TextLabel")
 			label.Size = UDim2.new(1, -20, 0, 60)
-			label.Position = UDim2.new(0, 10, 0, 10)
-			label.Text = "Are you sure you want to exit?"
+			label.Position = UDim2.new(0, 10, 0, 22)
+			label.Text = "Do you want to close this window? You will not be able to open it again."
 			label.TextColor3 = Color3.new(1, 1, 1)
+			label.TextTransparency = 0.4
+			label.TextWrapped = true
 			label.TextScaled = true
 			label.BackgroundTransparency = 1
 			label.ZIndex = 52
@@ -654,13 +669,18 @@ function Library:_Createchl0eControls()
 			local yesBtn = Instance.new("TextButton")
 			yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
-			yesBtn.Text = "Yes"
-			yesBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+			yesBtn.Text = "Confirm"
+			yesBtn.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 			yesBtn.BorderSizePixel = 1
 			yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 			yesBtn.TextColor3 = Color3.new(1, 1, 1)
 			yesBtn.ZIndex = 52
 			yesBtn.Parent = popup
+
+			local yesCorner = Instance.new("UICorner")
+			yesCorner.CornerRadius = UDim.new(0, 4)
+			yesCorner.Parent = yesBtn
+
 			yesBtn.MouseButton1Click:Connect(function()
 				lib:Destroy()
 			end)
@@ -668,19 +688,23 @@ function Library:_Createchl0eControls()
 			local noBtn = Instance.new("TextButton")
 			noBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
-			noBtn.Text = "No"
-			noBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+			noBtn.Text = "Cancel"
+			noBtn.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 			noBtn.BorderSizePixel = 1
 			noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 			noBtn.TextColor3 = Color3.new(1, 1, 1)
 			noBtn.ZIndex = 52
 			noBtn.Parent = popup
+
+			local noCorner = Instance.new("UICorner")
+			noCorner.CornerRadius = UDim.new(0, 4)
+			noCorner.Parent = noBtn
+
 			noBtn.MouseButton1Click:Connect(function()
 				overlay:Destroy()
 			end)
 		end)
 	end
-
 	closeBtn.MouseButton1Click:Connect(function()
 		ShowExitPopup(self)
 	end)
@@ -814,11 +838,35 @@ function Library:_SetupSmartResize(handle)
 end
 
 function Library:_ToggleMinimize()
-	local isVisible = not self.container.Visible
-	self.container.Visible = isVisible
+	self.minimized = not self.minimized
 
-	if self._acrylicBlur then
-		self._acrylicBlur:SetEnabled(isVisible)
+	if self.minimized then
+		local tween = CreateTween(self.container,{
+			Size = UDim2.new(0, self.container.AbsoluteSize.X * 0.6, 0, self.container.AbsoluteSize.Y * 0.6),
+			BackgroundTransparency = 1
+		},0.15)
+
+		tween.Completed:Connect(function()
+			self.container.Visible = false
+		end)
+
+		if self._acrylicBlur then
+			self._acrylicBlur:SetEnabled(false)
+		end
+	else
+		self.container.Visible = true
+
+		self.container.Size = UDim2.new(0, self.container.AbsoluteSize.X * 0.6, 0, self.container.AbsoluteSize.Y * 0.6)
+		self.container.BackgroundTransparency = 1
+
+		CreateTween(self.container,{
+			Size = UDim2.new(0, s.chl0e.Width, 0, s.chl0e.Height),
+			BackgroundTransparency = 0.05
+		},0.15)
+
+		if self._acrylicBlur then
+			self._acrylicBlur:SetEnabled(true)
+		end
 	end
 end
 
@@ -2018,7 +2066,7 @@ function Library._CreateKeybind(tab, config, lib)
 
 	local keybindId = name .. "_" .. tostring(tick())
 
-	lib._keybinds[keybindId] = { -- error disini?
+	lib._keybinds[keybindId] = {
 		key = currentKey,
 		callback = callback,
 	}
