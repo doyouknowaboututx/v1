@@ -609,7 +609,13 @@ function Library:_Createchl0eControls()
 		Parent = self.topBar,
 	})
 
+	local isPopupOpen = false
 	local function ShowExitPopup(lib)
+		if isPopupOpen then
+			return
+		end
+		isPopupOpen = true
+
 		local centerPos = UDim2.new(0.5, -lib.container.AbsoluteSize.X / 2, 0.5, -lib.container.AbsoluteSize.Y / 2)
 
 		local tween = CreateTween(lib.container, {
@@ -629,7 +635,7 @@ function Library:_Createchl0eControls()
 			local popup = Instance.new("Frame")
 			popup.Size = UDim2.new(0, 0, 0, 0)
 			popup.Position = UDim2.new(0.5, -125, 0.5, -60)
-			popup.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+			popup.BackgroundColor3 = c.Border
 			popup.BorderSizePixel = 1
 			popup.ZIndex = 51
 			popup.Parent = overlay
@@ -639,29 +645,30 @@ function Library:_Createchl0eControls()
 			corner.Parent = popup
 
 			CreateTween(popup, {
-				Size = UDim2.new(0, 250, 0, 120),
+				Size = UDim2.new(0, 270, 0, 140),
 			}, 0.2)
 
 			local title = Instance.new("TextLabel")
 			title.Size = UDim2.new(1, -20, 0, 18)
-			title.Position = UDim2.new(0, 10, 0, 5)
+			title.Position = UDim2.new(0, 10, 0, 6)
 			title.Text = "Close Window"
 			title.TextXAlignment = Enum.TextXAlignment.Left
-			title.TextColor3 = Color3.new(1, 1, 1)
-			title.TextSize = 14
-			title.Font = Enum.Font.GothamBold
+			title.TextSize = 12
+			title.FontFace = f.Bold
+			title.TextColor3 = c.Text
 			title.BackgroundTransparency = 1
 			title.ZIndex = 52
 			title.Parent = popup
 
 			local label = Instance.new("TextLabel")
 			label.Size = UDim2.new(1, -20, 0, 60)
-			label.Position = UDim2.new(0, 10, 0, 22)
+			label.Position = UDim2.new(0, 10, 0, 28)
 			label.Text = "Do you want to close this window? You will not be able to open it again."
-			label.TextColor3 = Color3.new(1, 1, 1)
-			label.TextTransparency = 0.4
 			label.TextWrapped = true
-			label.TextScaled = true
+			label.TextSize = 10
+			label.FontFace = f.Regular
+			label.TextColor3 = c.Text
+			label.TextTransparency = 0.3
 			label.BackgroundTransparency = 1
 			label.ZIndex = 52
 			label.Parent = popup
@@ -670,38 +677,28 @@ function Library:_Createchl0eControls()
 			yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 			yesBtn.Text = "Confirm"
-			yesBtn.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
-			yesBtn.BorderSizePixel = 1
-			yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
-			yesBtn.TextColor3 = Color3.new(1, 1, 1)
-			yesBtn.ZIndex = 52
+			yesBtn.TextSize = 10
+			yesBtn.FontFace = f.Regular
+			yesBtn.TextColor3 = c.Text
 			yesBtn.Parent = popup
-
-			local yesCorner = Instance.new("UICorner")
-			yesCorner.CornerRadius = UDim.new(0, 4)
-			yesCorner.Parent = yesBtn
 
 			yesBtn.MouseButton1Click:Connect(function()
 				lib:Destroy()
+				isPopupOpen = false
 			end)
 
 			local noBtn = Instance.new("TextButton")
 			noBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
 			noBtn.Text = "Cancel"
-			noBtn.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
-			noBtn.BorderSizePixel = 1
-			noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
-			noBtn.TextColor3 = Color3.new(1, 1, 1)
-			noBtn.ZIndex = 52
+			noBtn.TextSize = 10
+			noBtn.FontFace = f.Regular
+			noBtn.TextColor3 = c.Text
 			noBtn.Parent = popup
-
-			local noCorner = Instance.new("UICorner")
-			noCorner.CornerRadius = UDim.new(0, 4)
-			noCorner.Parent = noBtn
 
 			noBtn.MouseButton1Click:Connect(function()
 				overlay:Destroy()
+				isPopupOpen = false
 			end)
 		end)
 	end
