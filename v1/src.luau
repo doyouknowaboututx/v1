@@ -1613,10 +1613,10 @@ function Library._Button(tab, config)
 
 	local function addClickEffect(button)
 		button.MouseButton1Down:Connect(function()
-			Tween(button, { BackgroundTransparency = 0.6 }, 0.1)
+			Tween(button, { BackgroundTransparency = 0.6 }, 0.4)
 		end)
 		button.MouseButton1Up:Connect(function()
-			Tween(button, { BackgroundTransparency = 1 }, 0.1)
+			Tween(button, { BackgroundTransparency = 1 }, 0.4)
 		end)
 	end
 
