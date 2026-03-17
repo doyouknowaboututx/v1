@@ -670,7 +670,7 @@ function Library:_Createchl0eControls()
 			yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 			yesBtn.Text = "Confirm"
-			yesBtn.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+			yesBtn.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 			yesBtn.BorderSizePixel = 1
 			yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 			yesBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -689,7 +689,7 @@ function Library:_Createchl0eControls()
 			noBtn.Size = UDim2.new(0.4, 0, 0, 30)
 			noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
 			noBtn.Text = "Cancel"
-			noBtn.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+			noBtn.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 			noBtn.BorderSizePixel = 1
 			noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 			noBtn.TextColor3 = Color3.new(1, 1, 1)
