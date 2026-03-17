@@ -942,46 +942,36 @@ function Library:ExportSelectedConfig(selectedDropdown)
 	end
 end
 
-function Library:ImportConfigFromInput(inputBox, importButton, overwrite)
-	local function ImportFunction()
-		local jsonData = inputBox:GetText()
-		if not jsonData or jsonData == "" then
-			chx("Input box is empty", 3)
-			return
-		end
+function Library:ImportConfigFromString(jsonText, overwrite)
+	if not jsonText or jsonText == "" then
+		chx("Input JSON kosong", 3)
+		return false
+	end
 
-		local ok, data = pcall(function()
-			return hs:JSONDecode(jsonData)
-		end)
-		if not ok or type(data) ~= "table" then
-			chx("Invalid JSON data", 3)
-			return
-		end
+	local ok, data = pcall(function()
+		return hs:JSONDecode(jsonText)
+	end)
+	if not ok or type(data) ~= "table" then
+		chx("JSON tidak valid", 3)
+		return false
+	end
 
-		local configName = data._name or "ImportedConfig"
-		local folder = self:GetConfigFolder()
-		if not isfolder(folder) then
-			makefolder(folder)
-		end
-
-		local path = folder .. "/" .. configName .. ".json"
-		if isfile(path) and not overwrite then
-			chx("Config already exists: " .. configName, 3)
-			return
-		end
-
-		local success, err = pcall(function()
-			writefile(path, jsonData)
-		end)
-
-		if success then
-			chx("Imported config: " .. configName, 2)
-		else
-			chx("Failed to import config: " .. tostring(err), 3)
+	for id, value in pairs(data) do
+		local element = self._configElements[id]
+		if element then
+			if type(value) == "table" and value._type == "Color3" then
+				value = Color3.new(value.R, value.G, value.B)
+			elseif type(value) == "table" and value._type == "EnumItem" then
+				value = Enum[value._enum][value._value]
+			end
+			pcall(function()
+				element.setValue(value)
+			end)
 		end
 	end
 
-	importButton.MouseButton1Click:Connect(ImportFunction)
+	chx("Config berhasil di-import", 2)
+	return true
 end
 
 function Library:ResetConfig()
@@ -2592,16 +2582,9 @@ function Library._CreateConfigSection(tab)
 		Name = "Import Config from Input",
 		Callback = function()
 			local jsonText = importInputBox:GetText()
-			if jsonText and jsonText ~= "" then
-				local success = lib:ImportConfig("ImportedConfig", jsonText, true)
-				if success then
-					chx("Config imported successfully", 2)
-					configDropdown:Refresh(lib:GetConfigs())
-				else
-					chx("Failed to import config", 3)
-				end
-			else
-				chx("Input box is empty", 3)
+			local success = lib:ImportConfigFromString(jsonText, true)
+			if success then
+				configDropdown:Refresh(lib:GetConfigs())
 			end
 		end,
 	})
