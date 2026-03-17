@@ -184,20 +184,6 @@ local function DisconnectAll()
 	Connections = {}
 end
 
-function Library:GetConfigFolder()
-    local baseFolder = "CHX"
-    if isfolder and not isfolder(baseFolder) then
-        makefolder(baseFolder)
-    end
-
-    local folder = baseFolder .. "/" .. (self.configFolder or "Default")
-    if isfolder and not isfolder(folder) then
-        makefolder(folder)
-    end
-
-    return folder
-end
-
 local function GetAvailableConfigs(library)
     local configs = {}
     if isfolder and listfiles then
@@ -207,13 +193,17 @@ local function GetAvailableConfigs(library)
         end
 
         local files = listfiles(folder)
+        print("DEBUG: Files found in folder:", folder)
         for _, file in ipairs(files) do
-            local name = file:match(folder .. "[/\\](.+)$")
+            print("DEBUG: file =", file)
+            local name = file:match(folder .. "[/\\](.+)%.json$")
+            print("DEBUG: matched name =", name)
             if name then
                 table.insert(configs, name)
             end
         end
     end
+    print("DEBUG: Available configs =", configs)
     return configs
 end
 
