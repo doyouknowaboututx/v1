@@ -1906,8 +1906,10 @@ function Library._Dropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
-
 			local corner = Corner(optionBtn, 0)
+			optionBtn.TextTransparency = 0.4
+			optionBtn.BackgroundTransparency = 1
+
 			optionBtn.MouseEnter:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
 			end)
@@ -1985,13 +1987,16 @@ function Library._Dropdown(tab, config)
 				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
 			end
 			for _, btn in ipairs(optionButtons) do
-				Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.1 }, animationspeed.Fast)
+				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, 0)
 			end
 			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
 			frame.ZIndex = 10
 		else
 			for _, btn in ipairs(optionButtons) do
 				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
+				if btn:FindFirstChild("UICorner") then
+					btn.UICorner.CornerRadius = UDim.new(0, 0)
+				end
 			end
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 1 }, animationspeed.Fast)
@@ -2032,7 +2037,8 @@ function Library._Dropdown(tab, config)
 		end,
 		Refresh = function(_, newOptions)
 			options = newOptions
-			RefreshOptions("")
+			RefreshOptions(""),
+			UpdateSelectedText()
 		end,
 	}
 
