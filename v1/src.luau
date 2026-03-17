@@ -2671,6 +2671,15 @@ function Library._ConfigSection(tab)
 		end,
 	})
 
+	local configNameBox = Library._Input(tab, {
+		Name = "Config Name",
+		Default = lib._currentConfig or "default",
+		Placeholder = "Enter config name...",
+		Callback = function(text)
+			lib._currentConfig = text
+		end,
+	})
+
 	Library._Button(tab, {
 		Name = "Save Config",
 		Callback = function()
@@ -2718,6 +2727,8 @@ function Library._ConfigSection(tab)
 		end,
 	})
 
+	Library._ContentSection(tab, "Export & Import Config")
+
 	Library._Button(tab, {
 		Name = "Export Selected Config",
 		Callback = function()
@@ -2758,6 +2769,8 @@ function Library._ConfigSection(tab)
 			lib:ResetConfig()
 		end,
 	})
+
+	Library._ContentSection(tab, "Auto Load Config")
 
 	Library._Button(tab, {
 		Name = "Auto Load Config",
