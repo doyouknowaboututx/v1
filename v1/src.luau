@@ -993,7 +993,9 @@ function Library:SetAutoLoad(enabled, selectedConfig)
 end
 
 function Library:_TryAutoLoad()
-	if not self._autoLoad then return end
+	if not self._autoLoad then
+		return
+	end
 	local folder = self:GetConfigFolder()
 	local autoloadPath = folder .. "/autoload.txt"
 	if isfile and isfile(autoloadPath) then
@@ -2022,14 +2024,10 @@ function Library._Dropdown(tab, config)
 
 		if expanded then
 			optionsContainer.Visible = true
-			Tween(
-				optionsContainer,
-				{
-					Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
-					BackgroundTransparency = 0.2,
-				},
-				animationspeed.Fast
-			)
+			Tween(optionsContainer, {
+				Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
+				BackgroundTransparency = 0.2,
+			}, animationspeed.Fast)
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
 			end
@@ -2657,20 +2655,10 @@ end
 function Library._ConfigSection(tab)
 	local lib = tab._library
 
-	Library._ContentSection(tab, "Keybind")
-
 	local configs = lib:GetConfigs()
 	if #configs == 0 then
 		configs = { "default" }
 	end
-
-	Library._Keybind(tab, {
-		Name = "Set Keybind",
-		Default = Enum.KeyCode.F3,
-		Callback = function()
-			lib:Toggle()
-		end,
-	})
 
 	Library._ContentSection(tab, "Configuration")
 
@@ -2768,6 +2756,20 @@ function Library._ConfigSection(tab)
 		Name = "Reset Config",
 		Callback = function()
 			lib:ResetConfig()
+		end,
+	})
+
+	Library._Button(tab, {
+		Name = "Auto Load Config",
+		Callback = function()
+			lib:SetAutoLoad(true, lib._currentConfig)
+		end,
+	})
+
+	Library._Button(tab, {
+		Name = "Reset Auto Load",
+		Callback = function()
+			lib:ClearAutoLoad()
 		end,
 	})
 
