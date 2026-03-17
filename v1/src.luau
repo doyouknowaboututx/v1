@@ -199,21 +199,22 @@ function Library:GetConfigFolder()
 end
 
 local function GetAvailableConfigs(library)
-	local configs = {}
-	if isfolder and listfiles then
-		local folder = library:GetConfigFolder()
-		if not isfolder(folder) then
-			makefolder(folder)
-		end
-		local files = listfiles(folder)
-		for _, file in ipairs(files) do
-			local name = file:match(folder .. "[/\\](.+)%.json$")
-			if name then
-				table.insert(configs, name)
-			end
-		end
-	end
-	return configs
+    local configs = {}
+    if isfolder and listfiles then
+        local folder = library:GetConfigFolder()
+        if not isfolder(folder) then
+            makefolder(folder)
+        end
+
+        local files = listfiles(folder)
+        for _, file in ipairs(files) do
+            local name = file:match(folder .. "[/\\](.+)$")
+            if name then
+                table.insert(configs, name)
+            end
+        end
+    end
+    return configs
 end
 
 local AcrylicBlur = {}
