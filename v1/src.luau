@@ -418,11 +418,17 @@ function Library.new(title, configFolder)
     self._configElements = {}
     self._autoSave = false
     self._currentConfig = "default"
+
+    if _G._ChloeXWindow then
+        _G._ChloeXWindow:Destroy()
+    end
+
     self:Instance_Mainchl0e()
     self:_SetupKeybindListener()
     self:_SetupMobileSupport()
 
     _G.ChloeXLibrary = self
+    _G._ChloeXWindow = self
 
     if not _G._ChloeXConfigAutoLoaded then
         self:_TryAutoLoad()
@@ -431,7 +437,6 @@ function Library.new(title, configFolder)
 
     return self
 end
-
 function Library:_SetupKeybindListener()
 	Connections["keybind_listener"] = ui.InputBegan:Connect(function(input, gameProcessed)
 		if gameProcessed then
