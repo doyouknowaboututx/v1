@@ -392,29 +392,47 @@ function AcrylicBlur:Destroy()
 	end
 end
 
-function Library.new(title, configFolder)
-	local self = setmetatable({}, Library)
-	self.title = title or "CHX"
-	self.configFolder = configFolder or title or "Games"
-	self.sections = {}
-	self.currentTab = nil
-	self.minimized = false
-	self._acrylicBlur = nil
-	self._keybinds = {}
-	self._toggleKey = Enum.KeyCode.RightControl
-	self._visible = true
-	self._originalHeight = s.chl0e.Height
-	self._minSize = Vector2.new(s.Minchl0e.Width, s.Minchl0e.Height)
-	self._maxSize = Vector2.new(s.Maxchl0e.Width, s.Maxchl0e.Height)
-	self._mobileToggle = nil
-	self._configElements = {}
-	self._autoSave = false
-	self._currentConfig = "default"
+if _G.ChloeXLibrary then
+    return _G.ChloeXLibrary
+end
 
-	self:Instance_Mainchl0e()
-	self:_SetupKeybindListener()
-	self:_SetupMobileSupport()
-	return self
+if _G._ChloeXWindow then
+    _G._ChloeXWindow:Destroy()
+end
+
+local Library = {}
+Library.__index = Library
+
+function Library.new(title, configFolder)
+    local self = setmetatable({}, Library)
+    self.title = title or "CHX"
+    self.configFolder = configFolder or title or "Games"
+    self.sections = {}
+    self.currentTab = nil
+    self.minimized = false
+    self._acrylicBlur = nil
+    self._keybinds = {}
+    self._toggleKey = Enum.KeyCode.RightControl
+    self._visible = true
+    self._originalHeight = s.chl0e.Height
+    self._minSize = Vector2.new(s.Minchl0e.Width, s.Minchl0e.Height)
+    self._maxSize = Vector2.new(s.Maxchl0e.Width, s.Maxchl0e.Height)
+    self._mobileToggle = nil
+    self._configElements = {}
+    self._autoSave = false
+    self._currentConfig = "default"
+    self:Instance_Mainchl0e()
+    self:_SetupKeybindListener()
+    self:_SetupMobileSupport()
+
+    _G.ChloeXLibrary = self
+
+    if not _G._ChloeXConfigAutoLoaded then
+        self:_TryAutoLoad()
+        _G._ChloeXConfigAutoLoaded = true
+    end
+
+    return self
 end
 
 function Library:_SetupKeybindListener()
@@ -869,7 +887,24 @@ function Library:Destroy()
 		self:SaveConfig(self._currentConfig)
 	end
 
+	for id, element in pairs(self._configElements) do
+		if element.type == "Toggle" then
+			element.setValue(false)
+		elseif element.type == "Slider" then
+			element.setValue(0)
+		elseif element.type == "Dropdown" then
+			element.setValue(nil)
+		elseif element.type == "Keybind" then
+			element.setValue(Enum.KeyCode.Unknown)
+		elseif element.type == "ColorPicker" then
+			element.setValue(Color3.fromRGB(255, 255, 255))
+		elseif element.type == "Input" then
+			element.setValue("")
+		end
+	end
+
 	DisconnectAll()
+
 	if self._acrylicBlur then
 		self._acrylicBlur:Destroy()
 	end
@@ -994,18 +1029,26 @@ function Library:SetAutoLoad(enabled, selectedConfig)
 end
 
 function Library:_TryAutoLoad()
-	if not self._autoLoad then
-		return
-	end
-	local folder = self:GetConfigFolder()
-	local autoloadPath = folder .. "/autoload.txt"
-	if isfile and isfile(autoloadPath) then
-		local configFile = readfile(autoloadPath)
-		configFile = configFile:gsub("%.json", "")
-		if configFile ~= "" then
-			self:LoadConfig(configFile)
-		end
-	end
+    if _G._ChloeXConfigAutoLoaded then
+        return
+    end
+
+    if not self._autoLoad then
+        return
+    end
+
+    local folder = self:GetConfigFolder()
+    local autoloadPath = folder .. "/autoload.txt"
+
+    if isfile and isfile(autoloadPath) then
+        local configFile = readfile(autoloadPath)
+        configFile = configFile:gsub("%.json", "")
+        if configFile ~= "" then
+            self:LoadConfig(configFile)
+        end
+    end
+
+    _G._ChloeXConfigAutoLoaded = true
 end
 
 function Library:ClearAutoLoad()
