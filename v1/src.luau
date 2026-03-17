@@ -1747,17 +1747,14 @@ function Library._Dropdown(tab, config)
 	local callback = config.Callback or function() end
 	local selected = multiSelect and {} or default
 	local expanded = false
-
 	if multiSelect and type(default) == "table" then
 		selected = default
 	elseif multiSelect then
 		selected = {}
 	end
-
 	local sectionName = tab.sectionName or "DefaultSection"
 	local tabName = tab._library.currentTab and tab._library.currentTab.name or "DefaultTab"
 	local flag = tabName .. "_" .. sectionName .. "_" .. name
-
 	local frame = Create("Frame", {
 		Name = "Dropdown_" .. name,
 		BackgroundColor3 = c.Secondary,
@@ -1770,7 +1767,6 @@ function Library._Dropdown(tab, config)
 	})
 	Corner(frame, 5)
 	Stroke(frame)
-
 	local nameLabel = Create("TextLabel", {
 		Name = "Name",
 		FontFace = f.Regular,
@@ -1784,7 +1780,6 @@ function Library._Dropdown(tab, config)
 		ZIndex = 1,
 		Parent = frame,
 	})
-
 	local selectedDisplay = Create("Frame", {
 		Name = "SelectedDisplay",
 		BackgroundColor3 = c.Secondary,
@@ -1797,7 +1792,6 @@ function Library._Dropdown(tab, config)
 	})
 	Corner(selectedDisplay, 5)
 	Stroke(selectedDisplay)
-
 	local selectedLabel = Create("TextLabel", {
 		Name = "SelectedLabel",
 		FontFace = f.Regular,
@@ -1812,7 +1806,6 @@ function Library._Dropdown(tab, config)
 		ZIndex = 2,
 		Parent = selectedDisplay,
 	})
-
 	local arrow = Create("ImageLabel", {
 		Name = "Arrow",
 		Image = "rbxassetid://105558791071013",
@@ -1824,7 +1817,6 @@ function Library._Dropdown(tab, config)
 		ZIndex = 2,
 		Parent = selectedDisplay,
 	})
-
 	local optionsContainer = Create("Frame", {
 		Name = "OptionsContainer",
 		BackgroundColor3 = c.Secondary,
@@ -1839,7 +1831,6 @@ function Library._Dropdown(tab, config)
 	})
 	Corner(optionsContainer, 5)
 	Stroke(optionsContainer)
-
 	local searchBox = Create("TextBox", {
 		Name = "SearchBox",
 		FontFace = f.Regular,
@@ -1856,7 +1847,6 @@ function Library._Dropdown(tab, config)
 		Parent = optionsContainer,
 	})
 	Corner(searchBox, 5)
-
 	local optionsScroll = Create("ScrollingFrame", {
 		Name = "OptionsScroll",
 		BackgroundTransparency = 1,
@@ -1870,7 +1860,6 @@ function Library._Dropdown(tab, config)
 		Parent = optionsContainer,
 	})
 	ListLayout(optionsScroll, 0, Enum.SortOrder.LayoutOrder)
-
 	local function UpdateSelectedText()
 		if multiSelect then
 			selectedLabel.Text = #selected > 0 and table.concat(selected, ", ") or "None"
@@ -1878,9 +1867,19 @@ function Library._Dropdown(tab, config)
 			selectedLabel.Text = tostring(selected)
 		end
 	end
-
 	local optionButtons = {}
-
+	local function ApplySelectedStyle(optionBtn)
+		optionBtn.Size = UDim2.new(1, -5, 0, 30)
+		optionBtn.Position = UDim2.new(0, 0, 0, (s.Dropdown.OptionHeight - 30)/2)
+		optionBtn.UIStroke.Transparency = 0
+		Tween(optionBtn, { BackgroundTransparency = 0.3, TextTransparency = 0 }, animationspeed.Fast)
+	end
+	local function ResetOptionStyle(optionBtn)
+		optionBtn.Size = UDim2.new(1, 0, 0, s.Dropdown.OptionHeight)
+		optionBtn.Position = UDim2.new(0, 0, 0, 0)
+		optionBtn.UIStroke.Transparency = 1
+		Tween(optionBtn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
+	end
 	local function RefreshOptions(filter)
 		for _, btn in ipairs(optionButtons) do
 			btn:Destroy()
@@ -1906,24 +1905,25 @@ function Library._Dropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
-
 			local corner = Corner(optionBtn, 0)
+			local stroke = Instance.new("UIStroke")
+			stroke.Thickness = 2
+			stroke.Color = Color3.fromRGB(255, 255, 255)
+			stroke.Transparency = 1
+			stroke.Parent = optionBtn
 			optionBtn.MouseEnter:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
 			end)
 			optionBtn.MouseLeave:Connect(function()
+				if not multiSelect and option == selected then
+					stroke.Transparency = 0
+				end
 				Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
 			end)
-
 			optionBtn.MouseButton1Click:Connect(function()
 				for _, btn in ipairs(optionButtons) do
-					Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-					if btn:FindFirstChild("UICorner") then
-						btn.UICorner.CornerRadius = UDim.new(0, 0)
-					end
-					Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
+					ResetOptionStyle(btn)
 				end
-
 				if multiSelect then
 					local index = table.find(selected, option)
 					if index then
@@ -1938,32 +1938,22 @@ function Library._Dropdown(tab, config)
 					UpdateSelectedText()
 					callback(selected)
 				end
-
-				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
-				optionBtn.BorderSizePixel = 1
-				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
-				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
+				ApplySelectedStyle(optionBtn)
 			end)
-
 			if not multiSelect and option == selected then
-				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
-				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
-				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
+				ApplySelectedStyle(optionBtn)
 			else
-				Tween(optionBtn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
+				ResetOptionStyle(optionBtn)
 			end
-
 			table.insert(optionButtons, optionBtn)
 		end
 		optionsScroll.CanvasSize = UDim2.new(0, 0, 0, #optionButtons * s.Dropdown.OptionHeight)
 		UpdateSelectedText()
 	end
-
 	searchBox:GetPropertyChangedSignal("Text"):Connect(function()
 		RefreshOptions(searchBox.Text)
 	end)
 	RefreshOptions("")
-
 	local toggleBtn = Create("TextButton", {
 		Name = "ToggleBtn",
 		Text = "",
@@ -1974,33 +1964,24 @@ function Library._Dropdown(tab, config)
 	})
 	toggleBtn.MouseButton1Click:Connect(function()
 		expanded = not expanded
-
 		if expanded then
 			optionsContainer.Visible = true
-			Tween(
-				optionsContainer,
-				{
-					Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
-					BackgroundTransparency = 0.04,
-				},
-				animationspeed.Fast
-			)
+			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36), BackgroundTransparency = 0.04 }, animationspeed.Fast)
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
 			end
 			for _, btn in ipairs(optionButtons) do
 				if not multiSelect and btn.Name == selected then
-					Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.6 }, animationspeed.Fast)
-					btn.UICorner.CornerRadius = UDim.new(0, 6)
+					ApplySelectedStyle(btn)
 				else
-					Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
+					ResetOptionStyle(btn)
 				end
 			end
 			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
 			frame.ZIndex = 10
 		else
 			for _, btn in ipairs(optionButtons) do
-				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
+				ResetOptionStyle(btn)
 			end
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 1 }, animationspeed.Fast)
@@ -2013,7 +1994,6 @@ function Library._Dropdown(tab, config)
 			end)
 		end
 	end)
-
 	local methods = {
 		SetValue = function(_, value)
 			if multiSelect then
@@ -2045,7 +2025,6 @@ function Library._Dropdown(tab, config)
 			RefreshOptions("")
 		end,
 	}
-
 	if tab._library then
 		tab._library:_RegisterConfigElement(flag, "Dropdown", function()
 			return selected
@@ -2053,7 +2032,6 @@ function Library._Dropdown(tab, config)
 			methods:SetValue(value)
 		end)
 	end
-
 	return methods
 end
 
