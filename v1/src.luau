@@ -210,7 +210,8 @@ local function GetAvailableConfigs(library)
         print("DEBUG: Files found in folder:", folder)
         for _, file in ipairs(files) do
             print("DEBUG: file =", file)
-            local name = file:match(folder .. "[/\\](.+)%.json$")
+            -- Ambil nama file tanpa path dan tanpa ekstensi .json
+            local name = file:match("([^\\/]+)%.json$")
             print("DEBUG: matched name =", name)
             if name then
                 table.insert(configs, name)
