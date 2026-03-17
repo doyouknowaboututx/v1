@@ -400,9 +400,6 @@ if _G._ChloeXWindow then
     _G._ChloeXWindow:Destroy()
 end
 
-local Library = {}
-Library.__index = Library
-
 function Library.new(title, configFolder)
     local self = setmetatable({}, Library)
     self.title = title or "CHX"
@@ -871,15 +868,6 @@ function Library:_SetupSmartResize(handle)
 			self._originalHeight = newHeight
 		end
 	end)
-end
-
-function Library:_ToggleMinimize()
-	local isVisible = not self.container.Visible
-	self.container.Visible = isVisible
-
-	if self._acrylicBlur then
-		self._acrylicBlur:SetEnabled(isVisible)
-	end
 end
 
 function Library:Destroy()
