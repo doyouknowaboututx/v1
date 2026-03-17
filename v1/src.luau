@@ -23,7 +23,7 @@ local c = {
 
 local s = {
 	chl0e = { Width = 690, Height = 446 },
-	Minchl0e = { Width = 500, Height = 300 }, -- INI BUAT SIZE bisa?
+	Minchl0e = { Width = 500, Height = 300 },
 	Maxchl0e = { Width = 1200, Height = 800 },
 	Toggle = { Width = 38, Height = 21, Circle = 13 },
 	Button = { Height = 39 },
@@ -610,49 +610,74 @@ function Library:_Createchl0eControls()
 	})
 
 	local function ShowExitPopup(lib)
-		local popup = Instance.new("Frame")
-		popup.Size = UDim2.new(0, 250, 0, 120)
-		popup.Position = UDim2.new(0.5, -125, 0.5, -60)
-		popup.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-		popup.BorderSizePixel = 0
-		popup.Parent = lib.screenGui
+		local centerPos = UDim2.new(0.5, -lib.container.AbsoluteSize.X / 2, 0.5, -lib.container.AbsoluteSize.Y / 2)
 
-		local corner = Instance.new("UICorner", popup)
-		corner.CornerRadius = UDim.new(0, 8)
+		local tween = CreateTween(lib.container, {
+			Position = centerPos,
+		}, 0.25)
 
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -20, 0, 60)
-		label.Position = UDim2.new(0, 10, 0, 10)
-		label.Text = "Are you sure you want to exit?"
-		label.TextColor3 = Color3.new(1, 1, 1)
-		label.TextScaled = true
-		label.BackgroundTransparency = 1
-		label.Parent = popup
+		tween.Completed:Connect(function()
+			local overlay = Instance.new("Frame")
+			overlay.Size = UDim2.new(1, 0, 1, 0)
+			overlay.BackgroundColor3 = Color3.new(0, 0, 0)
+			overlay.BackgroundTransparency = 1
+			overlay.ZIndex = 900
+			overlay.Parent = lib.screenGui
 
-		local yesBtn = Instance.new("TextButton")
-		yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
-		yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
-		yesBtn.Text = "Yes"
-		yesBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-		yesBtn.BorderSizePixel = 1
-		yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
-		yesBtn.TextColor3 = Color3.new(1, 1, 1)
-		yesBtn.Parent = popup
-		yesBtn.MouseButton1Click:Connect(function()
-			lib:Destroy()
-		end)
+			CreateTween(overlay, { BackgroundTransparency = 0.4 }, 0.2)
 
-		local noBtn = Instance.new("TextButton")
-		noBtn.Size = UDim2.new(0.4, 0, 0, 30)
-		noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
-		noBtn.Text = "No"
-		noBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-		noBtn.BorderSizePixel = 1
-		noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
-		noBtn.TextColor3 = Color3.new(1, 1, 1)
-		noBtn.Parent = popup
-		noBtn.MouseButton1Click:Connect(function()
-			popup:Destroy()
+			local popup = Instance.new("Frame")
+			popup.Size = UDim2.new(0, 0, 0, 0)
+			popup.Position = UDim2.new(0.5, -125, 0.5, -60)
+			popup.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+			popup.BorderSizePixel = 0
+			popup.ZIndex = 901
+			popup.Parent = overlay
+
+			local corner = Instance.new("UICorner", popup)
+			corner.CornerRadius = UDim.new(0, 8)
+
+			CreateTween(popup, {
+				Size = UDim2.new(0, 250, 0, 120),
+			}, 0.2)
+
+			local label = Instance.new("TextLabel")
+			label.Size = UDim2.new(1, -20, 0, 60)
+			label.Position = UDim2.new(0, 10, 0, 10)
+			label.Text = "Are you sure you want to exit?"
+			label.TextColor3 = Color3.new(1, 1, 1)
+			label.TextScaled = true
+			label.BackgroundTransparency = 1
+			label.ZIndex = 902
+			label.Parent = popup
+
+			local yesBtn = Instance.new("TextButton")
+			yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
+			yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
+			yesBtn.Text = "Yes"
+			yesBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+			yesBtn.BorderSizePixel = 1
+			yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
+			yesBtn.TextColor3 = Color3.new(1, 1, 1)
+			yesBtn.ZIndex = 902
+			yesBtn.Parent = popup
+			yesBtn.MouseButton1Click:Connect(function()
+				lib:Destroy()
+			end)
+
+			local noBtn = Instance.new("TextButton")
+			noBtn.Size = UDim2.new(0.4, 0, 0, 30)
+			noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
+			noBtn.Text = "No"
+			noBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+			noBtn.BorderSizePixel = 1
+			noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
+			noBtn.TextColor3 = Color3.new(1, 1, 1)
+			noBtn.ZIndex = 902
+			noBtn.Parent = popup
+			noBtn.MouseButton1Click:Connect(function()
+				overlay:Destroy()
+			end)
 		end)
 	end
 
