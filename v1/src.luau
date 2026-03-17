@@ -1984,12 +1984,12 @@ function Library._Dropdown(tab, config)
 
 			for _, btn in ipairs(optionButtons) do
 				Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-				btn.BorderSizePixel = 0
-				if btn:FindFirstChild("UICorner") then
-					btn.UICorner.CornerRadius = UDim.new(0, 0)
-				end
 				Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
 			end
+
+			task.delay(animationspeed.Fast, function()
+				optionsContainer.Visible = false
+			end)
 		end
 	end)
 
