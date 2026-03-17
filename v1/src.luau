@@ -62,8 +62,8 @@ local Notification = loadstring(
 	game:HttpGet("https://raw.githubusercontent.com/doyouknowaboututx/v1/main/v1/src/Core/Notification.luau", true)
 )()
 
-local function CreateTween(instance, properties, duration, easingStyle, easingDirection)
-	local tween = ts:Create(
+local function Tween(instance, properties, duration, easingStyle, easingDirection)
+	local tween = ts:Tween(
 		instance,
 		TweenInfo.new(
 			duration or animationspeed.Normal,
@@ -76,7 +76,7 @@ local function CreateTween(instance, properties, duration, easingStyle, easingDi
 	return tween
 end
 
-local function CreateInstance(className, properties)
+local function Instance(className, properties)
 	local instance = Instance.new(className)
 	for property, value in pairs(properties) do
 		if property ~= "Parent" then
@@ -89,15 +89,15 @@ local function CreateInstance(className, properties)
 	return instance
 end
 
-local function CreateCorner(parent, radius)
-	return CreateInstance("UICorner", {
+local function Corner(parent, radius)
+	return Instance("UICorner", {
 		CornerRadius = UDim.new(0, radius or 5),
 		Parent = parent,
 	})
 end
 
-local function CreateStroke(parent, color, transparency)
-	return CreateInstance("UIStroke", {
+local function Stroke(parent, color, transparency)
+	return Instance("UIStroke", {
 		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 		Color = color or c.Border,
 		Transparency = transparency or 0,
@@ -106,8 +106,8 @@ local function CreateStroke(parent, color, transparency)
 	})
 end
 
-local function CreatePadding(parent, top, bottom, left, right)
-	return CreateInstance("UIPadding", {
+local function Padding(parent, top, bottom, left, right)
+	return Instance("UIPadding", {
 		PaddingTop = UDim.new(0, top or 0),
 		PaddingBottom = UDim.new(0, bottom or 0),
 		PaddingLeft = UDim.new(0, left or 0),
@@ -116,8 +116,8 @@ local function CreatePadding(parent, top, bottom, left, right)
 	})
 end
 
-local function CreateListLayout(parent, padding, sortOrder, direction)
-	return CreateInstance("UIListLayout", {
+local function ListLayout(parent, padding, sortOrder, direction)
+	return Instance("UIListLayout", {
 		Padding = UDim.new(0, padding or 0),
 		SortOrder = sortOrder or Enum.SortOrder.LayoutOrder,
 		FillDirection = direction or Enum.FillDirection.Vertical,
@@ -226,7 +226,7 @@ function AcrylicBlur.new(object)
 	return self
 end
 
-function AcrylicBlur:_CreateDepthOfField()
+function AcrylicBlur:_DepthOfField()
 	local existingDOF = lg:FindFirstChild("AcrylicBlur")
 	if existingDOF then
 		existingDOF:Destroy()
@@ -236,7 +236,7 @@ function AcrylicBlur:_CreateDepthOfField()
 		existingBlur:Destroy()
 	end
 
-	local dof = CreateInstance("DepthOfFieldEffect", {
+	local dof = Instance("DepthOfFieldEffect", {
 		Name = "AcrylicBlur",
 		FarIntensity = 0,
 		FocusDistance = 0.05,
@@ -249,19 +249,19 @@ function AcrylicBlur:_CreateDepthOfField()
 	return dof
 end
 
-function AcrylicBlur:_CreateFolder()
+function AcrylicBlur:_Folder()
 	local existingFolder = workspace.CurrentCamera:FindFirstChild("AcrylicBlur")
 	if existingFolder then
 		existingFolder:Destroy()
 	end
-	self._folder = CreateInstance("Folder", {
+	self._folder = Instance("Folder", {
 		Name = "AcrylicBlur",
 		Parent = workspace.CurrentCamera,
 	})
 end
 
-function AcrylicBlur:_CreateRoot()
-	local part = CreateInstance("Part", {
+function AcrylicBlur:_Root()
+	local part = Instance("Part", {
 		Name = "Root",
 		Color = Color3.new(0, 0, 0),
 		Material = Enum.Material.Glass,
@@ -274,15 +274,15 @@ function AcrylicBlur:_CreateRoot()
 		Transparency = 0.95,
 		Parent = self._folder,
 	})
-	CreateInstance("SpecialMesh", {
+	Instance("SpecialMesh", {
 		MeshType = Enum.MeshType.Brick,
 		Parent = part,
 	})
 	self._root = part
 end
 
-function AcrylicBlur:_CreateFrame()
-	self._frame = CreateInstance("Frame", {
+function AcrylicBlur:_Frame()
+	self._frame = Instance("Frame", {
 		Size = UDim2.new(1, 0, 1, 0),
 		Position = UDim2.new(0.5, 0, 0.5, 0),
 		AnchorPoint = Vector2.new(0.5, 0.5),
@@ -354,10 +354,10 @@ function AcrylicBlur:_Render(distance)
 end
 
 function AcrylicBlur:_Initialize()
-	self:_CreateDepthOfField()
-	self:_CreateFolder()
-	self:_CreateRoot()
-	self:_CreateFrame()
+	self:_DepthOfField()
+	self:_Folder()
+	self:_Root()
+	self:_Frame()
 	self:_Render(0.001)
 end
 
@@ -403,7 +403,7 @@ function Library.new(title, configFolder)
 	self._configElements = {}
 	self._autoSave = false
 	self._currentConfig = "default"
-	self:_CreateMainchl0e()
+	self:_Mainchl0e()
 	self:_SetupKeybindListener()
 	self:_SetupMobileSupport()
 	return self
@@ -439,7 +439,7 @@ function Library:SetToggleKey(keyCode)
 end
 
 function Library:_SetupMobileSupport()
-	local mobileButton = CreateInstance("ImageButton", {
+	local mobileButton = Instance("ImageButton", {
 		Name = "MobileToggle",
 		Image = "rbxassetid://137536764529569",
 		ImageColor3 = c.Text,
@@ -452,7 +452,7 @@ function Library:_SetupMobileSupport()
 		ZIndex = 999,
 		Parent = self.screenGui,
 	})
-	CreateCorner(mobileButton, 6)
+	Corner(mobileButton, 6)
 
 	local dragging = false
 	local dragStart, startPos
@@ -502,8 +502,8 @@ function Library:_SetupMobileSupport()
 	self._mobileToggle = mobileButton
 end
 
-function Library:_CreateMainchl0e()
-	self.screenGui = CreateInstance("ScreenGui", {
+function Library:_Mainchl0e()
+	self.screenGui = Instance("ScreenGui", {
 		Name = "ChloeX",
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		ResetOnSpawn = false,
@@ -512,7 +512,7 @@ function Library:_CreateMainchl0e()
 	local isMobile = IsMobileDevice()
 	local size = isMobile and s.Minchl0e or s.chl0e
 
-	self.container = CreateInstance("Frame", {
+	self.container = Instance("Frame", {
 		Name = "Container",
 		BackgroundColor3 = c.Background,
 		BackgroundTransparency = 0.05,
@@ -522,17 +522,17 @@ function Library:_CreateMainchl0e()
 		ClipsDescendants = false,
 		Parent = self.screenGui,
 	})
-	CreateCorner(self.container, 5)
-	CreateStroke(self.container)
+	Corner(self.container, 5)
+	Stroke(self.container)
 
-	self.topBar = CreateInstance("Frame", {
+	self.topBar = Instance("Frame", {
 		Name = "TopBar",
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 45),
 		Parent = self.container,
 	})
 
-	self.titleLabel = CreateInstance("TextLabel", {
+	self.titleLabel = Instance("TextLabel", {
 		Name = "Title",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -545,9 +545,9 @@ function Library:_CreateMainchl0e()
 		Parent = self.topBar,
 	})
 
-	self:_Createchl0eControls()
+	self:_chl0eControls()
 
-	CreateInstance("Frame", {
+	Instance("Frame", {
 		Name = "Header",
 		BackgroundColor3 = c.Border,
 		Position = UDim2.new(0, 0, 0, 45),
@@ -556,7 +556,7 @@ function Library:_CreateMainchl0e()
 		Parent = self.container,
 	})
 
-	self:_CreateContentArea()
+	self:_ContentArea()
 	MakeDraggable(self.container, self.topBar)
 
 	local player = plr.LocalPlayer
@@ -564,8 +564,8 @@ function Library:_CreateMainchl0e()
 	self._acrylicBlur = AcrylicBlur.new(self.container)
 end
 
-function Library:_Createchl0eControls()
-	local minimizeBtn = CreateInstance("ImageLabel", {
+function Library:_chl0eControls()
+	local minimizeBtn = Instance("ImageLabel", {
 		Name = "Minimize",
 		ImageColor3 = c.TextDark,
 		Image = "rbxassetid://82603981310445",
@@ -576,7 +576,7 @@ function Library:_Createchl0eControls()
 		Parent = self.topBar,
 	})
 
-	local minimizeClickArea = CreateInstance("TextButton", {
+	local minimizeClickArea = Instance("TextButton", {
 		Name = "TextButton",
 		Text = "",
 		Rotation = 0.01,
@@ -590,14 +590,14 @@ function Library:_Createchl0eControls()
 	end)
 
 	minimizeBtn.MouseEnter:Connect(function()
-		CreateTween(minimizeBtn, { ImageColor3 = c.Text }, animationspeed.Fast)
+		Tween(minimizeBtn, { ImageColor3 = c.Text }, animationspeed.Fast)
 	end)
 
 	minimizeBtn.MouseLeave:Connect(function()
-		CreateTween(minimizeBtn, { ImageColor3 = c.TextDark }, animationspeed.Fast)
+		Tween(minimizeBtn, { ImageColor3 = c.TextDark }, animationspeed.Fast)
 	end)
 
-	local closeBtn = CreateInstance("ImageButton", {
+	local closeBtn = Instance("ImageButton", {
 		Name = "Close",
 		ImageColor3 = c.TextDark,
 		Image = "rbxassetid://119943770201674",
@@ -617,7 +617,7 @@ function Library:_Createchl0eControls()
 
 		local centerPos = UDim2.new(0.5, -lib.container.AbsoluteSize.X / 2, 0.5, -lib.container.AbsoluteSize.Y / 2)
 
-		local tween = CreateTween(lib.container, {
+		local tween = Tween(lib.container, {
 			Position = centerPos,
 		}, 0.25)
 
@@ -630,7 +630,7 @@ function Library:_Createchl0eControls()
 			overlay.ZIndex = 50
 			overlay.Parent = lib.container
 
-			CreateTween(overlay, { BackgroundTransparency = 0.4 }, 0.2)
+			Tween(overlay, { BackgroundTransparency = 0.4 }, 0.2)
 
 			local popup = Instance.new("Frame")
 			popup.Name = "OverlayWindowMain"
@@ -645,7 +645,7 @@ function Library:_Createchl0eControls()
 			corner.CornerRadius = UDim.new(0, 4)
 			corner.Parent = popup
 
-			CreateTween(popup, {
+			Tween(popup, {
 				Size = UDim2.new(0, 270, 0, 140),
 			}, 0.2)
 
@@ -720,14 +720,14 @@ function Library:_Createchl0eControls()
 	end)
 
 	closeBtn.MouseEnter:Connect(function()
-		CreateTween(closeBtn, { ImageColor3 = Color3.fromRGB(255, 100, 100) }, animationspeed.Fast)
+		Tween(closeBtn, { ImageColor3 = Color3.fromRGB(255, 100, 100) }, animationspeed.Fast)
 	end)
 
 	closeBtn.MouseLeave:Connect(function()
-		CreateTween(closeBtn, { ImageColor3 = c.TextDark }, animationspeed.Fast)
+		Tween(closeBtn, { ImageColor3 = c.TextDark }, animationspeed.Fast)
 	end)
 
-	local resizeBtn = CreateInstance("ImageButton", {
+	local resizeBtn = Instance("ImageButton", {
 		Name = "Resize",
 		ImageColor3 = Color3.fromRGB(110, 110, 110),
 		Image = "rbxassetid://120997033468887",
@@ -743,8 +743,8 @@ function Library:_Createchl0eControls()
 	self:_SetupSmartResize(resizeBtn)
 end
 
-function Library:_CreateContentArea()
-	self.mainContent = CreateInstance("Frame", {
+function Library:_ContentArea()
+	self.mainContent = Instance("Frame", {
 		Name = "MainContent",
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0, 0, 0, 46),
@@ -753,7 +753,7 @@ function Library:_CreateContentArea()
 		Parent = self.container,
 	})
 
-	self.sectionsContainer = CreateInstance("ScrollingFrame", {
+	self.sectionsContainer = Instance("ScrollingFrame", {
 		Name = "SectionsContainer",
 		ScrollBarThickness = 0,
 		BackgroundTransparency = 1,
@@ -764,10 +764,10 @@ function Library:_CreateContentArea()
 		ScrollingDirection = Enum.ScrollingDirection.Y,
 		Parent = self.mainContent,
 	})
-	CreateListLayout(self.sectionsContainer, 0, Enum.SortOrder.LayoutOrder)
-	CreatePadding(self.sectionsContainer, 5, 5, 5, 5)
+	ListLayout(self.sectionsContainer, 0, Enum.SortOrder.LayoutOrder)
+	Padding(self.sectionsContainer, 5, 5, 5, 5)
 
-	CreateInstance("Frame", {
+	Instance("Frame", {
 		Name = "Separator",
 		BackgroundColor3 = c.Border,
 		Position = UDim2.new(0, 165, 0, 0),
@@ -776,7 +776,7 @@ function Library:_CreateContentArea()
 		Parent = self.mainContent,
 	})
 
-	self.contentContainer = CreateInstance("ScrollingFrame", {
+	self.contentContainer = Instance("ScrollingFrame", {
 		Name = "ContentContainer",
 		ScrollBarThickness = 3,
 		ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60),
@@ -788,8 +788,8 @@ function Library:_CreateContentArea()
 		ScrollingDirection = Enum.ScrollingDirection.Y,
 		Parent = self.mainContent,
 	})
-	CreateListLayout(self.contentContainer, 8, Enum.SortOrder.LayoutOrder)
-	CreatePadding(self.contentContainer, 10, 10, 15, 15)
+	ListLayout(self.contentContainer, 8, Enum.SortOrder.LayoutOrder)
+	Padding(self.contentContainer, 10, 10, 15, 15)
 end
 
 function Library:_SetupSmartResize(handle)
@@ -797,12 +797,12 @@ function Library:_SetupSmartResize(handle)
 	local resizeStart, startSize, startPos
 
 	handle.MouseEnter:Connect(function()
-		CreateTween(handle, { ImageColor3 = c.Text }, animationspeed.Fast)
+		Tween(handle, { ImageColor3 = c.Text }, animationspeed.Fast)
 	end)
 
 	handle.MouseLeave:Connect(function()
 		if not resizing then
-			CreateTween(handle, { ImageColor3 = Color3.fromRGB(110, 110, 110) }, animationspeed.Fast)
+			Tween(handle, { ImageColor3 = Color3.fromRGB(110, 110, 110) }, animationspeed.Fast)
 		end
 	end)
 
@@ -821,7 +821,7 @@ function Library:_SetupSmartResize(handle)
 			connection = input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
 					resizing = false
-					CreateTween(handle, { ImageColor3 = Color3.fromRGB(110, 110, 110) }, animationspeed.Fast)
+					Tween(handle, { ImageColor3 = Color3.fromRGB(110, 110, 110) }, animationspeed.Fast)
 					if connection then
 						connection:Disconnect()
 					end
@@ -1056,7 +1056,7 @@ function Library:GetConfigs()
 	return GetAvailableConfigs(self)
 end
 
-function Library:CreateSection(name)
+function Library:Section(name)
 	local section = {
 		name = name,
 		tabs = {},
@@ -1064,16 +1064,16 @@ function Library:CreateSection(name)
 		_library = self,
 	}
 
-	local sectionFrame = CreateInstance("Frame", {
+	local sectionFrame = Instance("Frame", {
 		Name = "Section_" .. name,
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, -10, 0, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
 		Parent = self.sectionsContainer,
 	})
-	CreateListLayout(sectionFrame, 2, Enum.SortOrder.LayoutOrder)
+	ListLayout(sectionFrame, 2, Enum.SortOrder.LayoutOrder)
 
-	local headerContainer = CreateInstance("Frame", {
+	local headerContainer = Instance("Frame", {
 		Name = "HeaderContainer",
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 25),
@@ -1081,7 +1081,7 @@ function Library:CreateSection(name)
 		Parent = sectionFrame,
 	})
 
-	local headerBtn = CreateInstance("TextButton", {
+	local headerBtn = Instance("TextButton", {
 		Name = "Header",
 		FontFace = f.Regular,
 		TextColor3 = c.TextDark,
@@ -1092,7 +1092,7 @@ function Library:CreateSection(name)
 		Parent = headerContainer,
 	})
 
-	local headerLabel = CreateInstance("TextLabel", {
+	local headerLabel = Instance("TextLabel", {
 		Name = "Label",
 		FontFace = f.Regular,
 		TextColor3 = c.TextDark,
@@ -1105,7 +1105,7 @@ function Library:CreateSection(name)
 		Parent = headerContainer,
 	})
 
-	local arrow = CreateInstance("ImageButton", {
+	local arrow = Instance("ImageButton", {
 		Name = "Arrow",
 		Image = "rbxassetid://105558791071013",
 		ImageColor3 = c.TextDark,
@@ -1116,7 +1116,7 @@ function Library:CreateSection(name)
 		Parent = headerContainer,
 	})
 
-	local tabsContainer = CreateInstance("Frame", {
+	local tabsContainer = Instance("Frame", {
 		Name = "TabsContainer",
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 0),
@@ -1125,12 +1125,12 @@ function Library:CreateSection(name)
 		LayoutOrder = 1,
 		Parent = sectionFrame,
 	})
-	CreateListLayout(tabsContainer, 2, Enum.SortOrder.LayoutOrder)
-	CreatePadding(tabsContainer, 0, 0, 15, 0)
+	ListLayout(tabsContainer, 2, Enum.SortOrder.LayoutOrder)
+	Padding(tabsContainer, 0, 0, 15, 0)
 
 	local function ToggleSection()
 		section.expanded = not section.expanded
-		CreateTween(arrow, { Rotation = section.expanded and 0 or 180 }, animationspeed.Normal)
+		Tween(arrow, { Rotation = section.expanded and 0 or 180 }, animationspeed.Normal)
 		tabsContainer.Visible = section.expanded
 	end
 
@@ -1143,20 +1143,20 @@ function Library:CreateSection(name)
 
 	local sectionMethods = setmetatable({}, { __index = section })
 
-	function sectionMethods:CreateTab(tabName, icon)
-		return Library._CreateTab(self, tabName, icon)
+	function sectionMethods:Tab(tabName, icon)
+		return Library._Tab(self, tabName, icon)
 	end
 
 	return sectionMethods
 end
 
-function Library._CreateTab(section, name, icon)
+function Library._Tab(section, name, icon)
 	local tab = {
 		name = name,
 		elements = {},
 	}
 
-	local tabBtn = CreateInstance("Frame", {
+	local tabBtn = Instance("Frame", {
 		Name = name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 1,
@@ -1164,11 +1164,11 @@ function Library._CreateTab(section, name, icon)
 		Size = UDim2.new(0, s.Tab.Width, 0, s.Tab.Height),
 		Parent = section.tabsContainer,
 	})
-	CreateCorner(tabBtn, 5)
+	Corner(tabBtn, 5)
 
-	local tabStroke = CreateStroke(tabBtn, c.Border, 1)
+	local tabStroke = Stroke(tabBtn, c.Border, 1)
 
-	local iconLabel = CreateInstance("ImageLabel", {
+	local iconLabel = Instance("ImageLabel", {
 		Name = "Icon",
 		BackgroundTransparency = 1,
 		Image = icon,
@@ -1179,7 +1179,7 @@ function Library._CreateTab(section, name, icon)
 		Parent = tabBtn,
 	})
 
-	local tabText = CreateInstance("TextLabel", {
+	local tabText = Instance("TextLabel", {
 		Name = "TabText",
 		FontFace = f.Regular,
 		TextColor3 = c.TextDark,
@@ -1192,12 +1192,12 @@ function Library._CreateTab(section, name, icon)
 		Parent = tabBtn,
 	})
 
-	CreateInstance("UIPadding", {
+	Instance("UIPadding", {
 		PaddingRight = UDim.new(0, 9),
 		Parent = tabText,
 	})
 
-	local textGradient = CreateInstance("UIGradient", {
+	local textGradient = Instance("UIGradient", {
 		Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, c.TextDark),
 			ColorSequenceKeypoint.new(0.65, c.TextDark),
@@ -1206,7 +1206,7 @@ function Library._CreateTab(section, name, icon)
 		Parent = tabText,
 	})
 
-	local clickBtn = CreateInstance("TextButton", {
+	local clickBtn = Instance("TextButton", {
 		Name = "ClickButton",
 		Text = "",
 		BackgroundTransparency = 1,
@@ -1214,7 +1214,7 @@ function Library._CreateTab(section, name, icon)
 		Parent = tabBtn,
 	})
 
-	tab.content = CreateInstance("Frame", {
+	tab.content = Instance("Frame", {
 		Name = name .. "_Content",
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 0),
@@ -1222,7 +1222,7 @@ function Library._CreateTab(section, name, icon)
 		Visible = false,
 		Parent = section._library.contentContainer,
 	})
-	CreateListLayout(tab.content, 8, Enum.SortOrder.LayoutOrder)
+	ListLayout(tab.content, 8, Enum.SortOrder.LayoutOrder)
 
 	clickBtn.MouseButton1Click:Connect(function()
 		Library._SelectTab(section._library, tab, tabBtn, tabStroke, iconLabel, tabText, textGradient)
@@ -1230,13 +1230,13 @@ function Library._CreateTab(section, name, icon)
 
 	clickBtn.MouseEnter:Connect(function()
 		if section._library.currentTab ~= tab then
-			CreateTween(tabBtn, { BackgroundTransparency = 0.7 }, animationspeed.Fast)
+			Tween(tabBtn, { BackgroundTransparency = 0.7 }, animationspeed.Fast)
 		end
 	end)
 
 	clickBtn.MouseLeave:Connect(function()
 		if section._library.currentTab ~= tab then
-			CreateTween(tabBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
+			Tween(tabBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
 		end
 	end)
 
@@ -1253,62 +1253,46 @@ function Library._CreateTab(section, name, icon)
 		Library._SelectTab(section._library, tab, tabBtn, tabStroke, iconLabel, tabText, textGradient)
 	end
 
-	setmetatable(tab, {
-		__index = function(t, key)
-			if t.elements[key] then
-				return t.elements[key]
-			end
-			local creator = Library["_Create" .. key]
-			if creator then
-				return function(config)
-					local elem = creator(t, config)
-					t.elements[key] = elem
-					return elem
-				end
-			end
-		end,
-	})
-
 	local tabMethods = setmetatable({}, { __index = tab })
 
-	function tabMethods:CreateSection(sectionName)
-		return Library._CreateContentSection(self, sectionName)
+	function tabMethods:Section(sectionName)
+		return Library._ContentSection(self, sectionName)
 	end
 
-	function tabMethods:CreateParagraph(config)
-		return Library._CreateParagraph(self, config)
+	function tabMethods:Paragraph(config)
+		return Library._Paragraph(self, config)
 	end
 
-	function tabMethods:CreateSlider(config)
-		return Library._CreateSlider(self, config)
+	function tabMethods:Slider(config)
+		return Library._Slider(self, config)
 	end
 
-	function tabMethods:CreateButton(config)
-		return Library._CreateButton(self, config)
+	function tabMethods:Button(config)
+		return Library._Button(self, config)
 	end
 
-	function tabMethods:CreateToggle(config)
-		return Library._CreateToggle(self, config)
+	function tabMethods:Toggle(config)
+		return Library._Toggle(self, config)
 	end
 
-	function tabMethods:CreateDropdown(config)
-		return Library._CreateDropdown(self, config)
+	function tabMethods:Dropdown(config)
+		return Library._Dropdown(self, config)
 	end
 
-	function tabMethods:CreateKeybind(config)
-		return Library._CreateKeybind(self, config, section._library)
+	function tabMethods:Keybind(config)
+		return Library._Keybind(self, config, section._library)
 	end
 
-	function tabMethods:CreateColorPicker(config)
-		return Library._CreateColorPicker(self, config)
+	function tabMethods:ColorPicker(config)
+		return Library._ColorPicker(self, config)
 	end
 
-	function tabMethods:CreateInput(config)
-		return Library._CreateInput(self, config)
+	function tabMethods:Input(config)
+		return Library._Input(self, config)
 	end
 
-	function tabMethods:CreateConfigSection()
-		return Library._CreateConfigSection(self)
+	function tabMethods:ConfigSection()
+		return Library._ConfigSection(self)
 	end
 
 	return tabMethods
@@ -1317,8 +1301,8 @@ end
 function Library._SelectTab(lib, tab, btn, stroke, icon, textLabel, textGradient)
 	if lib.currentTab then
 		lib.currentTab.content.Visible = false
-		CreateTween(lib.currentTab.button, { BackgroundTransparency = 1 }, animationspeed.Fast)
-		CreateTween(lib.currentTab.icon, { ImageColor3 = c.TextDark }, animationspeed.Fast)
+		Tween(lib.currentTab.button, { BackgroundTransparency = 1 }, animationspeed.Fast)
+		Tween(lib.currentTab.icon, { ImageColor3 = c.TextDark }, animationspeed.Fast)
 		lib.currentTab.stroke.Transparency = 1
 
 		if lib.currentTab.textGradient then
@@ -1329,8 +1313,8 @@ function Library._SelectTab(lib, tab, btn, stroke, icon, textLabel, textGradient
 	lib.currentTab = tab
 	tab.content.Visible = true
 
-	CreateTween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-	CreateTween(icon, { ImageColor3 = c.Text }, animationspeed.Fast)
+	Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
+	Tween(icon, { ImageColor3 = c.Text }, animationspeed.Fast)
 	stroke.Transparency = 1
 
 	if textGradient then
@@ -1339,8 +1323,8 @@ function Library._SelectTab(lib, tab, btn, stroke, icon, textLabel, textGradient
 	textLabel.TextColor3 = c.Text
 end
 
-function Library._CreateContentSection(tab, name)
-	local section = CreateInstance("TextLabel", {
+function Library._ContentSection(tab, name)
+	local section = Instance("TextLabel", {
 		Name = "Section_" .. name,
 		FontFace = f.Regular,
 		TextColor3 = c.TextDark,
@@ -1354,12 +1338,12 @@ function Library._CreateContentSection(tab, name)
 	return section
 end
 
-function Library._CreateParagraph(tab, config)
+function Library._Paragraph(tab, config)
 	local title = config.Title or "Paragraph"
 	local content = config.Content or "Description text here."
 	local image = config.Image
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "Paragraph",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
@@ -1368,22 +1352,22 @@ function Library._CreateParagraph(tab, config)
 		AutomaticSize = Enum.AutomaticSize.Y,
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 5)
-	CreateStroke(frame)
-	CreatePadding(frame, 10, 10, 10, 10)
+	Corner(frame, 5)
+	Stroke(frame)
+	Padding(frame, 10, 10, 10, 10)
 
-	local container = CreateInstance("Frame", {
+	local container = Instance("Frame", {
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 0, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
 		Parent = frame,
 	})
 
-	CreateListLayout(container, 10, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
+	ListLayout(container, 10, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
 
 	local imageLabel
 	if image then
-		imageLabel = CreateInstance("ImageLabel", {
+		imageLabel = Instance("ImageLabel", {
 			Name = "Image",
 			Image = image,
 			BackgroundTransparency = 1,
@@ -1391,19 +1375,19 @@ function Library._CreateParagraph(tab, config)
 			Parent = container,
 		})
 		imageLabel.ScaleType = Enum.ScaleType.Crop
-		CreateCorner(imageLabel, 5)
+		Corner(imageLabel, 5)
 	end
 
-	local textContainer = CreateInstance("Frame", {
+	local textContainer = Instance("Frame", {
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, image and -90 or 0, 0, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
 		Parent = container,
 	})
 
-	CreateListLayout(textContainer, 4)
+	ListLayout(textContainer, 4)
 
-	local titleLabel = CreateInstance("TextLabel", {
+	local titleLabel = Instance("TextLabel", {
 		Name = "Title",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -1415,7 +1399,7 @@ function Library._CreateParagraph(tab, config)
 		Parent = textContainer,
 	})
 
-	local contentLabel = CreateInstance("TextLabel", {
+	local contentLabel = Instance("TextLabel", {
 		Name = "Content",
 		FontFace = f.Regular,
 		TextColor3 = c.TextDark,
@@ -1430,7 +1414,7 @@ function Library._CreateParagraph(tab, config)
 		Parent = textContainer,
 	})
 
-	local button = CreateInstance("TextButton", {
+	local button = Instance("TextButton", {
 		Name = "Button",
 		Text = config.ButtonText,
 		FontFace = f.Regular,
@@ -1440,8 +1424,8 @@ function Library._CreateParagraph(tab, config)
 		Size = UDim2.new(0, 120, 0, 30),
 		Parent = textContainer,
 	})
-	CreateCorner(button, 5)
-	CreateStroke(button)
+	Corner(button, 5)
+	Stroke(button)
 
 	if config.OnClick then
 		button.MouseButton1Click:Connect(config.OnClick)
@@ -1457,7 +1441,7 @@ function Library._CreateParagraph(tab, config)
 	}
 end
 
-function Library._CreateSlider(tab, config)
+function Library._Slider(tab, config)
 	local name = config.Name or "Slider"
 	local min = config.Min or 0
 	local max = config.Max or 100
@@ -1470,7 +1454,7 @@ function Library._CreateSlider(tab, config)
 	local sectionName = config.SectionName or "Main"
 	local flag = table.concat({ elementType, tabName, sectionName, name }, "_")
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "Slider_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
@@ -1478,10 +1462,10 @@ function Library._CreateSlider(tab, config)
 		Size = UDim2.new(1, 0, 0, s.Slider.Height),
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 5)
-	CreateStroke(frame)
+	Corner(frame, 5)
+	Stroke(frame)
 
-	local nameLabel = CreateInstance("TextLabel", {
+	local nameLabel = Instance("TextLabel", {
 		Name = "Name",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -1494,7 +1478,7 @@ function Library._CreateSlider(tab, config)
 		Parent = frame,
 	})
 
-	local valueLabel = CreateInstance("TextLabel", {
+	local valueLabel = Instance("TextLabel", {
 		Name = "Value",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -1507,7 +1491,7 @@ function Library._CreateSlider(tab, config)
 		Parent = frame,
 	})
 
-	local sliderBg = CreateInstance("Frame", {
+	local sliderBg = Instance("Frame", {
 		Name = "SliderBackground",
 		BackgroundColor3 = Color3.fromRGB(11, 11, 11),
 		Position = UDim2.new(0, 10, 0, 29),
@@ -1515,16 +1499,16 @@ function Library._CreateSlider(tab, config)
 		Size = UDim2.new(1, -20, 0, 7),
 		Parent = frame,
 	})
-	CreateCorner(sliderBg, 100)
+	Corner(sliderBg, 100)
 
-	local sliderFill = CreateInstance("Frame", {
+	local sliderFill = Instance("Frame", {
 		Name = "SliderFill",
 		BackgroundColor3 = c.Accent,
 		BorderSizePixel = 0,
 		Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
 		Parent = sliderBg,
 	})
-	CreateCorner(sliderFill, 100)
+	Corner(sliderFill, 100)
 
 	local dragging = false
 
@@ -1534,7 +1518,7 @@ function Library._CreateSlider(tab, config)
 		local frameSize = sliderBg.AbsoluteSize
 		local relativeX = math.clamp((pos.X - framePos.X) / frameSize.X, 0, 1)
 		currentValue = math.floor(min + (max - min) * relativeX)
-		CreateTween(sliderFill, { Size = UDim2.new(relativeX, 0, 1, 0) }, 0.05)
+		Tween(sliderFill, { Size = UDim2.new(relativeX, 0, 1, 0) }, 0.05)
 		valueLabel.Text = tostring(currentValue)
 		callback(currentValue)
 	end
@@ -1594,13 +1578,13 @@ function Library._CreateSlider(tab, config)
 	return methods
 end
 
-function Library._CreateButton(tab, config)
+function Library._Button(tab, config)
 	local name = config.Name or "Button"
 	local callback = config.Callback or function() end
 	local subName = config.SubName
 	local subCallback = config.SubCallback or function() end
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "Button_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 1,
@@ -1608,9 +1592,9 @@ function Library._CreateButton(tab, config)
 		Size = UDim2.new(1, 0, 0, s.Button.Height),
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 5)
+	Corner(frame, 5)
 
-	local mainButton = CreateInstance("TextButton", {
+	local mainButton = Instance("TextButton", {
 		Name = "Button_Main",
 		Text = name,
 		FontFace = f.Regular,
@@ -1622,13 +1606,13 @@ function Library._CreateButton(tab, config)
 		Position = UDim2.new(0, 0, 0, 0),
 		Parent = frame,
 	})
-	CreateCorner(mainButton, 5)
-	CreateStroke(mainButton)
+	Corner(mainButton, 5)
+	Stroke(mainButton)
 	mainButton.MouseButton1Click:Connect(callback)
 
 	local subButton
 	if subName then
-		subButton = CreateInstance("TextButton", {
+		subButton = Instance("TextButton", {
 			Name = "Button_Sub",
 			Text = subName,
 			FontFace = f.Regular,
@@ -1640,8 +1624,8 @@ function Library._CreateButton(tab, config)
 			Position = UDim2.new(0.5, 0, 0, 0),
 			Parent = frame,
 		})
-		CreateCorner(subButton, 5)
-		CreateStroke(subButton)
+		Corner(subButton, 5)
+		Stroke(subButton)
 		subButton.MouseButton1Click:Connect(subCallback)
 	end
 
@@ -1653,7 +1637,7 @@ function Library._CreateButton(tab, config)
 			if subButton then
 				return
 			end
-			subButton = CreateInstance("TextButton", {
+			subButton = Instance("TextButton", {
 				Name = "Button_Sub",
 				Text = newSubName,
 				FontFace = f.Regular,
@@ -1665,14 +1649,14 @@ function Library._CreateButton(tab, config)
 				Position = UDim2.new(0.5, 0, 0, 0),
 				Parent = frame,
 			})
-			CreateCorner(subButton, 5)
-			CreateStroke(subButton)
+			Corner(subButton, 5)
+			Stroke(subButton)
 			subButton.MouseButton1Click:Connect(newSubCallback or function() end)
 			mainButton.Size = UDim2.new(0.5, -5, 1, 0)
 		end,
 	}
 end
-function Library._CreateToggle(tab, config)
+function Library._Toggle(tab, config)
 	local name = config.Name or "Toggle"
 	local default = config.Default or false
 	local callback = config.Callback or function() end
@@ -1682,7 +1666,7 @@ function Library._CreateToggle(tab, config)
 	local tabName = tab._library.currentTab and tab._library.currentTab.name or "DefaultTab"
 	local flag = tabName .. "_" .. sectionName .. "_" .. name
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "Toggle_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
@@ -1690,10 +1674,10 @@ function Library._CreateToggle(tab, config)
 		Size = UDim2.new(1, 0, 0, s.Button.Height),
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 5)
-	CreateStroke(frame)
+	Corner(frame, 5)
+	Stroke(frame)
 
-	local nameLabel = CreateInstance("TextLabel", {
+	local nameLabel = Instance("TextLabel", {
 		Name = "Name",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -1706,7 +1690,7 @@ function Library._CreateToggle(tab, config)
 		Parent = frame,
 	})
 
-	local switchBg = CreateInstance("Frame", {
+	local switchBg = Instance("Frame", {
 		Name = "SwitchBackground",
 		BackgroundColor3 = enabled and c.Toggle.Enabled or c.Toggle.Disabled,
 		Position = UDim2.new(1, -48, 0.5, -10),
@@ -1714,9 +1698,9 @@ function Library._CreateToggle(tab, config)
 		Size = UDim2.new(0, s.Toggle.Width, 0, s.Toggle.Height),
 		Parent = frame,
 	})
-	CreateCorner(switchBg, 100)
+	Corner(switchBg, 100)
 
-	local switchCircle = CreateInstance("Frame", {
+	local switchCircle = Instance("Frame", {
 		Name = "Circle",
 		BackgroundColor3 = c.Toggle.Circle,
 		AnchorPoint = Vector2.new(0, 0.5),
@@ -1725,9 +1709,9 @@ function Library._CreateToggle(tab, config)
 		Size = UDim2.new(0, s.Toggle.Circle, 0, s.Toggle.Circle),
 		Parent = switchBg,
 	})
-	CreateCorner(switchCircle, 100)
+	Corner(switchCircle, 100)
 
-	local button = CreateInstance("TextButton", {
+	local button = Instance("TextButton", {
 		Name = "Button",
 		Text = "",
 		BackgroundTransparency = 1,
@@ -1737,11 +1721,11 @@ function Library._CreateToggle(tab, config)
 
 	local function UpdateToggle()
 		if enabled then
-			CreateTween(switchBg, { BackgroundColor3 = c.Toggle.Enabled }, animationspeed.Normal)
-			CreateTween(switchCircle, { Position = UDim2.new(0, 21, 0.5, 0) }, animationspeed.Normal)
+			Tween(switchBg, { BackgroundColor3 = c.Toggle.Enabled }, animationspeed.Normal)
+			Tween(switchCircle, { Position = UDim2.new(0, 21, 0.5, 0) }, animationspeed.Normal)
 		else
-			CreateTween(switchBg, { BackgroundColor3 = c.Toggle.Disabled }, animationspeed.Normal)
-			CreateTween(switchCircle, { Position = UDim2.new(0, 4, 0.5, 0) }, animationspeed.Normal)
+			Tween(switchBg, { BackgroundColor3 = c.Toggle.Disabled }, animationspeed.Normal)
+			Tween(switchCircle, { Position = UDim2.new(0, 4, 0.5, 0) }, animationspeed.Normal)
 		end
 	end
 
@@ -1773,7 +1757,7 @@ function Library._CreateToggle(tab, config)
 	return methods
 end
 
-function Library._CreateDropdown(tab, config)
+function Library._Dropdown(tab, config)
 	local name = config.Name or "Dropdown"
 	local options = config.Options or { "Option 1", "Option 2", "Option 3" }
 	local default = config.Default or options[1]
@@ -1792,7 +1776,7 @@ function Library._CreateDropdown(tab, config)
 	local tabName = tab._library.currentTab and tab._library.currentTab.name or "DefaultTab"
 	local flag = tabName .. "_" .. sectionName .. "_" .. name
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "Dropdown_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
@@ -1802,10 +1786,10 @@ function Library._CreateDropdown(tab, config)
 		ZIndex = 1,
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 5)
-	CreateStroke(frame)
+	Corner(frame, 5)
+	Stroke(frame)
 
-	local nameLabel = CreateInstance("TextLabel", {
+	local nameLabel = Instance("TextLabel", {
 		Name = "Name",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -1819,7 +1803,7 @@ function Library._CreateDropdown(tab, config)
 		Parent = frame,
 	})
 
-	local selectedDisplay = CreateInstance("Frame", {
+	local selectedDisplay = Instance("Frame", {
 		Name = "SelectedDisplay",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.04,
@@ -1829,10 +1813,10 @@ function Library._CreateDropdown(tab, config)
 		ZIndex = 2,
 		Parent = frame,
 	})
-	CreateCorner(selectedDisplay, 5)
-	CreateStroke(selectedDisplay)
+	Corner(selectedDisplay, 5)
+	Stroke(selectedDisplay)
 
-	local selectedLabel = CreateInstance("TextLabel", {
+	local selectedLabel = Instance("TextLabel", {
 		Name = "SelectedLabel",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -1847,7 +1831,7 @@ function Library._CreateDropdown(tab, config)
 		Parent = selectedDisplay,
 	})
 
-	local arrow = CreateInstance("ImageLabel", {
+	local arrow = Instance("ImageLabel", {
 		Name = "Arrow",
 		Image = "rbxassetid://105558791071013",
 		ImageColor3 = c.TextDark,
@@ -1859,7 +1843,7 @@ function Library._CreateDropdown(tab, config)
 		Parent = selectedDisplay,
 	})
 
-	local optionsContainer = CreateInstance("Frame", {
+	local optionsContainer = Instance("Frame", {
 		Name = "OptionsContainer",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.04,
@@ -1871,10 +1855,10 @@ function Library._CreateDropdown(tab, config)
 		ClipsDescendants = true,
 		Parent = frame,
 	})
-	CreateCorner(optionsContainer, 5)
-	CreateStroke(optionsContainer)
+	Corner(optionsContainer, 5)
+	Stroke(optionsContainer)
 
-	local searchBox = CreateInstance("TextBox", {
+	local searchBox = Instance("TextBox", {
 		Name = "SearchBox",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -1889,9 +1873,9 @@ function Library._CreateDropdown(tab, config)
 		Position = UDim2.new(0, 5, 0, 5),
 		Parent = optionsContainer,
 	})
-	CreateCorner(searchBox, 5)
+	Corner(searchBox, 5)
 
-	local optionsScroll = CreateInstance("ScrollingFrame", {
+	local optionsScroll = Instance("ScrollingFrame", {
 		Name = "OptionsScroll",
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
@@ -1903,7 +1887,7 @@ function Library._CreateDropdown(tab, config)
 		Position = UDim2.new(0, 0, 0, 36),
 		Parent = optionsContainer,
 	})
-	CreateListLayout(optionsScroll, 0, Enum.SortOrder.LayoutOrder)
+	ListLayout(optionsScroll, 0, Enum.SortOrder.LayoutOrder)
 
 	local function UpdateSelectedText()
 		if multiSelect then
@@ -1927,7 +1911,7 @@ function Library._CreateDropdown(tab, config)
 			end
 		end
 		for _, option in ipairs(filteredOptions) do
-			local optionBtn = CreateInstance("TextButton", {
+			local optionBtn = Instance("TextButton", {
 				Name = option,
 				FontFace = f.Regular,
 				TextColor3 = c.Text,
@@ -1941,10 +1925,10 @@ function Library._CreateDropdown(tab, config)
 				Parent = optionsScroll,
 			})
 			optionBtn.MouseEnter:Connect(function()
-				CreateTween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
+				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
 			end)
 			optionBtn.MouseLeave:Connect(function()
-				CreateTween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
+				Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
 			end)
 			optionBtn.MouseButton1Click:Connect(function()
 				if multiSelect then
@@ -1962,7 +1946,7 @@ function Library._CreateDropdown(tab, config)
 					callback(selected)
 					expanded = false
 					optionsContainer.Visible = false
-					CreateTween(arrow, { Rotation = 0 }, animationspeed.Normal)
+					Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
 					frame.ZIndex = 1
 				end
 			end)
@@ -1977,7 +1961,7 @@ function Library._CreateDropdown(tab, config)
 	end)
 	RefreshOptions("")
 
-	local toggleBtn = CreateInstance("TextButton", {
+	local toggleBtn = Instance("TextButton", {
 		Name = "ToggleBtn",
 		Text = "",
 		BackgroundTransparency = 1,
@@ -1988,7 +1972,7 @@ function Library._CreateDropdown(tab, config)
 	toggleBtn.MouseButton1Click:Connect(function()
 		expanded = not expanded
 		optionsContainer.Visible = expanded
-		CreateTween(arrow, { Rotation = expanded and 180 or 0 }, animationspeed.Normal)
+		Tween(arrow, { Rotation = expanded and 180 or 0 }, animationspeed.Normal)
 		frame.ZIndex = expanded and 10 or 1
 	end)
 
@@ -2035,7 +2019,7 @@ function Library._CreateDropdown(tab, config)
 	return methods
 end
 
-function Library._CreateKeybind(tab, config, lib)
+function Library._Keybind(tab, config, lib)
 	local name = config.Name or "Keybind"
 	local default = config.Default or Enum.KeyCode.F
 	local callback = config.Callback or function() end
@@ -2043,7 +2027,7 @@ function Library._CreateKeybind(tab, config, lib)
 	local currentKey = default
 	local listening = false
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "Keybind_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
@@ -2051,10 +2035,10 @@ function Library._CreateKeybind(tab, config, lib)
 		Size = UDim2.new(1, 0, 0, s.Button.Height),
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 5)
-	CreateStroke(frame)
+	Corner(frame, 5)
+	Stroke(frame)
 
-	local nameLabel = CreateInstance("TextLabel", {
+	local nameLabel = Instance("TextLabel", {
 		Name = "Name",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -2067,7 +2051,7 @@ function Library._CreateKeybind(tab, config, lib)
 		Parent = frame,
 	})
 
-	local keybindBox = CreateInstance("Frame", {
+	local keybindBox = Instance("Frame", {
 		Name = "KeybindBox",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.04,
@@ -2077,10 +2061,10 @@ function Library._CreateKeybind(tab, config, lib)
 		Size = UDim2.new(0, 30, 0, 26),
 		Parent = frame,
 	})
-	CreateCorner(keybindBox, 5)
-	CreateStroke(keybindBox)
+	Corner(keybindBox, 5)
+	Stroke(keybindBox)
 
-	local keyLabel = CreateInstance("TextLabel", {
+	local keyLabel = Instance("TextLabel", {
 		Name = "KeyLabel",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -2091,7 +2075,7 @@ function Library._CreateKeybind(tab, config, lib)
 		Parent = keybindBox,
 	})
 
-	local button = CreateInstance("TextButton", {
+	local button = Instance("TextButton", {
 		Name = "Button",
 		Text = "",
 		BackgroundTransparency = 1,
@@ -2158,7 +2142,7 @@ function Library._CreateKeybind(tab, config, lib)
 	return methods
 end
 
-function Library._CreateColorPicker(tab, config)
+function Library._ColorPicker(tab, config)
 	local name = config.Name or "Color Picker"
 	local default = config.Default or Color3.fromRGB(255, 255, 255)
 	local callback = config.Callback or function() end
@@ -2167,7 +2151,7 @@ function Library._CreateColorPicker(tab, config)
 	local hue, sat, val = currentColor:ToHSV()
 	local expanded = false
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "ColorPicker_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
@@ -2175,10 +2159,10 @@ function Library._CreateColorPicker(tab, config)
 		Size = UDim2.new(1, 0, 0, s.Button.Height),
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 6)
-	CreateStroke(frame)
+	Corner(frame, 6)
+	Stroke(frame)
 
-	local nameLabel = CreateInstance("TextLabel", {
+	local nameLabel = Instance("TextLabel", {
 		Name = "Name",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -2191,7 +2175,7 @@ function Library._CreateColorPicker(tab, config)
 		Parent = frame,
 	})
 
-	local colorPreview = CreateInstance("Frame", {
+	local colorPreview = Instance("Frame", {
 		Name = "ColorPreview",
 		BackgroundColor3 = currentColor,
 		Position = UDim2.new(1, -45, 0.5, -8),
@@ -2199,10 +2183,10 @@ function Library._CreateColorPicker(tab, config)
 		ZIndex = 2,
 		Parent = frame,
 	})
-	CreateCorner(colorPreview, 4)
-	CreateStroke(colorPreview)
+	Corner(colorPreview, 4)
+	Stroke(colorPreview)
 
-	local previewBtn = CreateInstance("TextButton", {
+	local previewBtn = Instance("TextButton", {
 		Text = "",
 		BackgroundTransparency = 1,
 		Size = UDim2.new(1, 0, 1, 0),
@@ -2210,7 +2194,7 @@ function Library._CreateColorPicker(tab, config)
 		Parent = colorPreview,
 	})
 
-	local pickerContainer = CreateInstance("Frame", {
+	local pickerContainer = Instance("Frame", {
 		Name = "PickerContainer",
 		BackgroundColor3 = Color3.fromRGB(20, 20, 20),
 		BorderSizePixel = 0,
@@ -2219,15 +2203,15 @@ function Library._CreateColorPicker(tab, config)
 		ZIndex = 3000,
 		Parent = tab.content:FindFirstAncestorOfClass("ScreenGui") or tab.content,
 	})
-	CreateCorner(pickerContainer, 6)
+	Corner(pickerContainer, 6)
 
-	local containerStroke = CreateInstance("UIStroke", {
+	local containerStroke = Instance("UIStroke", {
 		Color = Color3.fromRGB(40, 40, 40),
 		Thickness = 1,
 		Parent = pickerContainer,
 	})
 
-	local svPicker = CreateInstance("Frame", {
+	local svPicker = Instance("Frame", {
 		Name = "SVPicker",
 		BackgroundColor3 = Color3.fromHSV(hue, 1, 1),
 		Position = UDim2.new(0, 8, 0, 8),
@@ -2235,17 +2219,17 @@ function Library._CreateColorPicker(tab, config)
 		ZIndex = 3001,
 		Parent = pickerContainer,
 	})
-	CreateCorner(svPicker, 4)
+	Corner(svPicker, 4)
 
-	local whiteLayer = CreateInstance("Frame", {
+	local whiteLayer = Instance("Frame", {
 		BackgroundColor3 = Color3.new(1, 1, 1),
 		Size = UDim2.new(1, 0, 1, 0),
 		ZIndex = 3002,
 		Parent = svPicker,
 	})
-	CreateCorner(whiteLayer, 4)
+	Corner(whiteLayer, 4)
 
-	local whiteGrad = CreateInstance("UIGradient", {
+	local whiteGrad = Instance("UIGradient", {
 		Color = ColorSequence.new(Color3.new(1, 1, 1)),
 		Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 0),
@@ -2254,15 +2238,15 @@ function Library._CreateColorPicker(tab, config)
 		Parent = whiteLayer,
 	})
 
-	local blackLayer = CreateInstance("Frame", {
+	local blackLayer = Instance("Frame", {
 		BackgroundColor3 = Color3.new(0, 0, 0),
 		Size = UDim2.new(1, 0, 1, 0),
 		ZIndex = 3003,
 		Parent = svPicker,
 	})
-	CreateCorner(blackLayer, 4)
+	Corner(blackLayer, 4)
 
-	local blackGrad = CreateInstance("UIGradient", {
+	local blackGrad = Instance("UIGradient", {
 		Color = ColorSequence.new(Color3.new(0, 0, 0)),
 		Rotation = 90,
 		Transparency = NumberSequence.new({
@@ -2272,7 +2256,7 @@ function Library._CreateColorPicker(tab, config)
 		Parent = blackLayer,
 	})
 
-	local svCursor = CreateInstance("Frame", {
+	local svCursor = Instance("Frame", {
 		Name = "Cursor",
 		BackgroundColor3 = Color3.new(1, 1, 1),
 		BackgroundTransparency = 1,
@@ -2283,23 +2267,23 @@ function Library._CreateColorPicker(tab, config)
 		Parent = svPicker,
 	})
 
-	local svCursorStroke = CreateInstance("UIStroke", {
+	local svCursorStroke = Instance("UIStroke", {
 		Thickness = 1.5,
 		Color = Color3.new(1, 1, 1),
 		Parent = svCursor,
 	})
-	CreateCorner(svCursor, 100)
+	Corner(svCursor, 100)
 
-	local hueSlider = CreateInstance("Frame", {
+	local hueSlider = Instance("Frame", {
 		Name = "HueSlider",
 		Position = UDim2.new(0, 8, 0, 98),
 		Size = UDim2.new(1, -16, 0, 8),
 		ZIndex = 3001,
 		Parent = pickerContainer,
 	})
-	CreateCorner(hueSlider, 100)
+	Corner(hueSlider, 100)
 
-	local hueGrad = CreateInstance("UIGradient", {
+	local hueGrad = Instance("UIGradient", {
 		Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, Color3.fromHSV(0, 1, 1)),
 			ColorSequenceKeypoint.new(0.167, Color3.fromHSV(0.167, 1, 1)),
@@ -2312,7 +2296,7 @@ function Library._CreateColorPicker(tab, config)
 		Parent = hueSlider,
 	})
 
-	local hueCursor = CreateInstance("Frame", {
+	local hueCursor = Instance("Frame", {
 		Name = "HueCursor",
 		BackgroundColor3 = Color3.new(1, 1, 1),
 		BackgroundTransparency = 0,
@@ -2322,8 +2306,8 @@ function Library._CreateColorPicker(tab, config)
 		ZIndex = 3005,
 		Parent = hueSlider,
 	})
-	CreateCorner(hueCursor, 100)
-	CreateInstance("UIStroke", {
+	Corner(hueCursor, 100)
+	Instance("UIStroke", {
 		Thickness = 1,
 		Color = Color3.fromRGB(20, 20, 20),
 		Parent = hueCursor,
@@ -2447,7 +2431,7 @@ function Library._CreateColorPicker(tab, config)
 	return methods
 end
 
-function Library._CreateInput(tab, config)
+function Library._Input(tab, config)
 	local name = config.Name or "TextBox"
 	local default = config.Default or ""
 	local placeholder = config.Placeholder or "Enter text..."
@@ -2459,7 +2443,7 @@ function Library._CreateInput(tab, config)
 	local tabName = tab._library.currentTab and tab._library.currentTab.name or "DefaultTab"
 	local flag = tabName .. "_" .. sectionName .. "_" .. name
 
-	local frame = CreateInstance("Frame", {
+	local frame = Instance("Frame", {
 		Name = "Input_" .. name,
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.4,
@@ -2467,10 +2451,10 @@ function Library._CreateInput(tab, config)
 		Size = UDim2.new(1, 0, 0, s.TextBox.Height),
 		Parent = tab.content,
 	})
-	CreateCorner(frame, 5)
-	CreateStroke(frame)
+	Corner(frame, 5)
+	Stroke(frame)
 
-	local nameLabel = CreateInstance("TextLabel", {
+	local nameLabel = Instance("TextLabel", {
 		Name = "Name",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -2483,7 +2467,7 @@ function Library._CreateInput(tab, config)
 		Parent = frame,
 	})
 
-	local icon = CreateInstance("ImageLabel", {
+	local icon = Instance("ImageLabel", {
 		Name = "Icon",
 		BackgroundTransparency = 1,
 		Image = "rbxassetid://93828793199781",
@@ -2494,7 +2478,7 @@ function Library._CreateInput(tab, config)
 		Parent = frame,
 	})
 
-	local textBoxContainer = CreateInstance("Frame", {
+	local textBoxContainer = Instance("Frame", {
 		Name = "InputContainer",
 		BackgroundColor3 = c.Secondary,
 		BackgroundTransparency = 0.04,
@@ -2504,10 +2488,10 @@ function Library._CreateInput(tab, config)
 		Size = UDim2.new(0, s.TextBox.InputWidth, 0, 26),
 		Parent = frame,
 	})
-	CreateCorner(textBoxContainer, 5)
-	local textBoxStroke = CreateStroke(textBoxContainer)
+	Corner(textBoxContainer, 5)
+	local textBoxStroke = Stroke(textBoxContainer)
 
-	local textBox = CreateInstance("TextBox", {
+	local textBox = Instance("TextBox", {
 		Name = "Input",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
@@ -2525,15 +2509,15 @@ function Library._CreateInput(tab, config)
 	})
 
 	textBox.Focused:Connect(function()
-		CreateTween(textBoxContainer, { BackgroundTransparency = 0 }, animationspeed.Fast)
-		CreateTween(textBoxStroke, { Color = c.Accent }, animationspeed.Fast)
-		CreateTween(icon, { ImageColor3 = c.Text }, animationspeed.Fast)
+		Tween(textBoxContainer, { BackgroundTransparency = 0 }, animationspeed.Fast)
+		Tween(textBoxStroke, { Color = c.Accent }, animationspeed.Fast)
+		Tween(icon, { ImageColor3 = c.Text }, animationspeed.Fast)
 	end)
 
 	textBox.FocusLost:Connect(function(enterPressed)
-		CreateTween(textBoxContainer, { BackgroundTransparency = 0.04 }, animationspeed.Fast)
-		CreateTween(textBoxStroke, { Color = c.Border }, animationspeed.Fast)
-		CreateTween(icon, { ImageColor3 = c.TextDark }, animationspeed.Fast)
+		Tween(textBoxContainer, { BackgroundTransparency = 0.04 }, animationspeed.Fast)
+		Tween(textBoxStroke, { Color = c.Border }, animationspeed.Fast)
+		Tween(icon, { ImageColor3 = c.TextDark }, animationspeed.Fast)
 
 		if numbersOnly then
 			local numValue = tonumber(textBox.Text)
@@ -2587,12 +2571,12 @@ function Library._CreateInput(tab, config)
 	return methods
 end
 
-function Library._CreateConfigSection(tab)
+function Library._ConfigSection(tab)
 	local lib = tab._library
 
-	Library._CreateContentSection(tab, "Configuration")
+	Library._ContentSection(tab, "Configuration")
 
-	local configNameBox = Library._CreateInput(tab, {
+	local configNameBox = Library._Input(tab, {
 		Name = "Config Name",
 		Default = "default",
 		Placeholder = "Enter config name...",
@@ -2606,7 +2590,7 @@ function Library._CreateConfigSection(tab)
 		configs = { "default" }
 	end
 
-	configDropdown = Library._CreateDropdown(tab, {
+	configDropdown = Library._Dropdown(tab, {
 		Name = "Select Config",
 		Options = configs,
 		Default = configs[1],
@@ -2616,7 +2600,7 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	Library._CreateButton(tab, {
+	Library._Button(tab, {
 		Name = "Save Config",
 		Callback = function()
 			local configName = configNameBox:GetText()
@@ -2627,7 +2611,7 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	Library._CreateButton(tab, {
+	Library._Button(tab, {
 		Name = "Load Config",
 		Callback = function()
 			local configName = configNameBox:GetText()
@@ -2637,7 +2621,7 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	Library._CreateButton(tab, {
+	Library._Button(tab, {
 		Name = "Delete Config",
 		Callback = function()
 			local configName = configNameBox:GetText()
@@ -2648,14 +2632,14 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	Library._CreateButton(tab, {
+	Library._Button(tab, {
 		Name = "Refresh Configs",
 		Callback = function()
 			configDropdown:Refresh(lib:GetConfigs())
 		end,
 	})
 
-	Library._CreateToggle(tab, {
+	Library._Toggle(tab, {
 		Name = "Auto Save",
 		Default = false,
 		Callback = function(enabled)
@@ -2663,7 +2647,7 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	Library._CreateButton(tab, {
+	Library._Button(tab, {
 		Name = "Export Selected Config",
 		Callback = function()
 			local data = lib:ExportSelectedConfig(configDropdown)
@@ -2680,13 +2664,13 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	local importInputBox = Library._CreateInput(tab, {
+	local importInputBox = Library._Input(tab, {
 		Name = "Import Config JSON",
 		Default = "",
 		Placeholder = "Paste JSON here...",
 	})
 
-	Library._CreateButton(tab, {
+	Library._Button(tab, {
 		Name = "Import Config from Input",
 		Callback = function()
 			local jsonText = importInputBox:GetText()
@@ -2697,7 +2681,7 @@ function Library._CreateConfigSection(tab)
 		end,
 	})
 
-	Library._CreateButton(tab, {
+	Library._Button(tab, {
 		Name = "Reset Config",
 		Callback = function()
 			lib:ResetConfig()
