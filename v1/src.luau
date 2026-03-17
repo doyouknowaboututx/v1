@@ -814,24 +814,11 @@ function Library:_SetupSmartResize(handle)
 end
 
 function Library:_ToggleMinimize()
-	self.minimized = not self.minimized
+	local isVisible = not self.container.Visible
+	self.container.Visible = isVisible
 
-	if self.minimized then
-		CreateTween(self.container,{
-			BackgroundTransparency = 1
-		},0.1)
-
-		if self._acrylicBlur then
-			self._acrylicBlur:SetEnabled(false)
-		end
-	else
-		CreateTween(self.container,{
-			BackgroundTransparency = 0.05
-		},0.1)
-
-		if self._acrylicBlur then
-			self._acrylicBlur:SetEnabled(true)
-		end
+	if self._acrylicBlur then
+		self._acrylicBlur:SetEnabled(isVisible)
 	end
 end
 
