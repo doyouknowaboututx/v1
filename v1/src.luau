@@ -1909,7 +1909,7 @@ function Library._Dropdown(tab, config)
 
 			local corner = Corner(optionBtn, 0)
 			optionBtn.MouseEnter:Connect(function()
-				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
+				Tween(optionBtn, { BackgroundTransparency = 0.8 }, animationspeed.Fast)
 			end)
 			optionBtn.MouseLeave:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
@@ -1939,15 +1939,15 @@ function Library._Dropdown(tab, config)
 					callback(selected)
 				end
 
-				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
+				Tween(optionBtn, { BackgroundTransparency = 0.8 }, animationspeed.Fast)
 				optionBtn.BorderSizePixel = 1
-				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
+				optionBtn.UICorner.CornerRadius = UDim.new(0, 9)
 				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			end)
 
 			if not multiSelect and option == selected then
-				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
-				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
+				Tween(optionBtn, { BackgroundTransparency = 0.8 }, animationspeed.Fast)
+				optionBtn.UICorner.CornerRadius = UDim.new(0, 9)
 				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			else
 				Tween(optionBtn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
