@@ -63,7 +63,7 @@ loadstring(
 )()
 
 local function Tween(instance, properties, duration, easingStyle, easingDirection)
-	local tween = ts:Tween(
+	local tween = ts:Create(
 		instance,
 		TweenInfo.new(
 			duration or animationspeed.Normal,
