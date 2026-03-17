@@ -23,7 +23,7 @@ local c = {
 
 local s = {
 	chl0e = { Width = 690, Height = 446 },
-	Minchl0e = { Width = 500, Height = 300 }, -- INI BUAT SIZE bisa? 
+	Minchl0e = { Width = 500, Height = 300 }, -- INI BUAT SIZE bisa?
 	Maxchl0e = { Width = 1200, Height = 800 },
 	Toggle = { Width = 38, Height = 21, Circle = 13 },
 	Button = { Height = 39 },
@@ -460,7 +460,10 @@ function Library:_SetupMobileSupport()
 	local moved = false
 
 	mobileButton.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if
+			input.UserInputType == Enum.UserInputType.Touch
+			or input.UserInputType == Enum.UserInputType.MouseButton1
+		then
 			dragging = true
 			moved = false
 			dragStart = input.Position
@@ -469,17 +472,27 @@ function Library:_SetupMobileSupport()
 	end)
 
 	ui.InputChanged:Connect(function(input)
-		if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+		if
+			dragging
+			and (
+				input.UserInputType == Enum.UserInputType.Touch
+				or input.UserInputType == Enum.UserInputType.MouseMovement
+			)
+		then
 			local delta = input.Position - dragStart
 			if delta.Magnitude > 10 then
 				moved = true
 			end
-			mobileButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+			mobileButton.Position =
+				UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 		end
 	end)
 
 	mobileButton.InputEnded:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if
+			input.UserInputType == Enum.UserInputType.Touch
+			or input.UserInputType == Enum.UserInputType.MouseButton1
+		then
 			if not moved then
 				self:Toggle()
 			end
@@ -621,7 +634,7 @@ function Library:_Createchl0eControls()
 		yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 		yesBtn.Text = "Yes"
 		yesBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-        yesBtn.BorderSizePixel = 1
+		yesBtn.BorderSizePixel = 1
 		yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 		yesBtn.TextColor3 = Color3.new(1, 1, 1)
 		yesBtn.Parent = popup
@@ -776,12 +789,12 @@ function Library:_SetupSmartResize(handle)
 end
 
 function Library:_ToggleMinimize()
-    local isVisible = not self.container.Visible
-    self.container.Visible = isVisible
+	local isVisible = not self.container.Visible
+	self.container.Visible = isVisible
 
-    if self._acrylicBlur then
-        self._acrylicBlur:SetEnabled(isVisible)
-    end
+	if self._acrylicBlur then
+		self._acrylicBlur:SetEnabled(isVisible)
+	end
 end
 
 function Library:Destroy()
@@ -900,9 +913,78 @@ function Library:DeleteConfig(configName)
 	return false
 end
 
+function Library:SetAutoLoad(enabled, defaultConfig)
+	self._autoLoad = enabled
+	self._defaultAutoLoadConfig = defaultConfig or "default"
+	if enabled then
+		if self._defaultAutoLoadConfig then
+			self:LoadConfig(self._defaultAutoLoadConfig)
+		end
+	end
+end
+
+function Library:ClearAutoLoad()
+	self._autoLoad = false
+	self._defaultAutoLoadConfig = nil
+end
+
+function Library:ExportSelectedConfig(selectedDropdown)
+	local selectedConfigName = selectedDropdown:GetValue()
+	if not selectedConfigName or selectedConfigName == "" then
+		return nil
+	end
+	local folder = self:GetConfigFolder()
+	local path = folder .. "/" .. selectedConfigName .. ".json"
+	if isfile(path) then
+		return readfile(path)
+	else
+		return nil
+	end
+end
+
+function Library:ImportConfigFromInput(inputBox, importButton, overwrite)
+	local function ImportFunction()
+		local jsonData = inputBox:GetText()
+		local configName = inputBox:GetText():match("^%s*(.-)%s*$")
+		if not configName or configName == "" or not jsonData or jsonData == "" then
+			chx("Invalid config name or JSON data", 3)
+			return
+		end
+		local success, err = pcall(function()
+			writefile(self:GetConfigFolder() .. "/" .. configName .. ".json", jsonData)
+		end)
+		if success then
+			chx("Imported config: " .. configName, 2)
+		else
+			chx("Failed to import config: " .. err, 3)
+		end
+	end
+	importButton.MouseButton1Click:Connect(ImportFunction)
+end
+
+function Library:ResetConfig()
+	for id, element in pairs(self._configElements) do
+		if element.type == "Slider" then
+			element.setValue(0)
+		elseif element.type == "Toggle" then
+			element.setValue(false)
+		elseif element.type == "Dropdown" then
+			element.setValue(nil)
+		elseif element.type == "Keybind" then
+			element.setValue(Enum.KeyCode.Unknown)
+		elseif element.type == "ColorPicker" then
+			element.setValue(Color3.fromRGB(255, 255, 255))
+		elseif element.type == "Input" then
+			element.setValue("")
+		end
+	end
+	chx("Config reset to default", 2)
+end
+
 function Library:GetConfigs()
 	return GetAvailableConfigs(self)
 end
+
 function Library:CreateSection(name)
 	local section = {
 		name = name,
@@ -2400,7 +2482,6 @@ function Library._CreateConfigSection(tab)
 	})
 
 	local configs = lib:GetConfigs()
-
 	if #configs == 0 then
 		configs = { "default" }
 	end
@@ -2459,6 +2540,39 @@ function Library._CreateConfigSection(tab)
 		Default = false,
 		Callback = function(enabled)
 			lib:SetAutoSave(enabled)
+		end,
+	})
+
+	Library._CreateButton(tab, {
+		Name = "Export Selected Config",
+		Callback = function()
+			local data = lib:ExportSelectedConfig(configDropdown)
+			if data then
+				configNameBox:SetText(data)
+				chx("Config exported to input box", 2)
+			else
+				chx("Failed to export selected config", 3)
+			end
+		end,
+	})
+
+	local importInputBox = Library._CreateInput(tab, {
+		Name = "Import Config JSON",
+		Default = "",
+		Placeholder = "Paste JSON here...",
+	})
+
+	Library._CreateButton(tab, {
+		Name = "Import Config",
+		Callback = function()
+			local jsonData = importInputBox:GetText()
+			local configName = configNameBox:GetText()
+			if configName and configName ~= "" and jsonData and jsonData ~= "" then
+				lib:ImportConfig(configName, jsonData, true)
+				configDropdown:Refresh(lib:GetConfigs())
+			else
+				chx("Invalid config name or JSON", 3)
+			end
 		end,
 	})
 
