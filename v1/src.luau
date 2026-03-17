@@ -1973,20 +1973,26 @@ function Library._Dropdown(tab, config)
 
 		if expanded then
 			optionsContainer.Visible = true
-			local targetHeight = (#optionButtons * s.Dropdown.OptionHeight) + 36
-			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, targetHeight) }, animationspeed.Fast)
+			Tween(
+				optionsContainer,
+				{
+					Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
+					BackgroundTransparency = 0.04,
+				},
+				animationspeed.Fast
+			)
+			for _, btn in ipairs(optionButtons) do
+				Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.1 }, animationspeed.Fast)
+			end
 			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
 			frame.ZIndex = 10
 		else
-			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0) }, animationspeed.Fast)
+			for _, btn in ipairs(optionButtons) do
+				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
+			end
+			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0), BackgroundTransparency = 1 }, animationspeed.Fast)
 			Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
 			frame.ZIndex = 1
-
-			for _, btn in ipairs(optionButtons) do
-				Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-				Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
-			end
-
 			task.delay(animationspeed.Fast, function()
 				optionsContainer.Visible = false
 			end)
