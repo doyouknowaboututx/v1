@@ -653,7 +653,7 @@ function Library:_Createchl0eControls()
 			local title = Instance.new("TextLabel")
 			title.Name = "ContentWindow"
 			title.Size = UDim2.new(1, -20, 0, 18)
-			title.Position = UDim2.new(0, 10, 0, 6)
+			title.Position = UDim2.new(0, 10, 0, 15)
 			title.Text = "Chloe X Window Menu"
 			title.TextXAlignment = Enum.TextXAlignment.Center
 			title.TextSize = 20
