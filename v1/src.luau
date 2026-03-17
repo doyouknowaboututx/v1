@@ -1357,6 +1357,7 @@ end
 function Library._CreateParagraph(tab, config)
 	local title = config.Title or "Paragraph"
 	local content = config.Content or "Description text here."
+	local image = config.Image
 
 	local frame = CreateInstance("Frame", {
 		Name = "Paragraph",
@@ -1371,6 +1372,37 @@ function Library._CreateParagraph(tab, config)
 	CreateStroke(frame)
 	CreatePadding(frame, 10, 10, 10, 10)
 
+	local container = CreateInstance("Frame", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		Parent = frame,
+	})
+
+	CreateListLayout(container, 10, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
+
+	local imageLabel
+	if image then
+		imageLabel = CreateInstance("ImageLabel", {
+			Name = "Image",
+			Image = image,
+			BackgroundTransparency = 1,
+			Size = UDim2.new(0, 80, 1, 0),
+			Parent = container,
+		})
+		imageLabel.ScaleType = Enum.ScaleType.Crop
+		CreateCorner(imageLabel, 5)
+	end
+
+	local textContainer = CreateInstance("Frame", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, image and -90 or 0, 0, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		Parent = container,
+	})
+
+	CreateListLayout(textContainer, 4)
+
 	local titleLabel = CreateInstance("TextLabel", {
 		Name = "Title",
 		FontFace = f.Regular,
@@ -1380,7 +1412,7 @@ function Library._CreateParagraph(tab, config)
 		BackgroundTransparency = 1,
 		TextSize = textsize.Normal,
 		Size = UDim2.new(1, 0, 0, 20),
-		Parent = frame,
+		Parent = textContainer,
 	})
 
 	local contentLabel = CreateInstance("TextLabel", {
@@ -1388,14 +1420,14 @@ function Library._CreateParagraph(tab, config)
 		FontFace = f.Regular,
 		TextColor3 = c.TextDark,
 		Text = content,
+		RichText = true,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		TextWrapped = true,
 		BackgroundTransparency = 1,
 		TextSize = textsize.Small,
-		Position = UDim2.new(0, 0, 0, 22),
-		Size = UDim2.new(1, 0, 0, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
-		Parent = frame,
+		Size = UDim2.new(1, 0, 0, 0),
+		Parent = textContainer,
 	})
 
 	return {
