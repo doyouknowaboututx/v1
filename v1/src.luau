@@ -2548,8 +2548,12 @@ function Library._CreateConfigSection(tab)
 		Callback = function()
 			local data = lib:ExportSelectedConfig(configDropdown)
 			if data then
-				configNameBox:SetText(data)
-				chx("Config exported to input box", 2)
+				if setclipboard then
+					setclipboard(data)
+					chx("Config copied to clipboard", 2)
+				else
+					chx("Clipboard function not supported", 3)
+				end
 			else
 				chx("Failed to export selected config", 3)
 			end
