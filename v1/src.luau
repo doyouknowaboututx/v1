@@ -1387,7 +1387,7 @@ function Library._CreateParagraph(tab, config)
 			Name = "Image",
 			Image = image,
 			BackgroundTransparency = 1,
-			Size = UDim2.new(0, 80, 1, 0),
+			Size = UDim2.new(0, 50, 0, 50),
 			Parent = container,
 		})
 		imageLabel.ScaleType = Enum.ScaleType.Crop
@@ -1429,6 +1429,23 @@ function Library._CreateParagraph(tab, config)
 		Size = UDim2.new(1, 0, 0, 0),
 		Parent = textContainer,
 	})
+
+	local button = CreateInstance("TextButton", {
+		Name = "Button",
+		Text = config.ButtonText,
+		FontFace = f.Regular,
+		TextColor3 = c.Text,
+		BackgroundColor3 = c.Primary,
+		AutoButtonColor = true,
+		Size = UDim2.new(0, 120, 0, 30),
+		Parent = textContainer,
+	})
+	CreateCorner(button, 5)
+	CreateStroke(button)
+
+	if config.OnClick then
+		button.MouseButton1Click:Connect(config.OnClick)
+	end
 
 	return {
 		SetTitle = function(_, newTitle)
