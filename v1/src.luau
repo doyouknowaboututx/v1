@@ -1339,7 +1339,7 @@ function Library._ContentSection(tab, name)
 end
 
 function Library._Paragraph(tab, config)
-	local title = config.Title or "Paragraph"
+	local name = config.Name or "Paragraph"
 	local content = config.Content or "Description text here."
 	local image = config.Image
 
@@ -1387,11 +1387,11 @@ function Library._Paragraph(tab, config)
 
 	ListLayout(textContainer, 4)
 
-	local titleLabel = Create("TextLabel", {
-		Name = "Title",
+	local nameLabel = Create("TextLabel", {
+		Name = "Name",
 		FontFace = f.Regular,
 		TextColor3 = c.Text,
-		Text = title,
+		Text = name,
 		TextXAlignment = Enum.TextXAlignment.Left,
 		BackgroundTransparency = 1,
 		TextSize = textsize.Normal,
@@ -1415,8 +1415,8 @@ function Library._Paragraph(tab, config)
 	})
 
 	return {
-		SetTitle = function(_, newTitle)
-			titleLabel.Text = newTitle
+		SetName = function(_, newName)
+			nameLabel.Text = newName
 		end,
 		SetContent = function(_, newContent)
 			contentLabel.Text = newContent
