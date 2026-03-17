@@ -1908,20 +1908,26 @@ function Library._Dropdown(tab, config)
 			})
 
 			local corner = Corner(optionBtn, 0)
+			local stroke = Instance.new("UIStroke")
+			stroke.Thickness = 2
+			stroke.Color = Color3.fromRGB(255, 255, 255)
+			stroke.Transparency = 1
+			stroke.Parent = optionBtn
+
 			optionBtn.MouseEnter:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
 			end)
 			optionBtn.MouseLeave:Connect(function()
+				if not multiSelect and option == selected then
+					stroke.Transparency = 0
+				end
 				Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
 			end)
 
 			optionBtn.MouseButton1Click:Connect(function()
 				for _, btn in ipairs(optionButtons) do
-					Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-					if btn:FindFirstChild("UICorner") then
-						btn.UICorner.CornerRadius = UDim.new(0, 0)
-					end
-					Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
+					btn.UIStroke.Transparency = 1
+					Tween(btn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
 				end
 
 				if multiSelect then
@@ -1939,17 +1945,17 @@ function Library._Dropdown(tab, config)
 					callback(selected)
 				end
 
-				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
-				optionBtn.BorderSizePixel = 1
+				optionBtn.UIStroke.Transparency = 0
+				Tween(optionBtn, { BackgroundTransparency = 0.6, TextTransparency = 0 }, animationspeed.Fast)
 				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
-				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			end)
 
 			if not multiSelect and option == selected then
-				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
+				optionBtn.UIStroke.Transparency = 0
+				Tween(optionBtn, { BackgroundTransparency = 0.6, TextTransparency = 0 }, animationspeed.Fast)
 				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
-				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			else
+				optionBtn.UIStroke.Transparency = 1
 				Tween(optionBtn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
 			end
 
@@ -1990,9 +1996,11 @@ function Library._Dropdown(tab, config)
 			end
 			for _, btn in ipairs(optionButtons) do
 				if not multiSelect and btn.Name == selected then
+					btn.UIStroke.Transparency = 0
 					Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.6 }, animationspeed.Fast)
 					btn.UICorner.CornerRadius = UDim.new(0, 6)
 				else
+					btn.UIStroke.Transparency = 1
 					Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
 				end
 			end
@@ -2000,6 +2008,7 @@ function Library._Dropdown(tab, config)
 			frame.ZIndex = 10
 		else
 			for _, btn in ipairs(optionButtons) do
+				btn.UIStroke.Transparency = 1
 				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
 			end
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
