@@ -1970,11 +1970,27 @@ function Library._Dropdown(tab, config)
 	})
 	toggleBtn.MouseButton1Click:Connect(function()
 		expanded = not expanded
-		optionsContainer.Visible = true
-		local targetHeight = (#optionButtons * s.Dropdown.OptionHeight) + 36
-		Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, targetHeight) }, animationspeed.Fast)
-		Tween(arrow, { Rotation = expanded and 180 or 0 }, animationspeed.Normal)
-		frame.ZIndex = expanded and 10 or 1
+
+		if expanded then
+			optionsContainer.Visible = true
+			local targetHeight = (#optionButtons * s.Dropdown.OptionHeight) + 36
+			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, targetHeight) }, animationspeed.Fast)
+			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
+			frame.ZIndex = 10
+		else
+			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0) }, animationspeed.Fast)
+			Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
+			frame.ZIndex = 1
+
+			for _, btn in ipairs(optionButtons) do
+				Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
+				btn.BorderSizePixel = 0
+				if btn:FindFirstChild("UICorner") then
+					btn.UICorner.CornerRadius = UDim.new(0, 0)
+				end
+				Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
+			end
+		end
 	end)
 
 	local methods = {
