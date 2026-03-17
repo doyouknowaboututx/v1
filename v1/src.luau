@@ -621,8 +621,8 @@ function Library:_Createchl0eControls()
 			overlay.Size = UDim2.new(1, 0, 1, 0)
 			overlay.BackgroundColor3 = Color3.new(0, 0, 0)
 			overlay.BackgroundTransparency = 1
-			overlay.ZIndex = 900
-			overlay.Parent = lib.screenGui
+			overlay.ZIndex = 50
+			overlay.Parent = lib.container
 
 			CreateTween(overlay, { BackgroundTransparency = 0.4 }, 0.2)
 
@@ -631,7 +631,7 @@ function Library:_Createchl0eControls()
 			popup.Position = UDim2.new(0.5, -125, 0.5, -60)
 			popup.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 			popup.BorderSizePixel = 0
-			popup.ZIndex = 901
+			popup.ZIndex = 51
 			popup.Parent = overlay
 
 			local corner = Instance.new("UICorner", popup)
@@ -648,7 +648,7 @@ function Library:_Createchl0eControls()
 			label.TextColor3 = Color3.new(1, 1, 1)
 			label.TextScaled = true
 			label.BackgroundTransparency = 1
-			label.ZIndex = 902
+			label.ZIndex = 52
 			label.Parent = popup
 
 			local yesBtn = Instance.new("TextButton")
@@ -659,7 +659,7 @@ function Library:_Createchl0eControls()
 			yesBtn.BorderSizePixel = 1
 			yesBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 			yesBtn.TextColor3 = Color3.new(1, 1, 1)
-			yesBtn.ZIndex = 902
+			yesBtn.ZIndex = 52
 			yesBtn.Parent = popup
 			yesBtn.MouseButton1Click:Connect(function()
 				lib:Destroy()
@@ -673,7 +673,7 @@ function Library:_Createchl0eControls()
 			noBtn.BorderSizePixel = 1
 			noBtn.BorderColor3 = Color3.fromRGB(39, 39, 39)
 			noBtn.TextColor3 = Color3.new(1, 1, 1)
-			noBtn.ZIndex = 902
+			noBtn.ZIndex = 52
 			noBtn.Parent = popup
 			noBtn.MouseButton1Click:Connect(function()
 				overlay:Destroy()
@@ -814,11 +814,31 @@ function Library:_SetupSmartResize(handle)
 end
 
 function Library:_ToggleMinimize()
-	local isVisible = not self.container.Visible
-	self.container.Visible = isVisible
+	self.minimized = not self.minimized
 
-	if self._acrylicBlur then
-		self._acrylicBlur:SetEnabled(isVisible)
+	if self.minimized then
+		self._originalSize = self.container.Size
+
+		CreateTween(self.container,{
+			Size = UDim2.new(
+				self.container.Size.X.Scale,
+				self.container.Size.X.Offset,
+				0,
+				0
+			)
+		},animationspeed.Normal)
+
+		if self._acrylicBlur then
+			self._acrylicBlur:SetEnabled(false)
+		end
+	else
+		CreateTween(self.container,{
+			Size = self._originalSize
+		},animationspeed.Normal)
+
+		if self._acrylicBlur then
+			self._acrylicBlur:SetEnabled(true)
+		end
 	end
 end
 
