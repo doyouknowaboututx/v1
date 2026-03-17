@@ -945,20 +945,42 @@ end
 function Library:ImportConfigFromInput(inputBox, importButton, overwrite)
 	local function ImportFunction()
 		local jsonData = inputBox:GetText()
-		local configName = inputBox:GetText():match("^%s*(.-)%s*$")
-		if not configName or configName == "" or not jsonData or jsonData == "" then
-			chx("Invalid config name or JSON data", 3)
+		if not jsonData or jsonData == "" then
+			chx("Input box is empty", 3)
 			return
 		end
-		local success, err = pcall(function()
-			writefile(self:GetConfigFolder() .. "/" .. configName .. ".json", jsonData)
+
+		local ok, data = pcall(function()
+			return hs:JSONDecode(jsonData)
 		end)
+		if not ok or type(data) ~= "table" then
+			chx("Invalid JSON data", 3)
+			return
+		end
+
+		local configName = data._name or "ImportedConfig"
+		local folder = self:GetConfigFolder()
+		if not isfolder(folder) then
+			makefolder(folder)
+		end
+
+		local path = folder .. "/" .. configName .. ".json"
+		if isfile(path) and not overwrite then
+			chx("Config already exists: " .. configName, 3)
+			return
+		end
+
+		local success, err = pcall(function()
+			writefile(path, jsonData)
+		end)
+
 		if success then
 			chx("Imported config: " .. configName, 2)
 		else
-			chx("Failed to import config: " .. err, 3)
+			chx("Failed to import config: " .. tostring(err), 3)
 		end
 	end
+
 	importButton.MouseButton1Click:Connect(ImportFunction)
 end
 
@@ -2567,16 +2589,27 @@ function Library._CreateConfigSection(tab)
 	})
 
 	Library._CreateButton(tab, {
-		Name = "Import Config",
+		Name = "Import Config from Input",
 		Callback = function()
-			local jsonData = importInputBox:GetText()
-			local configName = configNameBox:GetText()
-			if configName and configName ~= "" and jsonData and jsonData ~= "" then
-				lib:ImportConfig(configName, jsonData, true)
-				configDropdown:Refresh(lib:GetConfigs())
+			local jsonText = importInputBox:GetText()
+			if jsonText and jsonText ~= "" then
+				local success = lib:ImportConfig("ImportedConfig", jsonText, true)
+				if success then
+					chx("Config imported successfully", 2)
+					configDropdown:Refresh(lib:GetConfigs())
+				else
+					chx("Failed to import config", 3)
+				end
 			else
-				chx("Invalid config name or JSON", 3)
+				chx("Input box is empty", 3)
 			end
+		end,
+	})
+
+	Library._CreateButton(tab, {
+		Name = "Reset Config",
+		Callback = function()
+			lib:ResetConfig()
 		end,
 	})
 
