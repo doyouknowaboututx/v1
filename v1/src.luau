@@ -185,17 +185,17 @@ local function DisconnectAll()
 end
 
 function Library:GetConfigFolder()
-	local baseFolder = "CHX"
-	if isfolder and not isfolder(baseFolder) then
-		makefolder(baseFolder)
-	end
+    local baseFolder = "CHX"
+    if isfolder and not isfolder(baseFolder) then
+        makefolder(baseFolder)
+    end
 
-	local folder = baseFolder .. "/" .. self.configFolder
-	if isfolder and not isfolder(folder) then
-		makefolder(folder)
-	end
+    local folder = baseFolder .. "/" .. (self.configFolder or "Default")
+    if isfolder and not isfolder(folder) then
+        makefolder(folder)
+    end
 
-	return folder
+    return folder
 end
 
 local function GetAvailableConfigs(library)
