@@ -1981,6 +1981,9 @@ function Library._Dropdown(tab, config)
 				},
 				animationspeed.Fast
 			)
+			if optionsContainer:FindFirstChildOfClass("UIStroke") then
+				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
+			end
 			for _, btn in ipairs(optionButtons) do
 				Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.1 }, animationspeed.Fast)
 			end
@@ -1990,6 +1993,9 @@ function Library._Dropdown(tab, config)
 			for _, btn in ipairs(optionButtons) do
 				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
 			end
+			if optionsContainer:FindFirstChildOfClass("UIStroke") then
+				Tween(optionsContainer.UIStroke, { Transparency = 1 }, animationspeed.Fast)
+			end
 			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0), BackgroundTransparency = 1 }, animationspeed.Fast)
 			Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
 			frame.ZIndex = 1
@@ -1998,7 +2004,6 @@ function Library._Dropdown(tab, config)
 			end)
 		end
 	end)
-
 	local methods = {
 		SetValue = function(_, value)
 			if multiSelect then
