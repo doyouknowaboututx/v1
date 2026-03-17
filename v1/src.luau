@@ -441,7 +441,7 @@ end
 function Library:_SetupMobileSupport()
 	local mobileButton = CreateInstance("ImageButton", {
 		Name = "MobileToggle",
-		Image = "rbxassetid://132435516080103",
+		Image = "rbxassetid://137536764529569",
 		ImageColor3 = c.Text,
 		BackgroundColor3 = c.Background,
 		BackgroundTransparency = 0.1,
@@ -453,7 +453,6 @@ function Library:_SetupMobileSupport()
 		Parent = self.screenGui,
 	})
 	CreateCorner(mobileButton, 6)
-	CreateStroke(mobileButton)
 
 	local dragging = false
 	local dragStart, startPos
