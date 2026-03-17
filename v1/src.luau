@@ -1906,10 +1906,8 @@ function Library._Dropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
-			local corner = Corner(optionBtn, 0)
-			optionBtn.TextTransparency = 0.4
-			optionBtn.BackgroundTransparency = 1
 
+			local corner = Corner(optionBtn, 0)
 			optionBtn.MouseEnter:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
 			end)
@@ -1951,6 +1949,14 @@ function Library._Dropdown(tab, config)
 				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			end)
 
+			if not multiSelect and option == selected then
+				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
+				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
+				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
+			else
+				Tween(optionBtn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
+			end
+
 			table.insert(optionButtons, optionBtn)
 		end
 		optionsScroll.CanvasSize = UDim2.new(0, 0, 0, #optionButtons * s.Dropdown.OptionHeight)
@@ -1975,28 +1981,21 @@ function Library._Dropdown(tab, config)
 
 		if expanded then
 			optionsContainer.Visible = true
-			Tween(
-				optionsContainer,
-				{
-					Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
-					BackgroundTransparency = 0.04,
-				},
-				animationspeed.Fast
-			)
+			Tween(optionsContainer, {
+				Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
+				BackgroundTransparency = 0.04,
+			}, animationspeed.Fast)
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
 			end
 			for _, btn in ipairs(optionButtons) do
-				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, 0)
+				Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.1 }, animationspeed.Fast)
 			end
 			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
 			frame.ZIndex = 10
 		else
 			for _, btn in ipairs(optionButtons) do
 				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
-				if btn:FindFirstChild("UICorner") then
-					btn.UICorner.CornerRadius = UDim.new(0, 0)
-				end
 			end
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 1 }, animationspeed.Fast)
@@ -2037,8 +2036,7 @@ function Library._Dropdown(tab, config)
 		end,
 		Refresh = function(_, newOptions)
 			options = newOptions
-			RefreshOptions(""),
-			UpdateSelectedText()
+			RefreshOptions("")
 		end,
 	}
 
