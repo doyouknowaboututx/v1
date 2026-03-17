@@ -189,7 +189,13 @@ function Library:GetConfigFolder()
 	if isfolder and not isfolder(baseFolder) then
 		makefolder(baseFolder)
 	end
-	return baseFolder
+
+	local folder = baseFolder .. "/" .. self.configFolder
+	if isfolder and not isfolder(folder) then
+		makefolder(folder)
+	end
+
+	return folder
 end
 
 local function GetAvailableConfigs(library)
@@ -387,8 +393,8 @@ end
 
 function Library.new(title, configFolder)
 	local self = setmetatable({}, Library)
-	self.title = title or "Acrylic"
-	self.configFolder = configFolder or title or "Acrylic"
+	self.title = title or "CHX"
+	self.configFolder = configFolder or title or "Games"
 	self.sections = {}
 	self.currentTab = nil
 	self.minimized = false
@@ -403,6 +409,7 @@ function Library.new(title, configFolder)
 	self._configElements = {}
 	self._autoSave = false
 	self._currentConfig = "default"
+
 	self:Instance_Mainchl0e()
 	self:_SetupKeybindListener()
 	self:_SetupMobileSupport()
@@ -972,12 +979,28 @@ function Library:DeleteConfig(configName)
 	return false
 end
 
-function Library:SetAutoLoad(enabled, defaultConfig)
+function Library:SetAutoLoad(enabled, selectedConfig)
 	self._autoLoad = enabled
-	self._defaultAutoLoadConfig = defaultConfig or "default"
-	if enabled then
-		if self._defaultAutoLoadConfig then
-			self:LoadConfig(self._defaultAutoLoadConfig)
+	self._defaultAutoLoadConfig = selectedConfig or "default"
+
+	if enabled and self._defaultAutoLoadConfig then
+		self:LoadConfig(self._defaultAutoLoadConfig)
+		if writefile then
+			local folder = self:GetConfigFolder()
+			writefile(folder .. "/autoload.txt", self._defaultAutoLoadConfig .. ".json")
+		end
+	end
+end
+
+function Library:_TryAutoLoad()
+	if not self._autoLoad then return end
+	local folder = self:GetConfigFolder()
+	local autoloadPath = folder .. "/autoload.txt"
+	if isfile and isfile(autoloadPath) then
+		local configFile = readfile(autoloadPath)
+		configFile = configFile:gsub("%.json", "")
+		if configFile ~= "" then
+			self:LoadConfig(configFile)
 		end
 	end
 end
@@ -985,6 +1008,13 @@ end
 function Library:ClearAutoLoad()
 	self._autoLoad = false
 	self._defaultAutoLoadConfig = nil
+
+	local folder = self:GetConfigFolder()
+	local autoloadPath = folder .. "/autoload.txt"
+
+	if delfile and isfile(autoloadPath) then
+		delfile(autoloadPath)
+	end
 end
 
 function Library:ExportSelectedConfig(selectedDropdown)
@@ -2627,7 +2657,7 @@ end
 function Library._ConfigSection(tab)
 	local lib = tab._library
 
-	Library._ContentSection(tab, "Configuration")
+	Library._ContentSection(tab, "Keybind Features")
 
 	local configNameBox = Library._Input(tab, {
 		Name = "Config Name",
@@ -2638,12 +2668,22 @@ function Library._ConfigSection(tab)
 		end,
 	})
 
+	Library._Keybind(tab, {
+		Name = "Set Keybind",
+		Default = Enum.KeyCode.F3,
+		Callback = function()
+			lib:Toggle()
+		end,
+	})
+
+	Library._ContentSection(tab, "Configuration Features")
+
 	local configs = lib:GetConfigs()
 	if #configs == 0 then
 		configs = { "default" }
 	end
 
-	configDropdown = Library._Dropdown(tab, {
+	local configDropdown = Library._Dropdown(tab, {
 		Name = "Select Config",
 		Options = configs,
 		Default = configs[1],
