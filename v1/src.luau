@@ -58,7 +58,7 @@ local Library = {}
 Library.__index = Library
 
 local Connections = {}
-local Notification = loadstring(
+loadstring(
 	game:HttpGet("https://raw.githubusercontent.com/doyouknowaboututx/v1/main/v1/src/Core/Notification.luau", true)
 )()
 
@@ -403,7 +403,7 @@ function Library.new(title, configFolder)
 	self._configElements = {}
 	self._autoSave = false
 	self._currentConfig = "default"
-	self:_Mainchl0e()
+	self:Instance_Mainchl0e()
 	self:_SetupKeybindListener()
 	self:_SetupMobileSupport()
 	return self
@@ -502,7 +502,7 @@ function Library:_SetupMobileSupport()
 	self._mobileToggle = mobileButton
 end
 
-function Library:_Mainchl0e()
+function Library:Instance_Mainchl0e()
 	self.screenGui = Instance("ScreenGui", {
 		Name = "ChloeX",
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
