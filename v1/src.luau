@@ -1339,106 +1339,143 @@ function Library._ContentSection(tab, name)
 end
 
 function Library._Paragraph(tab, config)
-	local title = config.Title or "Paragraph"
-	local content = config.Content or "Description text here."
-	local image = config.Image
+    local title = config.Title or "Paragraph"
+    local content = config.Content or "Deskripsi paragraf"
+    local buttonText = config.Button
+    local buttonCallback = config.Callback
+    local subButtonText = config.SubButton
+    local subButtonCallback = config.SubCallback
 
-	local frame = Create("Frame", {
-		Name = "Paragraph",
-		BackgroundColor3 = c.Secondary,
-		BackgroundTransparency = 0.4,
-		BorderSizePixel = 0,
-		Size = UDim2.new(1, 0, 0, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
-		Parent = tab.content,
-	})
-	Corner(frame, 5)
-	Stroke(frame)
-	Padding(frame, 10, 10, 10, 10)
+    local frame = Create("Frame", {
+        Name = "Paragraph",
+        BackgroundColor3 = c.Secondary,
+        BackgroundTransparency = 0.4,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 0),
+        AutomaticSize = Enum.AutomaticSize.Y,
+        Parent = tab.content,
+    })
+    Corner(frame, 5)
+    Stroke(frame)
+    Padding(frame, 10, 10, 10, 10)
 
-	local container = Create("Frame", {
-		BackgroundTransparency = 1,
-		Size = UDim2.new(1, 0, 0, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
-		Parent = frame,
-	})
+    local container = Create("Frame", {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 0),
+        AutomaticSize = Enum.AutomaticSize.Y,
+        Parent = frame,
+    })
+    ListLayout(container, 10, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
 
-	ListLayout(container, 10, Enum.SortOrder.LayoutOrder, Enum.FillDirection.Horizontal)
+    local textContainer = Create("Frame", {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 0),
+        AutomaticSize = Enum.AutomaticSize.Y,
+        Parent = container,
+    })
+    ListLayout(textContainer, 4)
 
-	local imageLabel
-	if image then
-		imageLabel = Create("ImageLabel", {
-			Name = "Image",
-			Image = image,
-			BackgroundTransparency = 1,
-			Size = UDim2.new(0, 50, 0, 50),
-			Parent = container,
-		})
-		imageLabel.ScaleType = Enum.ScaleType.Crop
-		Corner(imageLabel, 5)
-	end
+    local titleLabel = Create("TextLabel", {
+        Name = "Title",
+        FontFace = f.Regular,
+        TextColor3 = c.Text,
+        Text = title,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        BackgroundTransparency = 1,
+        TextSize = textsize.Normal,
+        Size = UDim2.new(1, 0, 0, 20),
+        Parent = textContainer,
+    })
 
-	local textContainer = Create("Frame", {
-		BackgroundTransparency = 1,
-		Size = UDim2.new(1, image and -90 or 0, 0, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
-		Parent = container,
-	})
+    local contentLabel = Create("TextLabel", {
+        Name = "Content",
+        FontFace = f.Regular,
+        TextColor3 = c.TextDark,
+        Text = content,
+        RichText = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextWrapped = true,
+        BackgroundTransparency = 1,
+        TextSize = textsize.Small,
+        AutomaticSize = Enum.AutomaticSize.Y,
+        Size = UDim2.new(1, 0, 0, 0),
+        Parent = textContainer,
+    })
 
-	ListLayout(textContainer, 4)
+    local buttonFrame = Create("Frame", {
+        Name = "ButtonContainer",
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, s.Button.Height),
+        Parent = container,
+    })
 
-	local titleLabel = Create("TextLabel", {
-		Name = "Title",
-		FontFace = f.Regular,
-		TextColor3 = c.Text,
-		Text = title,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		BackgroundTransparency = 1,
-		TextSize = textsize.Normal,
-		Size = UDim2.new(1, 0, 0, 20),
-		Parent = textContainer,
-	})
+    local mainButton = Create("TextButton", {
+        Name = "MainButton",
+        Text = buttonText or "Button",
+        FontFace = f.Regular,
+        TextColor3 = c.Text,
+        BackgroundColor3 = c.Primary,
+        AutoButtonColor = true,
+        Size = subButtonText and UDim2.new(0.5, -5, 1, 0) or UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
+        Parent = buttonFrame,
+    })
+    Corner(mainButton, 5)
+    Stroke(mainButton)
+    if buttonCallback then
+        mainButton.MouseButton1Click:Connect(buttonCallback)
+    end
 
-	local contentLabel = Create("TextLabel", {
-		Name = "Content",
-		FontFace = f.Regular,
-		TextColor3 = c.TextDark,
-		Text = content,
-		RichText = true,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		TextWrapped = true,
-		BackgroundTransparency = 1,
-		TextSize = textsize.Small,
-		AutomaticSize = Enum.AutomaticSize.Y,
-		Size = UDim2.new(1, 0, 0, 0),
-		Parent = textContainer,
-	})
+    local subButton
+    if subButtonText then
+        subButton = Create("TextButton", {
+            Name = "SubButton",
+            Text = subButtonText,
+            FontFace = f.Regular,
+            TextColor3 = c.Text,
+            BackgroundColor3 = c.Primary,
+            AutoButtonColor = true,
+            Size = UDim2.new(0.5, 0, 1, 0),
+            Position = UDim2.new(0.5, 0, 0, 0),
+            Parent = buttonFrame,
+        })
+        Corner(subButton, 5)
+        Stroke(subButton)
+        if subButtonCallback then
+            subButton.MouseButton1Click:Connect(subButtonCallback)
+        end
+    end
 
-	local button = Create("TextButton", {
-		Name = "Button",
-		Text = config.ButtonText,
-		FontFace = f.Regular,
-		TextColor3 = c.Text,
-		BackgroundColor3 = c.Primary,
-		AutoButtonColor = true,
-		Size = UDim2.new(0, 120, 0, 30),
-		Parent = textContainer,
-	})
-	Corner(button, 5)
-	Stroke(button)
-
-	if config.OnClick then
-		button.MouseButton1Click:Connect(config.OnClick)
-	end
-
-	return {
-		SetTitle = function(_, newTitle)
-			titleLabel.Text = newTitle
-		end,
-		SetContent = function(_, newContent)
-			contentLabel.Text = newContent
-		end,
-	}
+    return {
+        SetTitle = function(_, newTitle) titleLabel.Text = newTitle end,
+        SetContent = function(_, newContent) contentLabel.Text = newContent end,
+        SetText = function(_, newText) mainButton.Text = newText end,
+        SetCallback = function(_, newCallback)
+            mainButton.MouseButton1Click:Connect(newCallback)
+        end,
+        MainButton = mainButton,
+        SubButton = subButton,
+        AddSubButton = function(_, text, callback)
+            if subButton then return end
+            subButton = Create("TextButton", {
+                Name = "SubButton",
+                Text = text,
+                FontFace = f.Regular,
+                TextColor3 = c.Text,
+                BackgroundColor3 = c.Primary,
+                AutoButtonColor = true,
+                Size = UDim2.new(0.5, 0, 1, 0),
+                Position = UDim2.new(0.5, 0, 0, 0),
+                Parent = buttonFrame,
+            })
+            Corner(subButton, 5)
+            Stroke(subButton)
+            if callback then
+                subButton.MouseButton1Click:Connect(callback)
+            end
+            mainButton.Size = UDim2.new(0.5, -5, 1, 0)
+        end,
+    }
 end
 
 function Library._Slider(tab, config)
