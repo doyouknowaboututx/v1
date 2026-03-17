@@ -1937,10 +1937,6 @@ function Library._Dropdown(tab, config)
 					selected = option
 					UpdateSelectedText()
 					callback(selected)
-					expanded = false
-					Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0) }, animationspeed.Fast)
-					Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
-					frame.ZIndex = 1
 				end
 
 				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
@@ -1948,6 +1944,14 @@ function Library._Dropdown(tab, config)
 				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
 				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			end)
+
+			if not multiSelect and option == selected then
+				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
+				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
+				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
+			else
+				Tween(optionBtn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
+			end
 
 			table.insert(optionButtons, optionBtn)
 		end
@@ -1985,7 +1989,12 @@ function Library._Dropdown(tab, config)
 				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
 			end
 			for _, btn in ipairs(optionButtons) do
-				Tween(btn, { TextTransparency = 0, BackgroundTransparency = 1 }, animationspeed.Fast)
+				if not multiSelect and btn.Name == selected then
+					Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.6 }, animationspeed.Fast)
+					btn.UICorner.CornerRadius = UDim.new(0, 6)
+				else
+					Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
+				end
 			end
 			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
 			frame.ZIndex = 10
@@ -2004,6 +2013,7 @@ function Library._Dropdown(tab, config)
 			end)
 		end
 	end)
+
 	local methods = {
 		SetValue = function(_, value)
 			if multiSelect then
