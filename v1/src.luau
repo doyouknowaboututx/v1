@@ -624,6 +624,7 @@ function Library:_Createchl0eControls()
 
 		tween.Completed:Connect(function()
 			local overlay = Instance.new("Frame")
+			overlay.Name = "OverlayWindowOption"
 			overlay.Size = UDim2.new(1, 0, 1, 0)
 			overlay.BackgroundColor3 = Color3.new(0, 0, 0)
 			overlay.BackgroundTransparency = 1
@@ -633,6 +634,7 @@ function Library:_Createchl0eControls()
 			CreateTween(overlay, { BackgroundTransparency = 0.4 }, 0.2)
 
 			local popup = Instance.new("Frame")
+			popup.Name = "OverlayWindowMain"
 			popup.Size = UDim2.new(0, 0, 0, 0)
 			popup.Position = UDim2.new(0.5, -125, 0.5, -60)
 			popup.BackgroundColor3 = c.Border
@@ -649,11 +651,12 @@ function Library:_Createchl0eControls()
 			}, 0.2)
 
 			local title = Instance.new("TextLabel")
+			title.Name = "ContentWindow"
 			title.Size = UDim2.new(1, -20, 0, 18)
 			title.Position = UDim2.new(0, 10, 0, 6)
 			title.Text = "Chloe X Window Menu"
 			title.TextXAlignment = Enum.TextXAlignment.Center
-			title.TextSize = 15
+			title.TextSize = 20
 			title.FontFace = f.Bold
 			title.TextColor3 = c.Text
 			title.BackgroundTransparency = 1
@@ -661,11 +664,12 @@ function Library:_Createchl0eControls()
 			title.Parent = popup
 
 			local label = Instance.new("TextLabel")
+			label.Name = "ContentOverlay"
 			label.Size = UDim2.new(1, -20, 0, 60)
 			label.Position = UDim2.new(0, 10, 0, 28)
 			label.Text = "Do you want to close this window? You will not be able to open it again."
 			label.TextWrapped = true
-			label.TextSize = 13
+			label.TextSize = 14
 			label.FontFace = f.Regular
 			label.TextColor3 = c.Text
 			label.TextTransparency = 0.4
@@ -674,10 +678,11 @@ function Library:_Createchl0eControls()
 			label.Parent = popup
 
 			local yesBtn = Instance.new("TextButton")
-			yesBtn.Size = UDim2.new(0.4, 0, 0, 30)
-			yesBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
+			yesBtn.Name = "Confirm"
+			yesBtn.Size = UDim2.new(0.45, 0, 0, 35)
+			yesBtn.Position = UDim2.new(0.03, 0, 0.65, 0)
 			yesBtn.Text = "Confirm"
-			yesBtn.TextSize = 13
+			yesBtn.TextSize = 14
 			yesBtn.FontFace = f.Regular
 			yesBtn.TextColor3 = c.Text
 			yesBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
@@ -692,10 +697,11 @@ function Library:_Createchl0eControls()
 			end)
 
 			local noBtn = Instance.new("TextButton")
-			noBtn.Size = UDim2.new(0.4, 0, 0, 30)
-			noBtn.Position = UDim2.new(0.55, 0, 0.7, 0)
+			noBtn.Name = "Cancel"
+			noBtn.Size = UDim2.new(0.45, 0, 0, 35)
+			noBtn.Position = UDim2.new(0.52, 0, 0.65, 0)
 			noBtn.Text = "Cancel"
-			noBtn.TextSize = 13
+			noBtn.TextSize = 14
 			noBtn.FontFace = f.Regular
 			noBtn.TextColor3 = c.Text
 			noBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
