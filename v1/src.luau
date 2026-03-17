@@ -838,35 +838,11 @@ function Library:_SetupSmartResize(handle)
 end
 
 function Library:_ToggleMinimize()
-	self.minimized = not self.minimized
+	local isVisible = not self.container.Visible
+	self.container.Visible = isVisible
 
-	if self.minimized then
-		local tween = CreateTween(self.container,{
-			Size = UDim2.new(0, self.container.AbsoluteSize.X * 0.6, 0, self.container.AbsoluteSize.Y * 0.6),
-			BackgroundTransparency = 1
-		},0.15)
-
-		tween.Completed:Connect(function()
-			self.container.Visible = false
-		end)
-
-		if self._acrylicBlur then
-			self._acrylicBlur:SetEnabled(false)
-		end
-	else
-		self.container.Visible = true
-
-		self.container.Size = UDim2.new(0, self.container.AbsoluteSize.X * 0.6, 0, self.container.AbsoluteSize.Y * 0.6)
-		self.container.BackgroundTransparency = 1
-
-		CreateTween(self.container,{
-			Size = UDim2.new(0, s.chl0e.Width, 0, s.chl0e.Height),
-			BackgroundTransparency = 0.05
-		},0.15)
-
-		if self._acrylicBlur then
-			self._acrylicBlur:SetEnabled(true)
-		end
+	if self._acrylicBlur then
+		self._acrylicBlur:SetEnabled(isVisible)
 	end
 end
 
