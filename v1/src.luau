@@ -1906,47 +1906,30 @@ function Library._Dropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
+
 			local corner = Corner(optionBtn, 0)
 			optionBtn.MouseEnter:Connect(function()
-				if multiSelect then
-					if table.find(selected, option) then
-						Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
-					else
-						Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
-					end
-				else
-					if option == selected then
-						Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
-					else
-						Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
-					end
-				end
+				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
 			end)
 			optionBtn.MouseLeave:Connect(function()
-				if multiSelect then
-					if table.find(selected, option) then
-						Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
-					else
-						Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-					end
-				else
-					if option == selected then
-						Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
-					else
-						Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-					end
-				end
+				Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
 			end)
 
 			optionBtn.MouseButton1Click:Connect(function()
+				for _, btn in ipairs(optionButtons) do
+					Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
+					if btn:FindFirstChild("UICorner") then
+						btn.UICorner.CornerRadius = UDim.new(0, 0)
+					end
+					Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
+				end
+
 				if multiSelect then
 					local index = table.find(selected, option)
 					if index then
 						table.remove(selected, index)
-						Tween(optionBtn, { BackgroundTransparency = 1 }, animationspeed.Fast)
 					else
 						table.insert(selected, option)
-						Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
 					end
 					UpdateSelectedText()
 					callback(selected)
@@ -1954,14 +1937,21 @@ function Library._Dropdown(tab, config)
 					selected = option
 					UpdateSelectedText()
 					callback(selected)
-					for _, btn in ipairs(optionButtons) do
-						if btn.Name ~= selected then
-							Tween(btn, { BackgroundTransparency = 1 }, animationspeed.Fast)
-						end
-					end
-					Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
 				end
+
+				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
+				optionBtn.BorderSizePixel = 1
+				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
+				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
 			end)
+
+			if not multiSelect and option == selected then
+				Tween(optionBtn, { BackgroundTransparency = 0.6 }, animationspeed.Fast)
+				optionBtn.UICorner.CornerRadius = UDim.new(0, 6)
+				Tween(optionBtn, { TextTransparency = 0 }, animationspeed.Fast)
+			else
+				Tween(optionBtn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
+			end
 
 			table.insert(optionButtons, optionBtn)
 		end
@@ -1984,51 +1974,33 @@ function Library._Dropdown(tab, config)
 	})
 	toggleBtn.MouseButton1Click:Connect(function()
 		expanded = not expanded
+
 		if expanded then
 			optionsContainer.Visible = true
-			Tween(optionsContainer, {
-				Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
-				BackgroundTransparency = 0.04,
-			}, animationspeed.Fast)
+			Tween(
+				optionsContainer,
+				{
+					Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
+					BackgroundTransparency = 0.04,
+				},
+				animationspeed.Fast
+			)
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
 			end
 			for _, btn in ipairs(optionButtons) do
-				if multiSelect then
-					if table.find(selected, btn.Name) then
-						Tween(btn, { BackgroundTransparency = 0.3, TextTransparency = 0 }, animationspeed.Fast)
-						btn.UICorner.CornerRadius = UDim.new(0, 6)
-					else
-						Tween(btn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
-						btn.UICorner.CornerRadius = UDim.new(0, 0)
-					end
+				if not multiSelect and btn.Name == selected then
+					Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.6 }, animationspeed.Fast)
+					btn.UICorner.CornerRadius = UDim.new(0, 6)
 				else
-					if btn.Name == selected then
-						Tween(btn, { BackgroundTransparency = 0.3, TextTransparency = 0 }, animationspeed.Fast)
-						btn.UICorner.CornerRadius = UDim.new(0, 6)
-					else
-						Tween(btn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
-						btn.UICorner.CornerRadius = UDim.new(0, 0)
-					end
+					Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
 				end
 			end
 			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
 			frame.ZIndex = 10
 		else
 			for _, btn in ipairs(optionButtons) do
-				if multiSelect then
-					if table.find(selected, btn.Name) then
-						Tween(btn, { BackgroundTransparency = 0.3, TextTransparency = 0 }, animationspeed.Fast)
-					else
-						Tween(btn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
-					end
-				else
-					if btn.Name == selected then
-						Tween(btn, { BackgroundTransparency = 0.3, TextTransparency = 0 }, animationspeed.Fast)
-					else
-						Tween(btn, { BackgroundTransparency = 1, TextTransparency = 0.4 }, animationspeed.Fast)
-					end
-				end
+				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
 			end
 			if optionsContainer:FindFirstChildOfClass("UIStroke") then
 				Tween(optionsContainer.UIStroke, { Transparency = 1 }, animationspeed.Fast)
@@ -2055,14 +2027,12 @@ function Library._Dropdown(tab, config)
 			end
 			UpdateSelectedText()
 			callback(selected)
-			RefreshOptions("")
 		end,
 		SetValues = function(_, values)
 			if multiSelect and type(values) == "table" then
 				selected = values
 				UpdateSelectedText()
 				callback(selected)
-				RefreshOptions("")
 			else
 				warn("only table supported")
 			end
