@@ -1981,7 +1981,7 @@ function Library._Dropdown(tab, config)
 				optionsContainer,
 				{
 					Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
-					BackgroundTransparency = 0.04,
+					BackgroundTransparency = 0.2,
 				},
 				animationspeed.Fast
 			)
@@ -1991,7 +1991,7 @@ function Library._Dropdown(tab, config)
 			for _, btn in ipairs(optionButtons) do
 				if not multiSelect and btn.Name == selected then
 					Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.6 }, animationspeed.Fast)
-					btn.UICorner.CornerRadius = UDim.new(0, 6)
+					btn.UICorner.CornerRadius = UDim.new(0, 9)
 				else
 					Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
 				end
