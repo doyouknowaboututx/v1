@@ -207,18 +207,13 @@ local function GetAvailableConfigs(library)
         end
 
         local files = listfiles(folder)
-        print("DEBUG: Files found in folder:", folder)
         for _, file in ipairs(files) do
-            print("DEBUG: file =", file)
-            -- Ambil nama file tanpa path dan tanpa ekstensi .json
             local name = file:match("([^\\/]+)%.json$")
-            print("DEBUG: matched name =", name)
             if name then
                 table.insert(configs, name)
             end
         end
     end
-    print("DEBUG: Available configs =", configs)
     return configs
 end
 
