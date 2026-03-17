@@ -1908,7 +1908,19 @@ function Library._Dropdown(tab, config)
 			})
 			local corner = Corner(optionBtn, 0)
 			optionBtn.MouseEnter:Connect(function()
-				Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
+				if multiSelect then
+					if table.find(selected, option) then
+						Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
+					else
+						Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
+					end
+				else
+					if option == selected then
+						Tween(optionBtn, { BackgroundTransparency = 0.3 }, animationspeed.Fast)
+					else
+						Tween(optionBtn, { BackgroundTransparency = 0.5 }, animationspeed.Fast)
+					end
+				end
 			end)
 			optionBtn.MouseLeave:Connect(function()
 				if multiSelect then
