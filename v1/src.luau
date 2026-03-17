@@ -816,30 +816,18 @@ end
 function Library:_ToggleMinimize()
 	self.minimized = not self.minimized
 
-	local function SetTransparency(obj, value)
-		for _,v in pairs(obj:GetDescendants()) do
-			if v:IsA("Frame") or v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("ImageLabel") or v:IsA("ImageButton") then
-				if v.BackgroundTransparency ~= nil then
-					CreateTween(v,{BackgroundTransparency = value},animationspeed.Normal)
-				end
-				if v.TextTransparency ~= nil then
-					CreateTween(v,{TextTransparency = value},animationspeed.Normal)
-				end
-				if v.ImageTransparency ~= nil then
-					CreateTween(v,{ImageTransparency = value},animationspeed.Normal)
-				end
-			end
-		end
-	end
-
 	if self.minimized then
-		SetTransparency(self.container,1)
+		CreateTween(self.container,{
+			BackgroundTransparency = 1
+		},0.1)
 
 		if self._acrylicBlur then
 			self._acrylicBlur:SetEnabled(false)
 		end
 	else
-		SetTransparency(self.container,0)
+		CreateTween(self.container,{
+			BackgroundTransparency = 0.05
+		},0.1)
 
 		if self._acrylicBlur then
 			self._acrylicBlur:SetEnabled(true)
