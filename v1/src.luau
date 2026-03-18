@@ -2023,15 +2023,12 @@ function Library._Dropdown(tab, config)
 							Name = "CheckMark",
 							Image = "rbxassetid://130396712201457",
 							Size = UDim2.new(0, 15, 0, 15),
-							Position = UDim2.new(0, 5, 0.5, -7),
+							Position = UDim2.new(1, -18, 0.5, -7),
 							BackgroundTransparency = 1,
 							Parent = btn,
 						})
-						btn.TextXAlignment = Enum.TextXAlignment.Left
-						btn.Text = "   " .. btn.Text
 						Tween(btn, { TextTransparency = 0 }, animationspeed.Fast)
 					else
-						btn.Text = btn.Text:gsub("^%s+", "")
 						Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
 					end
 				end
