@@ -1960,7 +1960,7 @@ function Library._Dropdown(tab, config)
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		Size = UDim2.new(1, 0, 1, -36),
-		CanvasSize = UDim2.new(0, 0, 0, #options * s.Dropdown.OptionHeight),
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		ScrollBarThickness = 3,
 		ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60),
 		ZIndex = 100,
@@ -2053,7 +2053,6 @@ function Library._Dropdown(tab, config)
 
 			table.insert(optionButtons, optionBtn)
 		end
-		optionsScroll.CanvasSize = UDim2.new(0, 0, 0, #optionButtons * s.Dropdown.OptionHeight)
 		UpdateSelectedText()
 	end
 
@@ -2074,14 +2073,11 @@ function Library._Dropdown(tab, config)
 		expanded = not expanded
 
 		if expanded then
+			local maxHeight = 200
+			local contentHeight = #optionButtons * s.Dropdown.OptionHeight
+			local targetHeight = math.min(contentHeight + 36, maxHeight)
 			optionsContainer.Visible = true
-			Tween(optionsContainer, {
-				Size = UDim2.new(0, 230, 0, (#optionButtons * s.Dropdown.OptionHeight) + 36),
-				BackgroundTransparency = 0.2,
-			}, animationspeed.Fast)
-			if optionsContainer:FindFirstChildOfClass("UIStroke") then
-				Tween(optionsContainer.UIStroke, { Transparency = 0 }, animationspeed.Fast)
-			end
+			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, targetHeight), BackgroundTransparency = 0.2 }, animationspeed.Fast)
 			for _, btn in ipairs(optionButtons) do
 				if not multiSelect and btn.Name == selected then
 					Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.6 }, animationspeed.Fast)
@@ -2095,9 +2091,6 @@ function Library._Dropdown(tab, config)
 		else
 			for _, btn in ipairs(optionButtons) do
 				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
-			end
-			if optionsContainer:FindFirstChildOfClass("UIStroke") then
-				Tween(optionsContainer.UIStroke, { Transparency = 1 }, animationspeed.Fast)
 			end
 			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0), BackgroundTransparency = 1 }, animationspeed.Fast)
 			Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
