@@ -453,6 +453,20 @@ function Library:_SetupKeybindListener()
 	end)
 end
 
+function Library:_ToggleMinimize()
+    self.minimized = not self.minimized
+    local targetHeight = self.minimized and s.Minchl0e.Height or self._originalHeight
+
+    Tween(self.container, {
+        Size = UDim2.new(
+            self.container.Size.X.Scale,
+            self.container.Size.X.Offset,
+            0,
+            targetHeight
+        )
+    }, animationspeed.Normal)
+end
+
 function Library:Toggle()
 	self._visible = not self._visible
 	self.container.Visible = self._visible
@@ -953,7 +967,7 @@ function Library:SaveConfig(configName)
 	end)
 	if success then
 		self._currentConfig = configName
-		chx("Saved as: " .. configName, 2)
+		chx("Saved config as: " .. configName, 2)
 		return true
 	else
 		chx("Failed to save config", 3)
@@ -991,7 +1005,7 @@ function Library:LoadConfig(configName)
 		end
 	end
 	self._currentConfig = configName
-	chx("Loaded: " .. configName, 2)
+	chx("Loaded config: " .. configName, 2)
 	return true
 end
 
@@ -1002,7 +1016,7 @@ function Library:DeleteConfig(configName)
 	local path = self:GetConfigFolder() .. "/" .. configName .. ".json"
 	if isfile(path) then
 		delfile(path)
-		chx("Deleted: " .. configName, 2)
+		chx("Deleted config: " .. configName, 2)
 		return true
 	end
 	return false
@@ -1072,7 +1086,7 @@ end
 
 function Library:ImportConfigFromString(jsonText, overwrite)
 	if not jsonText or jsonText == "" then
-		chx("Input JSON kosong", 3)
+		chx("Input JSON is empty", 3)
 		return false
 	end
 
@@ -1080,7 +1094,7 @@ function Library:ImportConfigFromString(jsonText, overwrite)
 		return hs:JSONDecode(jsonText)
 	end)
 	if not ok or type(data) ~= "table" then
-		chx("JSON tidak valid", 3)
+		chx("Invalid JSON", 3)
 		return false
 	end
 
@@ -1098,7 +1112,7 @@ function Library:ImportConfigFromString(jsonText, overwrite)
 		end
 	end
 
-	chx("Config berhasil di-import", 2)
+	chx("Config successfully imported", 2)
 	return true
 end
 
