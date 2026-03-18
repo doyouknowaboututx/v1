@@ -1990,8 +1990,8 @@ function Library._Dropdown(tab, config)
 				ZIndex = 100,
 				Parent = optionsScroll,
 			})
-			Corner(optionBtn, 0)
 
+			local corner = Corner(optionBtn, 0)
 			optionBtn.MouseEnter:Connect(function()
 				Tween(optionBtn, { BackgroundTransparency = 0.8 }, animationspeed.Fast)
 			end)
@@ -2017,34 +2017,29 @@ function Library._Dropdown(tab, config)
 					if btn:FindFirstChild("CheckMark") then
 						btn.CheckMark:Destroy()
 					end
-					if multiSelect and table.find(selected, btn.Name) then
-						Create("ImageLabel", {
+
+					if (multiSelect and table.find(selected, btn.Name)) or (not multiSelect and btn.Name == selected) then
+						local checkMark = Create("ImageLabel", {
 							Name = "CheckMark",
 							Image = "rbxassetid://130396712201457",
 							Size = UDim2.new(0, 15, 0, 15),
-							Position = UDim2.new(1, -18, 0.5, -7),
+							Position = UDim2.new(0, 5, 0.5, -7),
 							BackgroundTransparency = 1,
 							Parent = btn,
 						})
-						Tween(btn, { TextTransparency = 0 }, animationspeed.Fast)
-					elseif not multiSelect and btn.Name == selected then
-						Create("ImageLabel", {
-							Name = "CheckMark",
-							Image = "rbxassetid://130396712201457",
-							Size = UDim2.new(0, 15, 0, 15),
-							Position = UDim2.new(1, -18, 0.5, -7),
-							BackgroundTransparency = 1,
-							Parent = btn,
-						})
+						btn.TextXAlignment = Enum.TextXAlignment.Left
+						btn.Text = "   " .. btn.Text
 						Tween(btn, { TextTransparency = 0 }, animationspeed.Fast)
 					else
+						btn.Text = btn.Text:gsub("^%s+", "")
 						Tween(btn, { TextTransparency = 0.4 }, animationspeed.Fast)
 					end
 				end
 			end)
+
+			UpdateSelectedText()
 			table.insert(optionButtons, optionBtn)
 		end
-		UpdateSelectedText()
 	end
 
 	searchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -2062,19 +2057,44 @@ function Library._Dropdown(tab, config)
 	})
 	toggleBtn.MouseButton1Click:Connect(function()
 		expanded = not expanded
-		local maxHeight = 200
-		local contentHeight = #optionButtons * s.Dropdown.OptionHeight
-		local targetHeight = math.min(contentHeight + 36, maxHeight)
-		optionsContainer.Visible = expanded
-		Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, expanded and targetHeight or 0), BackgroundTransparency = expanded and 0.2 or 1 }, animationspeed.Fast)
-		Tween(arrow, { Rotation = expanded and 180 or 0 }, animationspeed.Normal)
-		frame.ZIndex = expanded and 10 or 1
+
+		if expanded then
+			local maxHeight = 200
+			local contentHeight = #optionButtons * s.Dropdown.OptionHeight
+			local targetHeight = math.min(contentHeight + 36, maxHeight)
+			optionsContainer.Visible = true
+			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, targetHeight), BackgroundTransparency = 0.2 }, animationspeed.Fast)
+			for _, btn in ipairs(optionButtons) do
+				if not multiSelect and btn.Name == selected then
+					Tween(btn, { TextTransparency = 0, BackgroundTransparency = 0.6 }, animationspeed.Fast)
+					btn.UICorner.CornerRadius = UDim.new(0, 9)
+				else
+					Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
+				end
+			end
+			Tween(arrow, { Rotation = 180 }, animationspeed.Normal)
+			frame.ZIndex = 10
+		else
+			for _, btn in ipairs(optionButtons) do
+				Tween(btn, { TextTransparency = 0.4, BackgroundTransparency = 1 }, animationspeed.Fast)
+			end
+			Tween(optionsContainer, { Size = UDim2.new(0, 230, 0, 0), BackgroundTransparency = 1 }, animationspeed.Fast)
+			Tween(arrow, { Rotation = 0 }, animationspeed.Normal)
+			frame.ZIndex = 1
+			task.delay(animationspeed.Fast, function()
+				optionsContainer.Visible = false
+			end)
+		end
 	end)
 
 	local methods = {
 		SetValue = function(_, value)
 			if multiSelect then
-				selected = type(value) == "table" and value or { value }
+				if type(value) == "table" then
+					selected = value
+				else
+					selected = { value }
+				end
 			else
 				selected = value
 			end
